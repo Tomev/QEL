@@ -89,7 +89,7 @@ for iteration_number in range(0, iterations_number):
         print("Current credits number is", current_credits_number,
               'which is less than 3. Waiting 10 minutes to continue.')
         time.sleep(600)
-        current_credits_number = my_api.get_my_credits()
+        current_credits_number = my_api.get_my_credits()['remaining']
 
     # Check if there's a qasm file, if not create it
     if not os.path.exists('.\\'+qasm_file_name):
