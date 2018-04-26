@@ -55,14 +55,24 @@ if __name__ == '__main__':
             # Add a CX (CNOT) gate on control qubit 0 and target qubit 1, putting
             # the qubits in a Bell state.
             qc.cx(qr[0], qr[1])
+            # Add X Pauli gat, to get different Bell state
+            qc.x(qr[1])
+            # Barrier added due to qasm parsing issue
+            # https://github.com/QISKit/qiskit-sdk-py/issues/309
+            qc.barrier(qr)
             # Add a Measure gate to see the state.
             qc.measure(qr, cr)
+
 
             # Create a Quantum Program for execution
             qp = qiskit.QuantumProgram()
             # Add the circuit you created to it, and call it the "bell" circuit.
             # (You can add multiple circuits to the same program, for batch execution)
             qp.add_circuit("bell", qc)
+
+
+            qp.load_qasm_file(name='bell', qasm_file='QASM.txt')
+            print(qp.get_qasm('bell'))
 
             # Compile and run the Quantum Program on a simulator backend
             print("(Local Backends)")
@@ -97,6 +107,10 @@ if __name__ == '__main__':
                 #while True:
                 print("Iteration: ", i)
                 print("Running on fixed device: ", backend)
+
+                qp.load_qasm_file(name='bell', qasm_file='QASM.txt')
+                print(qp.get_qasm('bell'))
+
                 exp_result = qp.execute("bell", backend=backend, shots=1024, timeout=5)
                 print("Next iteration")
                 i += 1
