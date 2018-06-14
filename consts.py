@@ -1,2 +1,3 @@
 SHOTS = 1024
 MAX_CREDITS = 3
+CONSIDERED_REMOTE_BACKENDS = ['ibmqx2', 'ibmqx4', 'ibmqx5']

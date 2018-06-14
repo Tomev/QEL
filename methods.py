@@ -1,4 +1,4 @@
-from qiskit import QuantumProgram, QuantumCircuit, QuantumRegister, ClassicalRegister
+
 from qiskit import available_backends, get_backend, execute, register
 from qiskit.tools.visualization import plot_histogram, circuit_drawer
 from IBMQuantumExperience import IBMQuantumExperience
@@ -33,6 +33,11 @@ def get_current_credits():
     return api.get_my_credits()['remaining']
 
 
+def get_backend_name_from_number(backend_index):
+    backend_index = backend_index % len(consts.CONSIDERED_REMOTE_BACKENDS)
+    return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
+
+
 def test_get_remote_backends_names():
     # Only naively checks if size of returned list is greater than 0. Most of the time will work well, but can be
     # false negative.
@@ -51,7 +56,6 @@ def test_get_available_remote_backends():
 
 def test_get_current_credits():
     assert(get_current_credits() >= 0)
-
 
 
 register(Qconfig.APItoken, Qconfig.config['url'])
