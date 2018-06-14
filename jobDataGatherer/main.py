@@ -2,7 +2,7 @@ import check_QE
 
 # Get finished jobs
 
-jobs_num = 1240
+jobs_num = 0
 
 my_jobs = check_QE.get_done_jobs(jobs_num)
 my_data = check_QE.filter_jobs_data(my_jobs)

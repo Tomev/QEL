@@ -17,6 +17,7 @@ quantum_circuit_name = 'bell'
 considered_backends = ['ibmqx2', 'ibmqx4', 'ibmqx5']
 iterations_number = 1000000
 
+
 def get_backend_name_from_number(backend_index):
     backend_index = backend_index % len(considered_backends)
     return considered_backends[backend_index]
@@ -69,8 +70,9 @@ def get_available_backends():
         for backend_index in range(len(discovered_backends) - 1, 0, -1):
             backend_status = api.backend_status(discovered_backends[backend_index])
 
-            if not backend_status['available']:
-                discovered_backends.remove(discovered_backends[backend_index])
+            # ibmqx2 seems to be online even if its status is unavailable
+            # if not backend_status['available']:
+              #  discovered_backends.remove(discovered_backends[backend_index])
 
     return discovered_backends
 
@@ -117,6 +119,8 @@ for iteration_number in range(0, iterations_number):
                 time.sleep(5)
 
             print("Executing quantum program on backend: ", backend)
+            backend_status = my_api.backend_status(backend)
+            print(backend_status)
             qp.execute(quantum_circuit_name, backend=backend, shots=1024, timeout=0)
 
             print("Program send for execution to ", backend, '.')
