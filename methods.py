@@ -39,6 +39,7 @@ def get_backend_name_from_number(backend_index):
 def execute_circuits(circuits, backend_name, shots_num):
     return execute(circuits, backend=backend_name, shots=shots_num)
 
+
 def test_get_remote_backends_names():
     # Only naively checks if size of returned list is greater than 0. Most of the time will work well, but can be
     # false negative.
