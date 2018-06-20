@@ -18,7 +18,6 @@ bell.cx(q[0], q[1])
 measureZZ = QuantumCircuit(q, c)
 measureZZ.measure(q[0], c[0])
 measureZZ.measure(q[1], c[1])
-bellZZ = bell+measureZZ
 
 # quantum circuit to measure q in the superposition basis
 measureXX = QuantumCircuit(q, c)
@@ -26,41 +25,35 @@ measureXX.h(q[0])
 measureXX.h(q[1])
 measureXX.measure(q[0], c[0])
 measureXX.measure(q[1], c[1])
-bellXX = bell+measureXX
 
 # quantum circuit to measure ZX
 measureZX = QuantumCircuit(q, c)
 measureZX.h(q[0])
 measureZX.measure(q[0], c[0])
 measureZX.measure(q[1], c[1])
-bellZX = bell+measureZX
 
 # quantum circuit to measure XZ
 measureXZ = QuantumCircuit(q, c)
 measureXZ.h(q[1])
 measureXZ.measure(q[0], c[0])
 measureXZ.measure(q[1], c[1])
-bellXZ = bell+measureXZ
 
-circuits = [bellZZ,bellXX,bellZX,bellXZ]
-
-observable_first ={'00': 1, '01': -1, '10': 1, '11': -1}
-observable_second ={'00': 1, '01': 1, '10': -1, '11': -1}
-observable_correlated ={'00': 1, '01': -1, '10': -1, '11': 1}
-
-CHSH = lambda x : x[0]+x[1]+x[2]-x[3]
 measure = [measureZZ, measureZX, measureXX, measureXZ]
 
 real_chsh_circuits = []
 real_x = []
 
 real_steps = 10
+
 for step in range(real_steps):
-    theta = 2.0*np.pi*step/10
-    bell_middle = QuantumCircuit(q,c)
-    bell_middle.ry(theta,q[0])
+
+    theta = 2.0 * np.pi * step / 10
+    bell_middle = QuantumCircuit(q, c)
+    bell_middle.ry(theta, q[0])
+
     for m in measure:
         real_chsh_circuits.append(bell+bell_middle+m)
+
     real_x.append(theta)
 
 print('Circuit prepared for execution.')
@@ -100,7 +93,7 @@ for iteration_number in range(0, consts.ITERATIONS_NUMBER):
                 available_backends = methods.get_available_remote_backends_names()
 
             print("Executing quantum program on backend:", backend)
-            methods.execute(circuits, backend)
+            methods.execute(real_chsh_circuits, backend)
 
             print("Program send for execution to ", backend, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
