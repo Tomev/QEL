@@ -36,8 +36,8 @@ def get_backend_name_from_number(backend_index):
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
 
 
-def execute_circuits(circuits, backend_name, shots_num):
-    return execute(circuits, backend=backend_name, shots=shots_num)
+def execute_circuits(circuits, backend_name):
+    return execute(circuits, backend=backend_name, shots=consts.SHOTS, timeout=0)
 
 
 def test_get_remote_backends_names():
