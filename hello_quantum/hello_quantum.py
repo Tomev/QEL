@@ -11,10 +11,6 @@ import methods
 from methods import consts
 
 
-# Settings
-iterations_number = 1
-
-
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = QuantumRegister(2)
 # Create a Classical Register called "cr" with 2 bits.
@@ -39,7 +35,7 @@ print('Circuit prepared for execution.')
 
 current_backend_index = 0
 
-for iteration_number in range(0, iterations_number):
+for iteration_number in range(0, consts.ITERATIONS_NUMBER):
 
     print('Iteration number: ', iteration_number)
 
