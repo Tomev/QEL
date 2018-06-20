@@ -33,6 +33,9 @@ qc.measure(qr, cr)
 
 print('Circuit prepared for execution.')
 
+# Assign circuits to run here.
+circuits = qc
+
 current_backend_index = 0
 
 for iteration_number in range(0, consts.ITERATIONS_NUMBER):
@@ -66,7 +69,7 @@ for iteration_number in range(0, consts.ITERATIONS_NUMBER):
                 print('Trying another backend: ', backend)
 
             print("Executing quantum program on backend:", backend)
-            methods.execute(qc, backend)
+            methods.execute(circuits, backend)
 
             print("Program send for execution to ", backend, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
