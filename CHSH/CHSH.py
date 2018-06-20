@@ -86,11 +86,9 @@ for iteration_number in range(0, consts.ITERATIONS_NUMBER):
                 print(backend, ': Currently not available.')
                 current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
                 backend = methods.get_backend_name_from_number(current_backend_index)
-                print('Trying another backend: ', backend)
-                # sleep for 5 secs in case no backends are available
-                time.sleep(5)
-                # refresh available backends list
+                print('Refreshing available backends list...')
                 available_backends = methods.get_available_remote_backends_names()
+                print('Trying another backend: ', backend)
 
             print("Executing quantum program on backend:", backend)
             methods.execute(real_chsh_circuits, backend)
