@@ -1,6 +1,7 @@
 from IBMQuantumExperience import IBMQuantumExperience
 from Qconfig import *
 from enum import IntEnum
+from consts import CSV_SEPARATOR
 
 
 class FilteredJobPart(IntEnum):
@@ -30,13 +31,14 @@ def filter_jobs_data(jobs):
     return data
 
 
-def parse_filtered_job_to_string(datum_dict):
+def parse_filtered_job_to_string(datum_dict, ordered_keys):
 
     resultant_string = ''
 
-    for key, value in datum_dict.items():
-        resultant_string = resultant_string + key + '=' + str(value) + ','
+    for key in ordered_keys:
+        resultant_string = resultant_string + str(datum_dict[key]) + CSV_SEPARATOR
 
+    # Make last char a new line instead of separator...
     resultant_string = resultant_string[:-1] + '\n'
 
     return resultant_string
