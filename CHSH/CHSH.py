@@ -1,4 +1,4 @@
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister, QISKitError
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from methods import run_main_loop
 import numpy as np
 
