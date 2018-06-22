@@ -17,25 +17,25 @@ def get_done_jobs(limit):
     return done_jobs
 
 
-# filter_jobs_data returns a list of tuples with important info, such as backend name, execution data, and results
+# filter_jobs_data returns a dictionary with selected important info, such as backend name, execution date and results...
 def filter_jobs_data(jobs):
     data = []
     for job in jobs:
         for qasm in job['qasms']:
-            row = job['backend']['name'], qasm['result']['date'], qasm['result']['data']['counts']
+            row = dict()
+            row['backend_name'] = job['backend']['name']
+            row['date'] = qasm['result']['date']
+            row['results'] = qasm['result']['data']['counts']
             data.append(row)
     return data
 
 
-def parse_filtered_job_to_string(datum):
-    resultant_string = ""
-    resultant_string += datum[FilteredJobPart.backend_name] + ","
-    resultant_string += datum[FilteredJobPart.execution_date] + ","
+def parse_filtered_job_to_string(datum_dict):
 
-    results_dict = datum[FilteredJobPart.results]
+    resultant_string = ''
 
-    for key in results_dict.keys():
-        resultant_string += key + ":" + str(results_dict[key]) + ","
+    for key, value in datum_dict.items():
+        resultant_string = resultant_string + key + '=' + str(value) + ','
 
     resultant_string = resultant_string[:-1] + '\n'
 

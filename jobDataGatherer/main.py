@@ -16,6 +16,6 @@ for datum in my_data:
 
 # Save them to file
 
-file = open("data.txt", "w")
+file = open("data.csv", "w")
 file.write(string_data)
 file.close()
