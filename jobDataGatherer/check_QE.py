@@ -1,5 +1,8 @@
 from IBMQuantumExperience import IBMQuantumExperience
+import sys
+sys.path.append('../')
 from Qconfig import *
+
 from enum import IntEnum
 from consts import CSV_SEPARATOR
 
