@@ -72,8 +72,8 @@ def run_main_loop(circuits):
         # In case there are to little credits
         while current_credits_number < 3:
             print("Current credits number is", current_credits_number,
-                  'which is less than 3. Waiting 10 minutes to continue.')
-            time.sleep(600)
+                  'which is less than 3. Waiting 1 hour to continue.')
+            time.sleep(6 * 600)
             current_credits_number = get_current_credits()
 
         print('Getting available backends...')
