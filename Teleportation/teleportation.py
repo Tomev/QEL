@@ -14,14 +14,14 @@ cr = qiskit.ClassicalRegister(3)
 #prepare a state rotated by theta on the qubit 0
 def prepare_state(theta):
     circuit=qiskit.QuantumCircuit(qr, cr)
-    circuit.rx(theta, qr[0])
+    circuit.ry(theta, qr[0])
     return(circuit)
 
 #a circuit to teleport state from qubit 0 to qubit 2
 teleport=qiskit.QuantumCircuit(qr, cr)
 #prepare bell state on qubits 1 and 2
-teleport.cx(qr[1], qr[2])
 teleport.h(qr[1])
+teleport.cx(qr[1], qr[2])
 #measure qubits 0 and 1
 teleport.measure(qr[0], cr[0])
 teleport.measure(qr[1], cr[1])
@@ -36,7 +36,7 @@ def measure(i):
 #Prepare circuits
 circuits=[]
 for theta in np.linspace(0,np.pi,10):
-    qc_test=prepare_state(theta)+measure(0)
+    qc_test=prepare_state(theta)+measure(0)+measure(1)+measure(2)
     circuits.append(qc_test)
     qc_teleport=prepare_state(theta)+teleport+measure(2)
     circuits.append(qc_teleport)
