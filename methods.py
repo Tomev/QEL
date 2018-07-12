@@ -16,8 +16,9 @@ def get_available_remote_backends_names():
     available_remote_backends_names = []
 
     for index in range(len(remote_backends_names) - 1, 0 - 1, -1):
-        if get_backend_from_name(remote_backends_names[index]).status['available']:
-            available_remote_backends_names.append(remote_backends_names[index])
+        backend = get_backend_from_name(remote_backends_names[index])
+        if backend.status['operational']:
+            available_remote_backends_names.append(backend.status['name'])
 
     return available_remote_backends_names
 
