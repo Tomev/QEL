@@ -6,3 +6,4 @@
 Qconfig.py
 */data.csv
 __pycache__
+.cache
