@@ -5,6 +5,6 @@
 */__pycache__
 Qconfig.py
 */data.csv
-__pycache__
-__pycache__/*
+__pycache__/
+*/*.pyc
 .cache
