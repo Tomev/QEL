@@ -16,6 +16,7 @@ x q[0];
 x q[1];
 x q[2];
 
+// According to https://www.researchgate.net/publication/228527320_Quantum_Circuits_From_a_Network_to_a_One-Way_Model-A_Tutorial_Version/figures?lo=1
 // CCZ using CCX
 h q[2];
 ccx q[0], q[1], q[2];
