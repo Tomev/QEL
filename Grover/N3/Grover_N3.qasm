@@ -44,7 +44,7 @@ h q[1];
 h q[2];
 // END Amplification
  
-// And now repeat this everything beside initialization 
+// And now repeat this (everything besides initialization)
  
 //BEGIN Oracle for |000>
 x q[0];
