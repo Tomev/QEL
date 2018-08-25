@@ -63,6 +63,7 @@ def test_get_current_credits():
 
 def run_main_loop(circuits):
     current_backend_index = 0
+    wait_time_in_minutes = 5
 
     for iteration_number in range(0, consts.ITERATIONS_NUMBER):
 
@@ -73,8 +74,8 @@ def run_main_loop(circuits):
         # In case there are to little credits
         while current_credits_number < 3:
             print("Current credits number is", current_credits_number,
-                  'which is less than 3. Waiting 1 hour to continue.')
-            time.sleep(6 * 600)
+                  'which is less than 3. Waiting ' + str(wait_time_in_minutes) + ' minute(s) to continue.')
+            time.sleep(wait_time_in_minutes * 60)
             current_credits_number = get_current_credits()
 
         print('Getting available backends...')
