@@ -1,10 +1,9 @@
 from IBMQuantumExperience import IBMQuantumExperience
-import sys
-sys.path.append('../')
+import sys, datetime
 from Qconfig import *
-
 from enum import IntEnum
-from consts import CSV_SEPARATOR
+from consts import CSV_SEPARATOR, JOBS_DOWNLOAD_LIMIT
+sys.path.append('../')
 
 
 class FilteredJobPart(IntEnum):
@@ -14,10 +13,16 @@ class FilteredJobPart(IntEnum):
 
 
 def get_done_jobs(limit):
-    api = IBMQuantumExperience(APItoken)
-    all_jobs = api.get_jobs(limit)
-    done_jobs = [j for j in all_jobs if j['status'] == 'COMPLETED']
+    api = IBMQuantumExperience(APItoken, config=config, verify=True)
+    jobs_to_skip = 0
+    done_jobs = []
 
+    while limit > JOBS_DOWNLOAD_LIMIT:
+        done_jobs += api.get_jobs(JOBS_DOWNLOAD_LIMIT, only_completed=True, skip=jobs_to_skip)
+        jobs_to_skip += JOBS_DOWNLOAD_LIMIT
+        limit -= JOBS_DOWNLOAD_LIMIT
+
+    done_jobs += api.get_jobs(limit, only_completed=True, skip=jobs_to_skip)
     return done_jobs
 
 
