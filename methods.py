@@ -105,6 +105,13 @@ def run_main_loop(circuits):
             print('There was an error in the circuit!. Error = {}'.format(ex))
 
 
+def test_locally(circuit):
+    backend = "local_qasm_simulator"
+    executed_job = execute_circuits(circuit, backend)
+    print(executed_job.result())
+    print(executed_job.result().get_data())
+
+
 register(Qconfig.APItoken, Qconfig.config['url'])
 
 
