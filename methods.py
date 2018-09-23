@@ -98,7 +98,7 @@ def run_main_loop(circuits):
             print("Executing quantum program on backend:", backend)
             execute_circuits(circuits, backend)
 
-            print("Program send for execution to ", backend, '.')
+            print("Program sent for execution to ", backend, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
 
         except qiskit.QISKitError as ex:
