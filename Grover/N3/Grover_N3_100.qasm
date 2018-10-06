@@ -11,18 +11,18 @@ h q[0];
 h q[1];
 h q[2];
 
-//BEGIN Oracle for |100>
+//BEGIN Oracle for |001>
+x q[0];
 x q[1];
-x q[2];
 
 // CCZ using CCX
 h q[2];
 ccx q[0], q[1], q[2];
 h q[2];
 
+x q[0];
 x q[1];
-x q[2];
-// END Oracle for |100>
+// END Oracle for |001>
 
 // BEGIN Amplification
 h q[0];
@@ -44,18 +44,18 @@ h q[2];
  
 // And now repeat this (everything besides initialization)
  
-//BEGIN Oracle for |100>
+//BEGIN Oracle for |001>
+x q[0];
 x q[1];
-x q[2];
 
 // CCZ using CCX
 h q[2];
 ccx q[0], q[1], q[2];
 h q[2];
 
+x q[0];
 x q[1];
-x q[2];
-// END Oracle for |100>
+// END Oracle for |001>
 
 // BEGIN Amplification
 h q[0];
