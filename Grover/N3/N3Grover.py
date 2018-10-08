@@ -6,7 +6,7 @@ from methods import run_main_loop, test_locally
 
 available_file_names = ['Grover_N3_000_simplified.qasm', 'Grover_N3_001_simplified.qasm', 'Grover_N3_010_simplified.qasm']
 
-selected_file_index = 2
+selected_file_index = 3
 circuit = qiskit.load_qasm_file(available_file_names[selected_file_index], 'GroverN3')
 
 #run_main_loop(circuit)
