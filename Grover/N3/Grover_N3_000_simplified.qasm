@@ -11,23 +11,23 @@ gate ccz a,b,c
 cx b,c; tdg c;
 cx a,c; t c;
 cx b,c; tdg c;
-cx a,c; t b; t c; h c;
+cx a,c; t b; t c; //h c;
 cx a,b; t a; tdg b;
 cx a,b;
-h c;
+//h c;
 }
 
 // XH combined gate
 //gate g_xh a { h a; z a; }
-gate g_xh a { u2(pi,pi) a; }
+gate xh a { u2(pi,pi) a; }
 
 // HX combined gate
 //gate g_hx a { z a; h a; }
-gate g_hx a { u2(0,0) a; }
+gate hx a { u2(0,0) a; }
 
 // XHX combined gate
 //gate g_xhx a { z a; h a; z a; }
-gate g_xhx a { u2(-pi,0) a; }
+gate xhx a { u2(-pi,0) a; }
 
 qreg q[3];
 creg c[3];
@@ -38,7 +38,7 @@ creg c[3];
 //x q;
 
 // h x combined
-g_hx q;
+hx q;
 
 // pre-defined CCZ
 ccz q[0], q[1], q[2];
@@ -51,7 +51,7 @@ ccz q[0], q[1], q[2];
 //x q;
 
 //x h x -> u2
-g_xhx q;
+xhx q;
 
 // pre-defined CCZ
 ccz q[0], q[1], q[2];
@@ -66,7 +66,7 @@ ccz q[0], q[1], q[2];
 //x q;
 
 // combined x h x -> u2
-g_xhx q;
+xhx q;
 
 // pre-defined CCZ
 ccz q[0], q[1], q[2];
@@ -79,7 +79,7 @@ ccz q[0], q[1], q[2];
 //x q;
 
 // combined x h x -> u2
-g_xhx q;
+xhx q;
 
 // pre-defined CCZ
 ccz q[0], q[1], q[2];
@@ -87,9 +87,8 @@ ccz q[0], q[1], q[2];
 //x q;
 //h q;
 // combined x h -> u2
-g_xh q;
+xh q;
 
 // END Amplification 
 
 measure q -> c;
-
