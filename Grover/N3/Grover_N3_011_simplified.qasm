@@ -64,7 +64,7 @@ xhx q[2];
 ccz q[0], q[1], q[2];
 
 // h q[0]; x q[0];
-hx q[1];
+hx q[0];
 
 // h q[1]; x q[1];
 hx q[1];
@@ -78,6 +78,5 @@ ccz q[0], q[1], q[2];
 // x q[1]; h q[1];
 // x q[2]; h q[2];
 xh q;
-
 
 measure q -> c;
