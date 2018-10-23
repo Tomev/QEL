@@ -1,4 +1,4 @@
-from qiskit import available_backends, get_backend, execute, register
+from qiskit import execute, IBMQ, Aer
 from IBMQuantumExperience import IBMQuantumExperience
 import qiskit
 import time
@@ -7,24 +7,26 @@ import Qconfig
 import consts
 
 
-def get_remote_backends_names():
-    return available_backends({'local': False, 'simulator': False})
+def get_operational_remote_backends():
+    operational_backends = IBMQ.backends(operational=True, filters=lambda x: not x.configuration()['simulator'])
+    return operational_backends
 
 
-def get_available_remote_backends_names():
-    remote_backends_names = get_remote_backends_names()
-    available_remote_backends_names = []
+def get_backends_names(backends):
+    names = []
 
-    for index in range(len(remote_backends_names) - 1, 0 - 1, -1):
-        backend = get_backend_from_name(remote_backends_names[index])
-        if backend.status['operational']:
-            available_remote_backends_names.append(backend.status['name'])
+    for backend in backends:
+        names.append(backend.name())
 
-    return available_remote_backends_names
+    return names
 
 
 def get_backend_from_name(name):
-    return get_backend(name)
+    return IBMQ.get_backend(name)
+
+
+def get_sim_backend_from_name(name):
+    return Aer.get_backend(name)
 
 
 def get_current_credits():
@@ -37,28 +39,8 @@ def get_backend_name_from_number(backend_index):
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
 
 
-def execute_circuits(circuits, backend_name):
-    return execute(circuits, backend=backend_name, shots=consts.SHOTS)
-
-
-def test_get_remote_backends_names():
-    # Only naively checks if size of returned list is greater than 0. Most of the time will work well, but can be
-    # false negative.
-    assert (len(get_remote_backends_names()) > 0)
-
-
-def test_get_backend_from_name():
-    # Check if class of returned object is identical to expected.
-    assert(isinstance(get_backend('ibmqx4'), qiskit.backends.ibmq.ibmqbackend.IBMQBackend))
-
-
-def test_get_available_remote_backends():
-    # Naive check. Most of the time will work well, but can be false negative.
-    assert (len(get_available_remote_backends_names()) <= len(get_remote_backends_names()))
-
-
-def test_get_current_credits():
-    assert(get_current_credits() >= 0)
+def execute_circuits(circuits, backend):
+    return execute(circuits, backend, shots=consts.SHOTS)
 
 
 def run_main_loop(circuits):
@@ -79,26 +61,30 @@ def run_main_loop(circuits):
             current_credits_number = get_current_credits()
 
         print('Getting available backends...')
-        available_remote_backends = get_available_remote_backends_names()
+        operational_remote_backends = get_operational_remote_backends()
 
         # Actual execution call
         # IMPORTANT https://github.com/QISKit/qiskit-sdk-py/issues/247
         # if __name__ == '__main__':
         try:
-            backend = get_backend_name_from_number(current_backend_index)
+            backend_name = get_backend_name_from_number(current_backend_index)
+            operational_remote_backends_names = get_backends_names(operational_remote_backends)
 
-            while not available_remote_backends.__contains__(backend):
-                print(backend, ': Currently not available.')
+            while not operational_remote_backends_names.__contains__(backend_name):
+                print(backend_name, ': Currently not available.')
+                print("Operational backends:")
+                print(operational_remote_backends_names)
                 current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
-                backend = get_backend_name_from_number(current_backend_index)
+                backend_name = get_backend_name_from_number(current_backend_index)
                 print('Refreshing available backends list...')
-                available_remote_backends = get_available_remote_backends_names()
-                print('Trying another backend: ', backend)
+                operational_remote_backends = get_operational_remote_backends()
+                operational_remote_backends_names = get_backends_names(operational_remote_backends)
+                print('Trying backend %s. ' % backend_name)
 
-            print("Executing quantum program on backend:", backend)
-            execute_circuits(circuits, backend)
+            print("Executing quantum program on %s." % backend_name)
+            execute_circuits(circuits, get_backend_from_name(backend_name))
 
-            print("Program sent for execution to ", backend, '.')
+            print("Program sent for execution to ", backend_name, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
 
         except qiskit.QISKitError as ex:
@@ -106,13 +92,13 @@ def run_main_loop(circuits):
 
 
 def test_locally(circuit):
-    backend = "local_qasm_simulator"
+    backend = get_sim_backend_from_name("qasm_simulator")
     executed_job = execute_circuits(circuit, backend)
     print(executed_job.result())
     print(executed_job.result().get_data())
 
 
-register(Qconfig.APItoken, Qconfig.config['url'])
+IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
 
 
 
