@@ -20,5 +20,5 @@ circuits.append(qiskit.load_qasm_file(available_file_names[selected_file_index],
 circuits.append(qiskit.load_qasm_file(available_simplified_file_names[selected_file_index],
                                       available_simplified_file_names[selected_file_index]))
 
-run_main_loop(circuit)
-test_locally(circuits)
+run_main_loop(circuits)
+#test_locally(circuits)
