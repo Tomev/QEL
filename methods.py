@@ -91,11 +91,13 @@ def run_main_loop(circuits):
             print('There was an error in the circuit!. Error = {}'.format(ex))
 
 
-def test_locally(circuit):
+def test_locally(circuits):
     backend = get_sim_backend_from_name("qasm_simulator")
-    executed_job = execute_circuits(circuit, backend)
+    executed_job = execute_circuits(circuits, backend)
     print(executed_job.result())
-    print(executed_job.result().get_data())
+
+    for circuit in circuits:
+        print(executed_job.result().get_data(circuit))
 
 
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
