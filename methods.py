@@ -100,11 +100,41 @@ def test_locally(circuits):
         print(executed_job.result().get_data(circuit))
 
 
-def get_jobs(backend_name):
+def get_jobs_from_backend(backend_name):
+    backend = IBMQ.get_backend(backend_name)
+
+    number_of_jobs_to_download = consts.JOBS_DOWNLOAD_LIMIT
+    downloaded_jobs = []
+    number_of_jobs_to_skip = 0
+
+    # Due to long connection times and a fail probability small download step is used
+
+    while number_of_jobs_to_download > 0:
+        number_of_jobs_to_download_now = min(consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM, number_of_jobs_to_download)
+
+        number_of_jobs_to_download -= number_of_jobs_to_download_now
+        downloaded_jobs.extend(backend.jobs(limit=consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM, skip=number_of_jobs_to_skip))
+        number_of_jobs_to_skip += number_of_jobs_to_download_now
+
+    return downloaded_jobs
 
 
+def parse_job_to_report_string(job):
+    job_string = ''
 
+    circuit_names = job.result().get_names()
+    job_id = format(job.job_id())
+    job_backend_name = job.backend().name()
+    job_creation_date = job.creation_date()
 
+    for circuit_name in circuit_names:
+        job_string += job_id + consts.CSV_SEPARATOR
+        job_string += job_backend_name + consts.CSV_SEPARATOR
+        job_string += circuit_name + consts.CSV_SEPARATOR
+        job_string += job_creation_date + consts.CSV_SEPARATOR
+        job_string += str(job.result().get_data(circuit_name)['counts']) + '\n'
+
+    return job_string
 
 
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])

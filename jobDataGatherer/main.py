@@ -1,47 +1,18 @@
-import check_QE
-from qiskit import *
-import methods
+import methods, consts
 
-# Get finished jobs...
+# Select desired backends.
+considered_backends_names = consts.CONSIDERED_REMOTE_BACKENDS
 
-jobs_num = 1
+report_content = consts.JOBS_REPORT_HEADER
 
-# print(methods.get_operational_remote_backends())
+# Get jobs data.
+for backend_name in considered_backends_names:
+    backends_jobs = methods.get_jobs_from_backend(backend_name)
 
-backend5 = IBMQ.get_backend('ibmqx4')
-downloaded_jobs = backend5.jobs(jobs_num)
+    for job in backends_jobs:
+        report_content += methods.parse_job_to_report_string(job)
 
-for job in downloaded_jobs:
-    print(format(job.job_id()))
-    print(job.creation_date())
-    print(job.result().get_names())
-    print(job.backend().name())
-    #print(job.result().get_data())
-
-
-
-my_jobs = check_QE.get_done_jobs(jobs_num)
-my_data = check_QE.filter_jobs_data(my_jobs)
-
-string_data = ""
-
-filtered_job_keys = my_data[0].keys()
-
-# Create a header line...
-
-for key in filtered_job_keys:
-    string_data = string_data + key + check_QE.CSV_SEPARATOR
-
-# Make last char a new line instead of separator...
-string_data = string_data[:-1] + '\n'
-
-# Parse them to string...
-
-for datum in my_data:
-    string_data += check_QE.parse_filtered_job_to_string(datum, filtered_job_keys)
-
-# Save them to file...
-
-file = open("data.csv", "w")
-file.write(string_data)
+# Save gathered data to file.
+file = open("jobs_report.csv", "w")
+file.write(report_content)
 file.close()

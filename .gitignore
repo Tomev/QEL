@@ -4,7 +4,7 @@
 */QASM.*
 */__pycache__
 Qconfig.py
-*/data.csv
+*/*.csv
 __pycache__/
 */*.pyc
 .cache
