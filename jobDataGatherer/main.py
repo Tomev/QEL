@@ -1,8 +1,24 @@
 import check_QE
+from qiskit import *
+import methods
 
 # Get finished jobs...
 
-jobs_num = 15
+jobs_num = 1
+
+# print(methods.get_operational_remote_backends())
+
+backend5 = IBMQ.get_backend('ibmqx4')
+downloaded_jobs = backend5.jobs(jobs_num)
+
+for job in downloaded_jobs:
+    print(format(job.job_id()))
+    print(job.creation_date())
+    print(job.result().get_names())
+    print(job.backend().name())
+    #print(job.result().get_data())
+
+
 
 my_jobs = check_QE.get_done_jobs(jobs_num)
 my_data = check_QE.filter_jobs_data(my_jobs)

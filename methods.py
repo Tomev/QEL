@@ -100,6 +100,13 @@ def test_locally(circuits):
         print(executed_job.result().get_data(circuit))
 
 
+def get_jobs(backend_name):
+
+
+
+
+
+
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
 
 
