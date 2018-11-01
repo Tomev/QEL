@@ -100,10 +100,10 @@ def test_locally(circuits):
         print(executed_job.result().get_data(circuit))
 
 
-def get_jobs_from_backend(backend_name):
+def get_jobs_from_backend(backend_name, jobs_number = consts.JOBS_DOWNLOAD_LIMIT):
     backend = IBMQ.get_backend(backend_name)
 
-    number_of_jobs_to_download = consts.JOBS_DOWNLOAD_LIMIT
+    number_of_jobs_to_download = jobs_number
     downloaded_jobs = []
     number_of_jobs_to_skip = 0
 
