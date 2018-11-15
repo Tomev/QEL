@@ -100,7 +100,7 @@ def test_locally(circuits):
         print(executed_job.result().get_data(circuit))
 
 
-def get_jobs_from_backend(backend_name, jobs_number = consts.JOBS_DOWNLOAD_LIMIT):
+def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
     backend = IBMQ.get_backend(backend_name)
 
     number_of_jobs_to_download = jobs_number
@@ -110,10 +110,13 @@ def get_jobs_from_backend(backend_name, jobs_number = consts.JOBS_DOWNLOAD_LIMIT
     # Due to long connection times and a fail probability small download step is used
 
     while number_of_jobs_to_download > 0:
+
+        print("Number of jobs to download left: %i." % number_of_jobs_to_download)
+
         number_of_jobs_to_download_now = min(consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM, number_of_jobs_to_download)
 
         number_of_jobs_to_download -= number_of_jobs_to_download_now
-        downloaded_jobs.extend(backend.jobs(limit=consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM, skip=number_of_jobs_to_skip))
+        downloaded_jobs.extend(backend.jobs(limit=number_of_jobs_to_download_now, skip=number_of_jobs_to_skip, status='DONE'))
         number_of_jobs_to_skip += number_of_jobs_to_download_now
 
     return downloaded_jobs
