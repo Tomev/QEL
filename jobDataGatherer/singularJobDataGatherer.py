@@ -60,7 +60,7 @@ file.close()
 job_gatherer = SingleJobGatherer(consts.CONSIDERED_REMOTE_BACKENDS[0], len(distinct_ids))
 year = 2018
 month = 11
-day = 1
+day = 16
 end_date = datetime(year, month, day)
 
 initialization_time = time() - initialization_time
@@ -73,7 +73,9 @@ while True:
     job_gatherer.jobs_to_skip += 1
 
     # If current job date is before end_date, finish
-    if job_gatherer.parse_date(current_line.split(';')[3]) < end_date:
+    current_date = job_gatherer.parse_date(current_line.split(';')[3])
+    print(f"Current date: {current_date}.")
+    if current_date < end_date:
         break
 
     # Else write it to the file
@@ -86,3 +88,4 @@ while True:
     print(f"Skipping {job_gatherer.jobs_to_skip} jobs.")
 
 jobs_gathering_time = time() - jobs_gathering_time
+print(f"Jobs gathering and writing finished in {jobs_gathering_time} second(s).")
