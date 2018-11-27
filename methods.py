@@ -2,6 +2,7 @@ from qiskit import execute, IBMQ, Aer
 from IBMQuantumExperience import IBMQuantumExperience
 import qiskit
 import time
+import pandas as pd
 
 import Qconfig
 import consts
@@ -139,7 +140,24 @@ def parse_job_to_report_string(job):
 
     return job_string
 
-
+def report_to_csv(report_file, csv_file, sep = consts.CSV_SEPARATOR, lowercase_header = True):
+    df = pd.read_csv(report_file, sep = sep)
+    
+    results=df.Results
+    results = [eval(r) for r in results]
+    results = pd.DataFrame.from_dict({i:results[i] for i in range(len(results))}, 'index')
+    
+    df_long = pd.melt(
+        pd.concat([df, results], axis=1).drop('Results',1),
+        list(set(df.columns)-{'Results'})
+    )
+    
+    if(lowercase_header):
+        df_long.columns = [c.lower() for c in df_long.columns]
+    
+    df_long.to_csv(csv_file, index=False)    
+    
+    
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
 
 
