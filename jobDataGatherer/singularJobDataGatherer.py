@@ -3,7 +3,7 @@
 from os.path import isfile
 from datetime import datetime
 from qiskit import IBMQ
-from methods import parse_job_to_report_string
+from methods import parse_job_to_report_string, report_to_csv
 from time import time
 import consts
 
@@ -89,3 +89,6 @@ while True:
 
 jobs_gathering_time = time() - jobs_gathering_time
 print(f"Jobs gathering and writing finished in {jobs_gathering_time} second(s).")
+
+file_result_name = '.csv'
+report_to_csv(file_result_name)

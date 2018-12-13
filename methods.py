@@ -140,7 +140,7 @@ def parse_job_to_report_string(job):
 
     return job_string
 
-def report_to_csv(report_file, csv_file, sep = consts.CSV_SEPARATOR, lowercase_header = True):
+def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep = consts.CSV_SEPARATOR, lowercase_header = True):
     df = pd.read_csv(report_file, sep = sep)
     
     results=df.Results
