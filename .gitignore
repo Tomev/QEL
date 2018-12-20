@@ -8,3 +8,5 @@ Qconfig.py
 __pycache__/
 */*.pyc
 .cache
+*.*~
+.ipynb_ch*
