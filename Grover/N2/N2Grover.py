@@ -13,8 +13,3 @@ for file_name in available_file_names:
 
 #test_locally(circuits)
 run_main_loop(circuits)
-
-
-
-
-
