@@ -9,7 +9,7 @@ import consts
 
 
 def get_operational_remote_backends():
-    operational_backends = IBMQ.backends(operational=True, filters=lambda x: not x.configuration()['simulator'])
+    operational_backends = IBMQ.backends(operational=True, filters=lambda x: not x.configuration().simulator)
     return operational_backends
 
 
