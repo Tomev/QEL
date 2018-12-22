@@ -95,10 +95,10 @@ def run_main_loop(circuits):
 def test_locally(circuits):
     backend = get_sim_backend_from_name("qasm_simulator")
     executed_job = execute_circuits(circuits, backend)
-    print(executed_job.result())
 
     for circuit in circuits:
-        print(executed_job.result().get_data(circuit))
+        print(circuit.name)
+        print(executed_job.result().get_counts(circuit))
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
@@ -139,6 +139,7 @@ def parse_job_to_report_string(job):
         job_string += str(job.result().get_data(circuit_name)['counts']) + '\n'
 
     return job_string
+
 
 def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep = consts.CSV_SEPARATOR, lowercase_header = True):
     df = pd.read_csv(report_file, sep = sep)
