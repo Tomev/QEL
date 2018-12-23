@@ -126,8 +126,8 @@ def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
 def parse_job_to_report_string(job):
     job_string = ''
 
-    circuit_names = job.result().get_names()
-    job_id = format(job.job_id())
+    job_id = job.job_id()
+    circuit_names = [j.header.name for j in job.result().results]
     job_backend_name = job.backend().name()
     job_creation_date = job.creation_date()
 
@@ -136,7 +136,7 @@ def parse_job_to_report_string(job):
         job_string += job_backend_name + consts.CSV_SEPARATOR
         job_string += circuit_name + consts.CSV_SEPARATOR
         job_string += job_creation_date + consts.CSV_SEPARATOR
-        job_string += str(job.result().get_data(circuit_name)['counts']) + '\n'
+        job_string += str(job.result().get_counts(circuit_names[0])) + '\n'
 
     return job_string
 

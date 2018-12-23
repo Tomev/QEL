@@ -1,5 +1,6 @@
 # This gatherer will download and write jobs one at the time. Let it download jobs until certain date is met.
-
+import sys
+sys.path.append('..\\')
 from os.path import isfile
 from datetime import datetime
 from qiskit import IBMQ
@@ -60,7 +61,7 @@ file.close()
 job_gatherer = SingleJobGatherer(consts.CONSIDERED_REMOTE_BACKENDS[0], len(distinct_ids))
 year = 2018
 month = 11
-day = 16
+day = 22
 end_date = datetime(year, month, day)
 
 initialization_time = time() - initialization_time
