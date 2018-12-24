@@ -134,9 +134,9 @@ def parse_job_to_report_string(job):
     for circuit_name in circuit_names:
         job_string += job_id + consts.CSV_SEPARATOR
         job_string += job_backend_name + consts.CSV_SEPARATOR
-        job_string += circuit_name + consts.CSV_SEPARATOR
+        job_string += str(circuit_name) + consts.CSV_SEPARATOR
         job_string += job_creation_date + consts.CSV_SEPARATOR
-        job_string += str(job.result().get_counts(circuit_names[0])) + '\n'
+        job_string += str(job.result().get_counts(circuit_name)) + '\n'
 
     return job_string
 

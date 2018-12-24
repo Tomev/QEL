@@ -60,8 +60,8 @@ file.close()
 
 job_gatherer = SingleJobGatherer(consts.CONSIDERED_REMOTE_BACKENDS[0], len(distinct_ids))
 year = 2018
-month = 11
-day = 22
+month = 12
+day = 23
 end_date = datetime(year, month, day)
 
 initialization_time = time() - initialization_time
