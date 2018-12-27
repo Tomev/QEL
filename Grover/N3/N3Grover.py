@@ -1,7 +1,7 @@
 import qiskit
 import sys
 sys.path.append('../..')
-from methods import run_main_loop, test_locally
+from methods import run_main_loop, test_locally, run_main_loop_with_chsh_test
 
 available_file_names = ['Grover_N3_000.qasm', 'Grover_N3_001.qasm', 'Grover_N3_010.qasm', 'Grover_N3_011.qasm',
                         'Grover_N3_100.qasm', 'Grover_N3_101.qasm', 'Grover_N3_110.qasm', 'Grover_N3_111.qasm']
@@ -20,5 +20,6 @@ circuits.append(qiskit.load_qasm_file(available_file_names[selected_file_index],
 circuits.append(qiskit.load_qasm_file(available_simplified_file_names[selected_file_index],
                                       available_simplified_file_names[selected_file_index]))
 
-run_main_loop(circuits)
+run_main_loop_with_chsh_test(circuits)
+#run_main_loop(circuits)
 #test_locally(circuits)
