@@ -1,6 +1,6 @@
-from qiskit import execute, IBMQ, Aer
+from qiskit import execute, IBMQ, Aer, QuantumCircuit, QISKitError, QuantumRegister, ClassicalRegister
 from IBMQuantumExperience import IBMQuantumExperience
-import qiskit
+import numpy as np
 import time
 import pandas as pd
 
@@ -88,7 +88,7 @@ def run_main_loop(circuits):
             print("Program sent for execution to ", backend_name, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
 
-        except qiskit.QISKitError as ex:
+        except QISKitError as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
 
 
@@ -158,35 +158,34 @@ def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep = consts.CSV_
     
     df_long.to_csv(csv_file, index=False)    
     
-    
-    
+
 def get_chsh_circuits():
-    q = qiskit.QuantumRegister(2)
-    c = qiskit.ClassicalRegister(2)
+    q = QuantumRegister(2)
+    c = ClassicalRegister(2)
     
-    #circuit to prepare an entangled state
-    bell = qiskit.QuantumCircuit(q, c)
+    # Circuit to prepare an entangled state.
+    bell = QuantumCircuit(q, c)
     bell.h(q[0])
     bell.cx(q[0], q[1])
     bell.ry(np.pi/4, q[0])
 
-    #circuits to measure q to c in different basis
-    measure_zz = qiskit.QuantumCircuit(q, c)
+    # Circuits to measure q to c in different basis.
+    measure_zz = QuantumCircuit(q, c)
     measure_zz.measure(q[0], c[0])
     measure_zz.measure(q[1], c[1])
 
-    measure_xx = qiskit.QuantumCircuit(q, c)
+    measure_xx = QuantumCircuit(q, c)
     measure_xx.h(q[0])
     measure_xx.h(q[1])
     measure_xx.measure(q[0], c[0])
     measure_xx.measure(q[1], c[1])
 
-    measure_zx = qiskit.QuantumCircuit(q, c)
+    measure_zx = QuantumCircuit(q, c)
     measure_zx.h(q[0])
     measure_zx.measure(q[0], c[0])
     measure_zx.measure(q[1], c[1])
 
-    measure_xz = qiskit.QuantumCircuit(q, c)
+    measure_xz = QuantumCircuit(q, c)
     measure_xz.h(q[1])
     measure_xz.measure(q[0], c[0])
     measure_xz.measure(q[1], c[1])
@@ -198,7 +197,7 @@ def get_chsh_circuits():
     for m in measure:
         chsh_circuits.append(bell + m)
 
-    #set circuits names
+    # Set circuits names.
     chsh_circuits[0].name = 'CHSH_test_ZZ'
     chsh_circuits[1].name = 'CHSH_test_ZX'
     chsh_circuits[2].name = 'CHSH_test_XX'
@@ -206,10 +205,13 @@ def get_chsh_circuits():
     
     return(chsh_circuits)
 
+
 def run_main_loop_with_chsh_test(circuits):
-    run_main_loop(circuits+get_chsh_circuits())
-  
+    run_main_loop(circuits + get_chsh_circuits())
+
+
+def create_circuit_from_qasm(qasm_file_path):
+    return QuantumCircuit.from_qasm_file(qasm_file_path)
+
+
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
-
-
-
