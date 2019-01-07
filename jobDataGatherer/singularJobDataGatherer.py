@@ -59,9 +59,9 @@ file.close()
 # TR TODO: Note that in case of multiple backends this file should be updated
 
 job_gatherer = SingleJobGatherer(consts.CONSIDERED_REMOTE_BACKENDS[0], len(distinct_ids))
-year = 2018
-month = 12
-day = 23
+year = 2019
+month = 1
+day = 6
 end_date = datetime(year, month, day)
 
 initialization_time = time() - initialization_time

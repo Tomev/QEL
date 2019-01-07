@@ -2,6 +2,7 @@ import sys
 sys.path.append('../..')
 from methods import run_main_loop, test_locally, run_main_loop_with_chsh_test, create_circuit_from_qasm
 
+'''
 available_file_names = ['Grover_N3_000.qasm', 'Grover_N3_001.qasm', 'Grover_N3_010.qasm', 'Grover_N3_011.qasm',
                         'Grover_N3_100.qasm', 'Grover_N3_101.qasm', 'Grover_N3_110.qasm', 'Grover_N3_111.qasm']
 
@@ -9,8 +10,10 @@ available_simplified_file_names = \
     ['Grover_N3_000_simplified.qasm', 'Grover_N3_001_simplified.qasm', 'Grover_N3_010_simplified.qasm',
      'Grover_N3_011_simplified.qasm', 'Grover_N3_100_simplified.qasm', 'Grover_N3_101_simplified.qasm',
      'Grover_N3_110_simplified.qasm', 'Grover_N3_111_simplified.qasm']
+'''
 
-selected_file_index = 0
+available_file_names = ['Grover_N3_000_1T.qasm', 'Grover_N3_001_1T.qasm', 'Grover_N3_010_1T.qasm', 'Grover_N3_011_1T.qasm',
+                        'Grover_N3_100_1T.qasm', 'Grover_N3_101_1T.qasm', 'Grover_N3_110_1T.qasm', 'Grover_N3_111_1T.qasm']
 
 circuits = []
 
