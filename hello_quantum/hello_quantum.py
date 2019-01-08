@@ -4,17 +4,17 @@ Note: if you have only cloned the QISKit repository but not
 used `pip install`, the examples only work from the root directory.
 """
 
-from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit, QISKitError
-
-from methods import run_main_loop
-
+import sys
+sys.path.append('../..')
+from methods import test_locally, run_main_loop_with_chsh_test
+from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = QuantumRegister(2)
 # Create a Classical Register called "cr" with 2 bits.
 cr = ClassicalRegister(2)
 # Create a Quantum Circuit called involving "qr" and "cr"
-qc = QuantumCircuit(qr, cr)
+qc = QuantumCircuit(qr, cr, name='Hello-Quantum')
 
 # Add a H gate on qubit 0, putting this qubit in superposition.
 qc.h(qr[0])
@@ -31,6 +31,5 @@ qc.measure(qr, cr)
 
 print('Circuit prepared for execution.')
 
-# Assign circuits to run here.
-
-run_main_loop(qc)
+#run_main_loop_with_chsh_test(qc)
+test_locally([qc])
