@@ -204,10 +204,10 @@ def get_chsh_circuits():
         chsh_circuits.append(bell + m)
 
     # Set circuits names.
-    chsh_circuits[0].name = 'CHSH_test_ZZ'
-    chsh_circuits[1].name = 'CHSH_test_ZX'
-    chsh_circuits[2].name = 'CHSH_test_XX'
-    chsh_circuits[3].name = 'CHSH_test_XZ'
+    chsh_circuits[0].name = 'CHSH-test_ZZ'
+    chsh_circuits[1].name = 'CHSH-test_ZX'
+    chsh_circuits[2].name = 'CHSH-test_XX'
+    chsh_circuits[3].name = 'CHSH-test_XZ'
     
     return chsh_circuits
 
