@@ -1,6 +1,5 @@
 import sys
 sys.path.append('../')
-
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from methods import run_main_loop_with_chsh_test, test_locally
 
@@ -24,8 +23,9 @@ def get_mermin_circuits():
     measure_xxx.measure(q3[1], c3[1])
     measure_xxx.measure(q3[2], c3[2])
     ghz_xxx = ghz3 + measure_xxx
+    ghz_xxx.name = "Mermin_XXX"
 
-    # quantum circuit to measure XYY
+    # Quantum circuit to measure XYY
     measure_xyy = QuantumCircuit(q3, c3)
     measure_xyy.s(q3[1]).inverse()
     measure_xyy.s(q3[2]).inverse()
@@ -36,6 +36,7 @@ def get_mermin_circuits():
     measure_xyy.measure(q3[1], c3[1])
     measure_xyy.measure(q3[2], c3[2])
     ghz_xyy = ghz3 + measure_xyy
+    ghz_xyy.name = "Mermin_XYY"
 
     # quantum circuit to measure q YXY
     measure_yxy = QuantumCircuit(q3, c3)
@@ -48,6 +49,7 @@ def get_mermin_circuits():
     measure_yxy.measure(q3[1], c3[1])
     measure_yxy.measure(q3[2], c3[2])
     ghz_yxy = ghz3 + measure_yxy
+    ghz_yxy.name = "Mermin_YXY"
 
     # quantum circuit to measure q YYX
     measure_yyx = QuantumCircuit(q3, c3)
@@ -60,6 +62,7 @@ def get_mermin_circuits():
     measure_yyx.measure(q3[1], c3[1])
     measure_yyx.measure(q3[2], c3[2])
     ghz_yyx = ghz3 + measure_yyx
+    ghz_yyx.name = "Mermin_YYX"
 
     circuits = [ghz_xxx, ghz_yyx, ghz_yxy, ghz_xyy]
 
