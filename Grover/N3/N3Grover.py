@@ -6,6 +6,8 @@ from methods import run_main_loop, test_locally, run_main_loop_with_chsh_test, c
 available_file_names = ['Grover_3_000_2.qasm', 'Grover_3_001_2.qasm', 'Grover_3_010_2.qasm', 'Grover_3_011_2.qasm',
                         'Grover_3_100_2.qasm', 'Grover_3_101_2.qasm', 'Grover_3_110_2.qasm', 'Grover_3_111_2.qasm']
 
+# Not that for now simplified qasms are not working as they use composite gates that are no longer supported (to date)
+# in qiskit 0.7.0.
 available_file_names = \
     ['Grover-simplified_3_000_2.qasm', 'Grover-simplified_3_001_2.qasm', 'Grover-simplified_3_010_2.qasm',
      'Grover-simplified_3_011_2.qasm', 'Grover-simplified_3_100_2.qasm', 'Grover-simplified_3_101_2.qasm',
