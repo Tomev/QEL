@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../jobDataGatherer')
+sys.path.append('../JobDataGatherer')
 sys.path.append('../')
 from check_QE import *
 import pandas as pd
