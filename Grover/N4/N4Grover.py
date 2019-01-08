@@ -1,5 +1,6 @@
 import sys
-sys.path.append('..\..')
+sys.path.append('..\\..')
+
 from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from Grover.N4.rtof import rtof4
