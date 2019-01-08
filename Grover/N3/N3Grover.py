@@ -3,25 +3,24 @@ sys.path.append('../..')
 from methods import run_main_loop, test_locally, run_main_loop_with_chsh_test, create_circuit_from_qasm
 
 '''
-available_file_names = ['Grover_N3_000.qasm', 'Grover_N3_001.qasm', 'Grover_N3_010.qasm', 'Grover_N3_011.qasm',
-                        'Grover_N3_100.qasm', 'Grover_N3_101.qasm', 'Grover_N3_110.qasm', 'Grover_N3_111.qasm']
+available_file_names = ['Grover_3_000_2.qasm', 'Grover_3_001_2.qasm', 'Grover_3_010_2.qasm', 'Grover_3_011_2.qasm',
+                        'Grover_3_100_2.qasm', 'Grover_3_101_2.qasm', 'Grover_3_110_2.qasm', 'Grover_3_111_2.qasm']
 
-available_simplified_file_names = \
-    ['Grover_N3_000_simplified.qasm', 'Grover_N3_001_simplified.qasm', 'Grover_N3_010_simplified.qasm',
-     'Grover_N3_011_simplified.qasm', 'Grover_N3_100_simplified.qasm', 'Grover_N3_101_simplified.qasm',
-     'Grover_N3_110_simplified.qasm', 'Grover_N3_111_simplified.qasm']
+available_file_names = \
+    ['Grover-simplified_3_000_2.qasm', 'Grover-simplified_3_001_2.qasm', 'Grover-simplified_3_010_2.qasm',
+     'Grover-simplified_3_011_2.qasm', 'Grover-simplified_3_100_2.qasm', 'Grover-simplified_3_101_2.qasm',
+     'Grover-simplified_3_110_2.qasm', 'Grover-simplified_3_111_2.qasm']
+
 '''
-
-available_file_names = ['Grover_N3_000_1T.qasm', 'Grover_N3_001_1T.qasm', 'Grover_N3_010_1T.qasm', 'Grover_N3_011_1T.qasm',
-                        'Grover_N3_100_1T.qasm', 'Grover_N3_101_1T.qasm', 'Grover_N3_110_1T.qasm', 'Grover_N3_111_1T.qasm']
+available_file_names = ['Grover_3_000_1.qasm', 'Grover_3_001_1.qasm', 'Grover_3_010_1.qasm', 'Grover_3_011_1.qasm',
+                        'Grover_3_100_1.qasm', 'Grover_3_101_1.qasm', 'Grover_3_110_1.qasm', 'Grover_3_111_1.qasm']
 
 circuits = []
 
 for name in available_file_names:
     qc = create_circuit_from_qasm(name)
-    qc.name = name
+    qc.name = name.split('.')[0]
     circuits.append(qc)
 
 run_main_loop_with_chsh_test(circuits)
-#run_main_loop(circuits)
 #test_locally(circuits)
