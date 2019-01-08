@@ -1,6 +1,6 @@
 # Mermin
 
-This is a readme for our Grover inequities experiments.
+This is a readme for our Grover inequalities experiments.
 
 ## Circuit naming convention
 
