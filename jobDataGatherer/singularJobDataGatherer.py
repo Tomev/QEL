@@ -1,4 +1,5 @@
 # This gatherer will download and write jobs one at the time. Let it download jobs until certain date is met.
+
 import sys
 sys.path.append('..\\')
 from os.path import isfile

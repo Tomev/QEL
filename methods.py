@@ -141,25 +141,26 @@ def parse_job_to_report_string(job):
     return job_string
 
 
-def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep = consts.CSV_SEPARATOR, lowercase_header = True):
-    df = pd.read_csv(report_file, sep = sep)
+def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep=consts.CSV_SEPARATOR, lowercase_header=True):
+
+    data_file = pd.read_csv(report_file, sep=sep)
     
-    #Evaling string represantations of dictionaries in 'Results' column ("{"00":500, "11":524}")
-    results=df.Results
+    # Evaling string representations of dictionaries in 'Results' column ("{"00":500, "11":524}")
+    results = data_file.Results
     results = [eval(r) for r in results]
     
-    #Creating a data frame with results in the long format (1, "00", 500 // 1, "11", 524)
-    #Auxiliary column "row_num" contains row index from the original data frame - to enable joining
-    #Column "variable" contains keys from the dictionaries (names of states)
-    #Column "value" contains their respective values (count)
+    # Creating a data frame with results in the long format (1, "00", 500 // 1, "11", 524)
+    # Auxiliary column "row_num" contains row index from the original data frame - to enable joining
+    # Column "variable" contains keys from the dictionaries (names of states)
+    # Column "value" contains their respective values (count)
     results = pd.DataFrame([[i, str(r), results[i][r]] for i in range(len(results)) for r in results[i]],
-            columns = ['row_num', 'variable', 'value'])
+                            columns=['row_num', 'variable', 'value'])
     
-    #Joining results with other experimental data
-    df_long = df.merge(results, left_index = True, right_on = 'row_num').drop(['row_num', 'Results'], 1)
+    # Joining results with other experimental data
+    df_long = data_file.merge(results, left_index=True, right_on = 'row_num').drop(['row_num', 'Results'], 1)
     
-    #Converting uppercase in header names to lowercase
-    if(lowercase_header):
+    # Converting uppercase in header names to lowercase
+    if lowercase_header:
         df_long.columns = [c.lower() for c in df_long.columns]
     
     df_long.to_csv(csv_file, index=False)    
@@ -198,7 +199,6 @@ def get_chsh_circuits():
 
     measure = [measure_zz, measure_zx, measure_xx, measure_xz]
 
-
     chsh_circuits = []
     for m in measure:
         chsh_circuits.append(bell + m)
@@ -209,7 +209,7 @@ def get_chsh_circuits():
     chsh_circuits[2].name = 'CHSH_test_XX'
     chsh_circuits[3].name = 'CHSH_test_XZ'
     
-    return(chsh_circuits)
+    return chsh_circuits
 
 
 def run_main_loop_with_chsh_test(circuits):
