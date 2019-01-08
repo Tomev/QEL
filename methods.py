@@ -144,15 +144,21 @@ def parse_job_to_report_string(job):
 def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep = consts.CSV_SEPARATOR, lowercase_header = True):
     df = pd.read_csv(report_file, sep = sep)
     
+    #Evaling string represantations of dictionaries in 'Results' column ("{"00":500, "11":524}")
     results=df.Results
     results = [eval(r) for r in results]
-    results = pd.DataFrame.from_dict({i:results[i] for i in range(len(results))}, 'index')
     
-    df_long = pd.melt(
-        pd.concat([df, results], axis=1).drop('Results',1),
-        list(set(df.columns)-{'Results'})
-    )
+    #Creating a data frame with results in the long format (1, "00", 500 // 1, "11", 524)
+    #Auxiliary column "row_num" contains row index from the original data frame - to enable joining
+    #Column "variable" contains keys from the dictionaries (names of states)
+    #Column "value" contains their respective values (count)
+    results = pd.DataFrame([[i, str(r), results[i][r]] for i in range(len(results)) for r in results[i]],
+            columns = ['row_num', 'variable', 'value'])
     
+    #Joining results with other experimental data
+    df_long = df.merge(results, left_index = True, right_on = 'row_num').drop(['row_num', 'Results'], 1)
+    
+    #Converting uppercase in header names to lowercase
     if(lowercase_header):
         df_long.columns = [c.lower() for c in df_long.columns]
     
