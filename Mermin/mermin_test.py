@@ -1,9 +1,9 @@
 import sys
-sys.path.append('../') # where Qconfig.py is placed
+sys.path.append('../')
 
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from methods import run_main_loop
-import numpy as np
+from methods import run_main_loop_with_chsh_test, test_locally
+
 
 def get_mermin_circuits():
     # 3 - qubits 
@@ -12,64 +12,60 @@ def get_mermin_circuits():
     c3 = ClassicalRegister(3)
     ghz3 = QuantumCircuit(q3, c3)
     ghz3.h(q3[0])
-    ghz3.cx(q3[0],q3[1])
-    ghz3.cx(q3[0],q3[2])
+    ghz3.cx(q3[0], q3[1])
+    ghz3.cx(q3[0], q3[2])
 
     # quantum circuit to measure XXX
-    measureXXX = QuantumCircuit(q3, c3)
-    measureXXX.h(q3[0])
-    measureXXX.h(q3[1])
-    measureXXX.h(q3[2])
-    measureXXX.measure(q3[0], c3[0])
-    measureXXX.measure(q3[1], c3[1])
-    measureXXX.measure(q3[2], c3[2])
-    ghzXXX = ghz3+measureXXX
+    measure_xxx = QuantumCircuit(q3, c3)
+    measure_xxx.h(q3[0])
+    measure_xxx.h(q3[1])
+    measure_xxx.h(q3[2])
+    measure_xxx.measure(q3[0], c3[0])
+    measure_xxx.measure(q3[1], c3[1])
+    measure_xxx.measure(q3[2], c3[2])
+    ghz_xxx = ghz3 + measure_xxx
 
     # quantum circuit to measure XYY
-    measureXYY = QuantumCircuit(q3, c3)
-    measureXYY.s(q3[1]).inverse()
-    measureXYY.s(q3[2]).inverse()
-    measureXYY.h(q3[0])
-    measureXYY.h(q3[1])
-    measureXYY.h(q3[2])
-    measureXYY.measure(q3[0], c3[0])
-    measureXYY.measure(q3[1], c3[1])
-    measureXYY.measure(q3[2], c3[2])
-    ghzXYY = ghz3+measureXYY
+    measure_xyy = QuantumCircuit(q3, c3)
+    measure_xyy.s(q3[1]).inverse()
+    measure_xyy.s(q3[2]).inverse()
+    measure_xyy.h(q3[0])
+    measure_xyy.h(q3[1])
+    measure_xyy.h(q3[2])
+    measure_xyy.measure(q3[0], c3[0])
+    measure_xyy.measure(q3[1], c3[1])
+    measure_xyy.measure(q3[2], c3[2])
+    ghz_xyy = ghz3 + measure_xyy
 
     # quantum circuit to measure q YXY
-    measureYXY = QuantumCircuit(q3, c3)
-    measureYXY.s(q3[0]).inverse()
-    measureYXY.s(q3[2]).inverse()
-    measureYXY.h(q3[0])
-    measureYXY.h(q3[1])
-    measureYXY.h(q3[2])
-    measureYXY.measure(q3[0], c3[0])
-    measureYXY.measure(q3[1], c3[1])
-    measureYXY.measure(q3[2], c3[2])
-    ghzYXY = ghz3+measureYXY
+    measure_yxy = QuantumCircuit(q3, c3)
+    measure_yxy.s(q3[0]).inverse()
+    measure_yxy.s(q3[2]).inverse()
+    measure_yxy.h(q3[0])
+    measure_yxy.h(q3[1])
+    measure_yxy.h(q3[2])
+    measure_yxy.measure(q3[0], c3[0])
+    measure_yxy.measure(q3[1], c3[1])
+    measure_yxy.measure(q3[2], c3[2])
+    ghz_yxy = ghz3 + measure_yxy
 
     # quantum circuit to measure q YYX
-    measureYYX = QuantumCircuit(q3, c3)
-    measureYYX.s(q3[0]).inverse()
-    measureYYX.s(q3[1]).inverse()
-    measureYYX.h(q3[0])
-    measureYYX.h(q3[1])
-    measureYYX.h(q3[2])
-    measureYYX.measure(q3[0], c3[0])
-    measureYYX.measure(q3[1], c3[1])
-    measureYYX.measure(q3[2], c3[2])
-    ghzYYX = ghz3+measureYYX
+    measure_yyx = QuantumCircuit(q3, c3)
+    measure_yyx.s(q3[0]).inverse()
+    measure_yyx.s(q3[1]).inverse()
+    measure_yyx.h(q3[0])
+    measure_yyx.h(q3[1])
+    measure_yyx.h(q3[2])
+    measure_yyx.measure(q3[0], c3[0])
+    measure_yyx.measure(q3[1], c3[1])
+    measure_yyx.measure(q3[2], c3[2])
+    ghz_yyx = ghz3 + measure_yyx
 
-    circuits = [ghzXXX, ghzYYX, ghzYXY, ghzXYY]
+    circuits = [ghz_xxx, ghz_yyx, ghz_yxy, ghz_xyy]
 
     return circuits
 
-# Prepare circuits here.
-mermin_circuits = get_mermin_circuits()
 
-print('Circuit prepared for execution.')
-
-# Assign circuits to run here.
-run_main_loop(mermin_circuits)
+# run_main_loop_with_chsh_test(get_mermin_circuits())
+test_locally(get_mermin_circuits())
 
