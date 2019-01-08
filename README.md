@@ -38,12 +38,14 @@ experiment-name_attr-1_attr-2_..._attr-n
 for example
 
 ```
-Grover_N3_111_1
+Grover_3_111_1
 ``` 
 
-would mean, that given circuit describes experiment with Grover algorithm, using 3 qubit states, for oracle 111 and with
-only one diffusion and oracle operator used. Note that each naming convention (for different experiments) should be 
-placed within experiments folder. See Grover folder for example.
+would mean, that given circuit describes experiment with Grover algorithm, using 3 qubit states, with 111 as selected
+state and with only one diffusion and oracle operator used. Note that each naming convention (for different experiments)
+should be placed within experiments folder. See Grover folder for example.
+
+Also note that attributes are separated by '_' character and mutli-word attributes or names should be separated by '-'.  
 
 ## Run with
 
