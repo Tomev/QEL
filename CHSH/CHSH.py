@@ -1,6 +1,6 @@
 import numpy as np
 import sys
-sys.path.append('../..')
+sys.path.append('..')
 from methods import test_locally, run_main_loop
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
@@ -57,5 +57,5 @@ def get_chsh_circuits(steps = 10):
     return real_chsh_circuits
 
 
-#run_main_loop(get_chsh_circuits())
-test_locally(get_chsh_circuits())
+run_main_loop(get_chsh_circuits(16))
+#test_locally(get_chsh_circuits())
