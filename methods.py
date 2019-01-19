@@ -1,8 +1,10 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QISKitError, QuantumRegister, ClassicalRegister
 from IBMQuantumExperience import IBMQuantumExperience
+from os.path import abspath
 import numpy as np
 import time
 import pandas as pd
+import os
 
 import Qconfig
 import consts
@@ -44,13 +46,23 @@ def execute_circuits(circuits, backend):
     return execute(circuits, backend, shots=consts.SHOTS)
 
 
+def package_home(gdict):
+    filename = gdict["__file__"]
+    return os.path.dirname(filename)
+
+
 def run_main_loop(circuits):
     current_backend_index = 0
     wait_time_in_minutes = 5
 
-    for iteration_number in range(0, consts.ITERATIONS_NUMBER):
+    file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "r")
+    line = file.readline()
+    iterations_done = int(line)
+    file.close()
 
-        print('Iteration number: ', iteration_number)
+    for iteration_number in range(consts.ITERATIONS_NUMBER - iterations_done):
+
+        print('Iteration number: ', iteration_number + iterations_done)
 
         current_credits_number = get_current_credits()
 
@@ -90,6 +102,16 @@ def run_main_loop(circuits):
 
         except QISKitError as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
+
+        line = str(iteration_number + iterations_done + 1)
+        print(f'Writing to file: {line}')
+        file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), 'w')
+        file.write(line)
+        file.close()
+
+    file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), 'w')
+    file.write(str(0))
+    file.close()
 
 
 def test_locally(circuits):
