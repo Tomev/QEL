@@ -108,6 +108,10 @@ def run_main_loop(circuits):
         file.write(line)
         file.close()
 
+    reset_jobs_counter()
+
+
+def reset_jobs_counter():
     file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), 'w')
     file.write(str(0))
     file.close()

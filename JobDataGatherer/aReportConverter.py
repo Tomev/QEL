@@ -9,5 +9,5 @@ file_result_name = 'GroverN4.csv'
 
 # report_file = JOBS_FILE_NAME  # Default value
 
-report_file = "raw_GroverN4.csv"
+report_file = "raw_N3_Grover_1T.csv"
 report_to_csv(file_result_name, report_file=report_file)
