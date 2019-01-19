@@ -1,6 +1,5 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QISKitError, QuantumRegister, ClassicalRegister
 from IBMQuantumExperience import IBMQuantumExperience
-from os.path import abspath
 import numpy as np
 import time
 import pandas as pd
