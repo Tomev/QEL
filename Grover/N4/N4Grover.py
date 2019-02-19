@@ -1,6 +1,5 @@
 import sys
 sys.path.append('..\\..')
-
 from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from Grover.N4.rtof import rtof4
@@ -129,5 +128,5 @@ for state in states:
     qc.measure(qr, cr)
     circuits.append(qc)
 
-# test_locally(circuits)
-run_main_loop_with_chsh_test(circuits)
+test_locally(circuits)
+# run_main_loop_with_chsh_test(circuits)
