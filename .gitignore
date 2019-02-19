@@ -10,3 +10,4 @@ __pycache__/
 .cache
 *.*~
 .ipynb_ch*
+current_iteration_holder.txt
