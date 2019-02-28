@@ -1,4 +1,7 @@
 library(shiny)
+library(tidyverse)
+library(magrittr)
+library(shinycssloaders)
 
 shinyUI(fluidPage(
 
@@ -9,6 +12,25 @@ shinyUI(fluidPage(
     
 ###Sidebar with controls
     sidebarPanel(
+      
+      selectInput("columns", label = h3("Comparison - x-axis"), 
+                  choices = list(
+                    '-' = '.',
+                    'Postselection' = 'postselection',
+                    #'Number of qubits' = 'N_qubits',
+                    'Number of iterations' = 'n_it',
+                    'Backend' = 'backend'
+                    ), 
+                  selected = '.'),
+      selectInput("rows", label = h3("Comparison - y-axis"), 
+                  choices = list(
+                    '-' = '.',
+                    'Postselection' = 'postselection',
+                    #'Number of qubits' = 'N_qubits',
+                    'Number of iterations' = 'n_it',
+                    'Backend' = 'backend'
+                  ), 
+                  selected = '.'),
       
       radioButtons("N_qubits", label = h3("Select number of qubits"),
                    choices = str_c('N', 2:4) %>% setNames(2:4), 
@@ -30,7 +52,7 @@ shinyUI(fluidPage(
 #
     mainPanel(
       
-      plotOutput("magic_square")
+      plotOutput("magic_square") %>% withSpinner()
       
     )#close mainPanel
 
