@@ -2,8 +2,12 @@ library(shiny)
 library(tidyverse)
 library(magrittr)
 library(shinycssloaders)
+library(shinyjs)
+
 
 shinyUI(fluidPage(
+  
+  useShinyjs(),
 
   # Application title
   titlePanel("Grover experiments"),

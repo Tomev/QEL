@@ -12,32 +12,24 @@ shinyServer(function(input, output) {
   parameters = c('N_qubits', 'n_it', 'backend')
   
   #reactive data frame
-  data <- reactiveVal(grover_data)
-  observeEvent(
-    c(input$columns, input$columns, input$N_qubits, input$n_it, input$backend),
-    {
+  data <- reactive({
       #filter data
-      data(
-        grover_data %>% filter_(str_c(
+       d = grover_data %>% filter_(str_c(
           setdiff(parameters, c(input$rows, input$columns)),
           ' == input$',
           setdiff(parameters, c(input$rows, input$columns))
         ) %>%
           str_c(collapse = ' & ')
         )
-      )
       
       #Add grouping for facetting
-      data(
-        data() %>% group_by_at(intersect(parameters, c(input$rows, input$columns)))
-      )
+      d %<>% group_by_at(intersect(parameters, c(input$rows, input$columns)))
       
       if('postselection' %in% c(input$rows, input$columns)){
-        data(
-          bind_rows(
-            all = data(),
-            good = filter(data(), good),
-            best = filter(data(), percent_rank(chsh)>0.9),
+          d = bind_rows(
+            all = d,
+            good = filter(d, good),
+            best = filter(d, percent_rank(chsh)>0.9),
             .id = 'postselection'
           ) %>%
             mutate(
@@ -45,11 +37,11 @@ shinyServer(function(input, output) {
             ) %>%
             group_by_at(intersect(parameters, c(input$rows, input$columns))) %>%
             group_by(postselection, add = TRUE)
-        )
       }
+      
+      d
 
-    }
-    )
+    })
   
   
 
@@ -68,7 +60,18 @@ shinyServer(function(input, output) {
     #scale_fill_continuous(limits = c(0,1))
     
   }
+
+###CONTROLS
   
+  observeEvent(
+    c(input$columns, input$rows),
+    {
+      lapply(parameters, function(p){
+        toggle(p, condition = !(p %in% c(input$columns, input$rows)))
+      })
+    }
+  )
+    
 ###PLOTS
   
   output$magic_square <- renderPlot({
