@@ -90,5 +90,5 @@ for state in states:
     circuit.name = str("tof4 " + state + " - expected: " + expected_cccnot(state))
     circuits.append(circuit)
 
-test_locally(circuits)
-# run_main_loop_with_chsh_test(circuits)
+#test_locally(circuits)
+run_main_loop_with_chsh_test(circuits)
