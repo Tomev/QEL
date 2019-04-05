@@ -3,7 +3,6 @@
 
 import sys
 sys.path.append('..\\')
-from qiskit import IBMQ
 from methods import get_backend_from_name
 
 if len(sys.argv) == 1:

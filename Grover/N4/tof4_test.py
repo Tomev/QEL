@@ -1,7 +1,7 @@
 import sys
 import warnings
 sys.path.append('../..')
-from methods import run_main_loop_with_chsh_test, execute_circuits, test_locally
+from methods import run_main_loop_with_chsh_test, execute_circuits, test_locally, get_backend_from_name
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
 qr = QuantumRegister(5)
@@ -90,5 +90,5 @@ for state in states:
     circuit.name = str("tof4 " + state + " - expected: " + expected_cccnot(state))
     circuits.append(circuit)
 
-#test_locally(circuits)
-run_main_loop_with_chsh_test(circuits)
+test_locally(circuits)
+#run_main_loop_with_chsh_test(circuits)

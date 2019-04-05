@@ -42,7 +42,8 @@ def get_backend_name_from_number(backend_index):
 
 
 def execute_circuits(circuits, backend):
-    return execute(circuits, backend, shots=consts.SHOTS)
+    backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+    return execute(circuits, backend, shots=consts.SHOTS, coupling_map=backend.configuration().coupling_map)
 
 
 def package_home(gdict):
