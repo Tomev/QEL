@@ -77,6 +77,8 @@ while True:
     # If current job date is before end_date, finish
     current_date = job_gatherer.parse_date(current_line.split(';')[3])
     print(f"Current date: {current_date}.")
+
+    # When to quit
     if current_date < end_date:
         break
 
@@ -87,6 +89,11 @@ while True:
 
     job_gathering_time = time() - job_gathering_time
     print(f"Job data gathered and written in {job_gathering_time} second(s).")
+
+    # And check if desired number of jobs is satisfied and break is so.
+    if job_gatherer.jobs_to_skip >= consts.JOBS_DOWNLOAD_LIMIT:
+        break
+
     print(f"Skipping {job_gatherer.jobs_to_skip} jobs.")
 
 jobs_gathering_time = time() - jobs_gathering_time
