@@ -15,7 +15,7 @@ qubits_indexes_by_occurrence = [C1, C0, C2, T]
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
 qc = QuantumCircuit(qr, cr)
-algorithm_repetition_times = 1
+algorithm_repetition_times = 3
 
 
 def rtof3(control1, control2, target):
@@ -58,8 +58,7 @@ def initialization(selected_state):
     global cr
     global algorithm_repetition_times
 
-    circuit_name = 'Grover_4_' + str(selected_state)[:2] + '0' + str(selected_state)[-2:] \
-                   + '_' + str(algorithm_repetition_times)
+    circuit_name = 'Grover_4_' + str(selected_state) + '_' + str(algorithm_repetition_times)
 
     qr = QuantumRegister(5)
     cr = ClassicalRegister(5)
