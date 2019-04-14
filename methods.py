@@ -41,9 +41,15 @@ def get_backend_name_from_number(backend_index):
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
 
 
-def execute_circuits(circuits, backend):
-    backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
-    return execute(circuits, backend, shots=consts.SHOTS, coupling_map=backend.configuration().coupling_map)
+def execute_circuits(circuits, backend, use_mapping=False):
+    if use_mapping:
+        real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+        mapping = real_chip.configuration().coupling_map
+        print("Used mapping:")
+        print(mapping)
+        return execute(circuits, backend, shots=consts.SHOTS, coupling_map=mapping)
+    else:
+        return execute(circuits, backend, shots=consts.SHOTS)
 
 
 def package_home(gdict):
@@ -118,9 +124,9 @@ def reset_jobs_counter():
     file.close()
 
 
-def test_locally(circuits):
+def test_locally(circuits, use_mapping=False):
     backend = get_sim_backend_from_name("qasm_simulator")
-    executed_job = execute_circuits(circuits, backend)
+    executed_job = execute_circuits(circuits, backend, use_mapping)
 
     for circuit in circuits:
         print(circuit.name)
