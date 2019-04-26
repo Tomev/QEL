@@ -3,6 +3,7 @@ import sys
 sys.path.append('..')
 from methods import test_locally, run_main_loop
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+from qiskit.extensions.standard import barrier
 
 
 def get_chsh_circuits(steps = 10):
@@ -48,6 +49,8 @@ def get_chsh_circuits(steps = 10):
         theta = 2.0 * np.pi * step / steps
         bell_middle = QuantumCircuit(q, c)
         bell_middle.ry(theta, q[0])
+        barrier(bell_middle)
+        # barrier(q[1])
         
         for m in measure.keys():
             new_circuit = bell + bell_middle + measure[m]

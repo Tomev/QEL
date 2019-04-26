@@ -68,6 +68,12 @@ end_date = datetime(year, month, day)
 initialization_time = time() - initialization_time
 print(f"Gatherer initialized in {initialization_time} second(s).")
 
+#print("Printing job")
+#file = open("job_result.txt", "a")
+#file.write(str(job_gatherer.get_single_job().result()))
+#file.close()
+#print("Done")
+
 while True:
     job_gathering_time = time()
 
