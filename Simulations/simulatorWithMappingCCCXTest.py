@@ -64,11 +64,11 @@ for i in range(5):
                 # Create state 11111 so that effect is visible.
                 circuit.x(qr[0])
                 circuit.x(qr[1])
-                #circuit.x(qr[2])
+                # circuit.x(qr[2])
                 circuit.x(qr[3])
                 circuit.x(qr[4])
 
-                circuit_name = "Control1: " + str(i) + ", Control2: " + str(j) + ", Target: " + str(k)
+                circuit_name = "Control1: " + str(i) + ", Control2: " + str(j) + ", Control3: " + str(k) + ", Target: " + str(l)
                 #print(circuit_name)
                 circuit += rtof4(i, j, k, l)
                 circuit.name = circuit_name
