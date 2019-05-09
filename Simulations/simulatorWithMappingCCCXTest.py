@@ -3,7 +3,13 @@ import sys
 sys.path.append('..\\')
 import consts
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from methods import test_locally
+from methods import test_locally, run_main_loop_with_chsh_test
+
+
+def ccnot(control1, control2, target):
+    quantum_circuit = QuantumCircuit(qr, cr)
+    quantum_circuit.ccx(qr[control1], qr[control2], qr[target])
+    return quantum_circuit
 
 
 def rtof3(control1, control2, target):
@@ -26,7 +32,7 @@ def rtof4(c1, c2, c3, t):
 
     rtof = QuantumCircuit(qr, cr)
     rtof += rtof3(c1, c2, a)
-    rtof += rtof3(a, c3, t)
+    rtof += ccnot(a, c3, t)
     rtof += rtof3(c1, c2, a)
 
     return rtof
@@ -79,4 +85,5 @@ for i in range(5):
 
 print("Created " + str(len(circuits)) + " circuits.")
 
-test_locally(circuits, True)
+#test_locally(circuits, False)
+run_main_loop_with_chsh_test(circuits)
