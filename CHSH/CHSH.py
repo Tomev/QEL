@@ -49,7 +49,8 @@ def get_chsh_circuits(steps = 10):
         theta = 2.0 * np.pi * step / steps
         bell_middle = QuantumCircuit(q, c)
         bell_middle.ry(theta, q[0])
-        barrier(bell_middle)
+        # barrier(bell_middle)
+        bell_middle.barrier()
         # barrier(q[1])
         
         for m in measure.keys():
