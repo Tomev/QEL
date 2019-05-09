@@ -131,6 +131,11 @@ def test_locally(circuits, use_mapping=False):
     for circuit in circuits:
         print(circuit.name)
         print(executed_job.result().get_counts(circuit))
+        # print(executed_job.result())
+        # print(executed_job)
+        # print("Circ")
+        # print(circuit)
+        # print(circuit.qasm())
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
