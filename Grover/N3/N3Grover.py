@@ -13,9 +13,12 @@ available_file_names = \
      'Grover-simplified_3_011_2.qasm', 'Grover-simplified_3_100_2.qasm', 'Grover-simplified_3_101_2.qasm',
      'Grover-simplified_3_110_2.qasm', 'Grover-simplified_3_111_2.qasm']
 
-'''
+
 available_file_names = ['Grover_3_000_1.qasm', 'Grover_3_001_1.qasm', 'Grover_3_010_1.qasm', 'Grover_3_011_1.qasm',
                         'Grover_3_100_1.qasm', 'Grover_3_101_1.qasm', 'Grover_3_110_1.qasm', 'Grover_3_111_1.qasm']
+'''
+
+available_file_names = ['Grover_3_000_1.qasm']
 
 circuits = []
 
@@ -24,5 +27,5 @@ for name in available_file_names:
     qc.name = name.split('.')[0]
     circuits.append(qc)
 
-run_main_loop_with_chsh_test(circuits)
-#test_locally(circuits)
+# run_main_loop_with_chsh_test(circuits)
+test_locally(circuits)

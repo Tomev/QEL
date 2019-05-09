@@ -1,4 +1,4 @@
-from qiskit import execute, IBMQ, Aer, QuantumCircuit, QISKitError, QuantumRegister, ClassicalRegister
+from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
 from IBMQuantumExperience import IBMQuantumExperience
 import numpy as np
 import time
@@ -106,7 +106,7 @@ def run_main_loop(circuits):
             print("Program sent for execution to ", backend_name, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
 
-        except QISKitError as ex:
+        except exceptions as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
 
         line = str(iteration_number + iterations_done + 1)
