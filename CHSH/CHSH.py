@@ -47,19 +47,28 @@ def get_chsh_circuits(steps = 10):
     for step in range(steps):
 
         theta = 2.0 * np.pi * step / steps
+
         bell_middle = QuantumCircuit(q, c)
         bell_middle.ry(theta, q[0])
-        # barrier(bell_middle)
-        bell_middle.barrier()
-        # barrier(q[1])
+        # bell_middle.barrier()
+
+        barrier_bell_middle = QuantumCircuit(q, c)
+        barrier_bell_middle.ry(theta, q[0])
+        barrier_bell_middle.barrier()
         
         for m in measure.keys():
+
             new_circuit = bell + bell_middle + measure[m]
-            new_circuit.name = 'CHSH_'+str(2*step)+'pi/'+str(steps)+'_'+m
+            new_circuit.name = 'CHSH_' + str(2 * step) + 'pi/' + str(steps) + '_' + m
+
+            barrier_new_circuit = bell + barrier_bell_middle + measure[m]
+            barrier_new_circuit.name = 'B_CHSH_' + str(2 * step) + 'pi/' + str(steps) + '_' + m
+
             real_chsh_circuits.append(new_circuit)
+            real_chsh_circuits.append(barrier_new_circuit)
 
     return real_chsh_circuits
 
 
 run_main_loop(get_chsh_circuits(16))
-#test_locally(get_chsh_circuits())
+# test_locally(get_chsh_circuits(16))
