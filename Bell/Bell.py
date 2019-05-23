@@ -23,7 +23,7 @@ for i in range(0, circuits_copies_number):
     qc.cx(qr[2], qr[0])
     qc.cx(qr[2], qr[4])
     qc.h(qr[2])
-    qc.ry(np.pi / 2, qr[0])
+    qc.ry(np.pi / 4, qr[0])
     qc.measure(qr, cr)
 
     circuits.append(qc)
