@@ -67,6 +67,8 @@ def get_chsh_circuits(steps = 10):
             real_chsh_circuits.append(new_circuit)
             real_chsh_circuits.append(barrier_new_circuit)
 
+    print("Number of circuits: " + str(len(real_chsh_circuits)))
+
     return real_chsh_circuits
 
 

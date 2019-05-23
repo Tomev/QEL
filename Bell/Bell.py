@@ -29,8 +29,8 @@ for i in range(0, circuits_copies_number):
     circuits.append(qc)
     circuits[i].name = "Bell_" + str(i)
 
-test_locally(circuits)
-#run_main_loop_with_chsh_test(circuits)
+# test_locally(circuits)
+run_main_loop_with_chsh_test(circuits)
 
 print("Bell experiment finished")
 
