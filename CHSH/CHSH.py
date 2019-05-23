@@ -5,11 +5,14 @@ from methods import test_locally, run_main_loop
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions.standard import barrier
 
+steps_number = 8
+
 
 def get_chsh_circuits(steps = 10):
     # Creating registers
     q = QuantumRegister(2)
     c = ClassicalRegister(2)
+    
 
     # quantum circuit to make an entangled bell state
     bell = QuantumCircuit(q, c)
@@ -72,5 +75,5 @@ def get_chsh_circuits(steps = 10):
     return real_chsh_circuits
 
 
-run_main_loop(get_chsh_circuits(16))
-# test_locally(get_chsh_circuits(16))
+run_main_loop(get_chsh_circuits(steps_number))
+# test_locally(get_chsh_circuits(steps_number))
