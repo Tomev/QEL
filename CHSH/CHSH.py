@@ -8,7 +8,7 @@ from qiskit.extensions.standard import barrier
 steps_number = 8
 
 
-def get_chsh_circuits(steps = 10):
+def get_chsh_circuits(steps=10):
     # Creating registers
     q = QuantumRegister(2)
     c = ClassicalRegister(2)

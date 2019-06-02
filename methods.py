@@ -5,6 +5,7 @@ import numpy as np
 import time
 import pandas as pd
 import os
+import datetime
 
 import Qconfig
 import consts
@@ -67,6 +68,8 @@ def run_main_loop(circuits):
     iterations_done = int(line)
     file.close()
 
+    backend_info = ''
+
     for iteration_number in range(consts.ITERATIONS_NUMBER - iterations_done):
 
         print('Iteration number: ', iteration_number + iterations_done)
@@ -104,7 +107,12 @@ def run_main_loop(circuits):
             print("Executing quantum program on %s." % backend_name)
 
             backend = get_backend_from_name(backend_name)
-            custom_backend_monitor(backend)
+            current_backend_info = custom_backend_monitor(backend)
+
+            if current_backend_info != backend_info:
+                print("New calibration data! Saving to file.")
+                backend_info = current_backend_info
+                save_calibration_data(backend_name, backend_info)
 
             execute_circuits(circuits, backend)
 
@@ -274,9 +282,8 @@ def custom_backend_monitor(backend):
     backend_info = ''
 
     qubit_header = 'Qubits [Name / Freq / T1 / T2 / U1 err / U2 err / U3 err / Readout err]'
+
     backend_info = backend_info + qubit_header + '\n'
-    #print(qubit_header)
-    #print('-'*len(qubit_header))
     backend_info = backend_info + '-'*len(qubit_header) + '\n'
 
     for qub in range(len(props['qubits'])):
@@ -289,29 +296,20 @@ def custom_backend_monitor(backend):
         readout_info = qubit_data[3]
 
         freq = str(round(freq_info['value'], 5))+' '+freq_info['unit']
-        T1 = str(round(t1_info['value'],  # pylint: disable=invalid-name
-                       5))+' ' + t1_info['unit']
-        T2 = str(round(t2_info['value'],  # pylint: disable=invalid-name
-                       5))+' ' + t2_info['unit']
-        # pylint: disable=invalid-name
+        T1 = str(round(t1_info['value'], 5))+' ' + t1_info['unit']
+        T2 = str(round(t2_info['value'], 5))+' ' + t2_info['unit']
         U1 = str(round(gate_data[0]['parameters'][0]['value'], 5))
-        # pylint: disable=invalid-name
         U2 = str(round(gate_data[1]['parameters'][0]['value'], 5))
-        # pylint: disable=invalid-name
         U3 = str(round(gate_data[2]['parameters'][0]['value'], 5))
-
         readout_error = str(round(readout_info['value'], 5))
-
         qstr = sep.join([name, freq, T1, T2, U1, U2, U3, readout_error])
-        #print(offset+qstr)
+
         backend_info = backend_info + offset+qstr + '\n'
 
-    #print()
     backend_info = backend_info + '\n'
     multi_qubit_gates = props['gates'][3*config['n_qubits']:]
     multi_header = 'Multi-Qubit Gates [Name / Type / Gate Error]'
-    # print(multi_header)
-    # print('-'*len(multi_header))
+
     backend_info = backend_info + multi_header + '\n'
     backend_info = backend_info + '-'*len(multi_header) + '\n'
 
@@ -320,11 +318,21 @@ def custom_backend_monitor(backend):
         ttype = gate['gate']
         error = str(round(gate['parameters'][0]['value'], 5))
         mstr = sep.join([name, ttype, error])
-        # print(offset+mstr)
         backend_info = backend_info + offset + mstr + '\n'
 
-    print(backend_info)
+    return backend_info
 
+
+def save_calibration_data(backend_name, data):
+
+    now = datetime.datetime.now()
+    file_name = backend_name + "_" + now.strftime("%Y-%m-%d_%H-%M") + ".txt"
+
+    file_path = os.path.join(os.path.dirname(__file__), 'CalibrationHistory\\' + file_name)
+
+    f = open(file_path, "w+")
+    f.write(data)
+    f.close()
 
 
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
