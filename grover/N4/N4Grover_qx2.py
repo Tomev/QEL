@@ -15,7 +15,7 @@ qubits_indexes_by_occurrence = [C1, C0, C2, T]
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
 qc = QuantumCircuit(qr, cr)
-algorithm_repetition_times = 3
+algorithm_repetition_times = 1
 
 
 def rtof3(control1, control2, target):
@@ -123,6 +123,8 @@ def diffusion():
 states = ['{0:04b}'.format(x) for x in range(2**4)]
 circuits = []
 
+print(states)
+
 
 for state in states:
     initialization(state)
@@ -134,5 +136,6 @@ for state in states:
     qc.measure(qr, cr)
     circuits.append(qc)
 
-# test_locally(circuits)
-run_main_loop_with_chsh_test(circuits)
+
+test_locally(circuits, True)
+#run_main_loop_with_chsh_test(circuits)

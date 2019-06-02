@@ -117,6 +117,7 @@ def diffusion():
 states = ['{0:04b}'.format(x) for x in range(2**4)]
 circuits = []
 
+print(states)
 
 for state in states:
     initialization(state)
@@ -128,5 +129,5 @@ for state in states:
     qc.measure(qr, cr)
     circuits.append(qc)
 
-test_locally(circuits)
+test_locally(circuits, True)
 # run_main_loop_with_chsh_test(circuits)
