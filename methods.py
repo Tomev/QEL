@@ -1,5 +1,6 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
 from IBMQuantumExperience import IBMQuantumExperience
+from qiskit.tools.monitor import backend_monitor
 import numpy as np
 import time
 import pandas as pd
@@ -101,7 +102,11 @@ def run_main_loop(circuits):
                 print('Trying backend %s. ' % backend_name)
 
             print("Executing quantum program on %s." % backend_name)
-            execute_circuits(circuits, get_backend_from_name(backend_name))
+
+            backend = get_backend_from_name(backend_name)
+            custom_backend_monitor(backend)
+
+            execute_circuits(circuits, backend)
 
             print("Program sent for execution to ", backend_name, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
@@ -255,6 +260,71 @@ def run_main_loop_with_chsh_test(circuits):
 
 def create_circuit_from_qasm(qasm_file_path):
     return QuantumCircuit.from_qasm_file(qasm_file_path)
+
+
+def custom_backend_monitor(backend):
+    # Custom version of qiskit 10.1 backend monitor.
+
+    config = backend.configuration().to_dict()
+    props = backend.properties().to_dict()
+
+    offset = '    '
+    sep = ' / '
+
+    backend_info = ''
+
+    qubit_header = 'Qubits [Name / Freq / T1 / T2 / U1 err / U2 err / U3 err / Readout err]'
+    backend_info = backend_info + qubit_header + '\n'
+    #print(qubit_header)
+    #print('-'*len(qubit_header))
+    backend_info = backend_info + '-'*len(qubit_header) + '\n'
+
+    for qub in range(len(props['qubits'])):
+        name = 'Q%s' % qub
+        qubit_data = props['qubits'][qub]
+        gate_data = props['gates'][3*qub:3*qub+3]
+        t1_info = qubit_data[0]
+        t2_info = qubit_data[1]
+        freq_info = qubit_data[2]
+        readout_info = qubit_data[3]
+
+        freq = str(round(freq_info['value'], 5))+' '+freq_info['unit']
+        T1 = str(round(t1_info['value'],  # pylint: disable=invalid-name
+                       5))+' ' + t1_info['unit']
+        T2 = str(round(t2_info['value'],  # pylint: disable=invalid-name
+                       5))+' ' + t2_info['unit']
+        # pylint: disable=invalid-name
+        U1 = str(round(gate_data[0]['parameters'][0]['value'], 5))
+        # pylint: disable=invalid-name
+        U2 = str(round(gate_data[1]['parameters'][0]['value'], 5))
+        # pylint: disable=invalid-name
+        U3 = str(round(gate_data[2]['parameters'][0]['value'], 5))
+
+        readout_error = str(round(readout_info['value'], 5))
+
+        qstr = sep.join([name, freq, T1, T2, U1, U2, U3, readout_error])
+        #print(offset+qstr)
+        backend_info = backend_info + offset+qstr + '\n'
+
+    #print()
+    backend_info = backend_info + '\n'
+    multi_qubit_gates = props['gates'][3*config['n_qubits']:]
+    multi_header = 'Multi-Qubit Gates [Name / Type / Gate Error]'
+    # print(multi_header)
+    # print('-'*len(multi_header))
+    backend_info = backend_info + multi_header + '\n'
+    backend_info = backend_info + '-'*len(multi_header) + '\n'
+
+    for gate in multi_qubit_gates:
+        name = gate['name']
+        ttype = gate['gate']
+        error = str(round(gate['parameters'][0]['value'], 5))
+        mstr = sep.join([name, ttype, error])
+        # print(offset+mstr)
+        backend_info = backend_info + offset + mstr + '\n'
+
+    print(backend_info)
+
 
 
 IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
