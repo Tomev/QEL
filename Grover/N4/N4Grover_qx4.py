@@ -5,8 +5,8 @@ from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from Grover.N4.rtof import rtof4
 
 # Mapowanie
-C0 = 3
-C1 = 4
+C0 = 4
+C1 = 3
 C2 = 1
 T = 0
 A = 2
