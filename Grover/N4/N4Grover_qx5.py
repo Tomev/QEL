@@ -2,7 +2,7 @@ import sys
 sys.path.append('..\\..')
 from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from _Grover.N4.rtof import rtof4
+from Grover.N4.rtof import rtof4
 
 # Mapowanie
 C0 = 3
