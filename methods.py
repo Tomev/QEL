@@ -62,6 +62,11 @@ def run_main_loop(circuits):
     current_backend_index = 0
     wait_time_in_minutes = 5
 
+    if not os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
+        file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "a")
+        file.write('0')
+        file.close()
+
     file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "r")
     line = file.readline()
     iterations_done = int(line)
@@ -121,10 +126,8 @@ def run_main_loop(circuits):
 
 
 def reset_jobs_counter():
-    file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), 'w')
-    file.write(str(0))
-    file.close()
-
+    if os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
+        os.remove(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'))
 
 def test_locally(circuits, use_mapping=False):
     backend = get_sim_backend_from_name("qasm_simulator")
