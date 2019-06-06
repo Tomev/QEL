@@ -1,6 +1,5 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
 from IBMQuantumExperience import IBMQuantumExperience
-from qiskit.tools.monitor import backend_monitor
 import numpy as np
 import time
 import pandas as pd
