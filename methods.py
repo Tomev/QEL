@@ -68,8 +68,6 @@ def run_main_loop(circuits):
     iterations_done = int(line)
     file.close()
 
-    backend_info = ''
-
     for iteration_number in range(consts.ITERATIONS_NUMBER - iterations_done):
 
         print('Iteration number: ', iteration_number + iterations_done)
@@ -106,15 +104,7 @@ def run_main_loop(circuits):
 
             print("Executing quantum program on %s." % backend_name)
 
-            backend = get_backend_from_name(backend_name)
-            current_backend_info = custom_backend_monitor(backend)
-
-            if current_backend_info != backend_info:
-                print("New calibration data! Saving to file.")
-                backend_info = current_backend_info
-                save_calibration_data(backend_name, backend_info)
-
-            execute_circuits(circuits, backend)
+            execute_circuits(circuits, get_backend_from_name(backend_name))
 
             print("Program sent for execution to ", backend_name, '.')
             current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
