@@ -1,3 +1,5 @@
+# A script that generates copies of Bell state preparing circuits.
+
 import sys
 
 sys.path.append('..\\')
