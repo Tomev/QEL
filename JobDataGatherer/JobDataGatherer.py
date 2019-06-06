@@ -1,10 +1,10 @@
 # Gathers specified number of newest jobs and saves it to file
 
 import sys
-import consts
 import time
 sys.path.append('..\\')
 import methods
+import consts
 
 
 # Select desired backends.
