@@ -1,6 +1,11 @@
-import methods
+# Gathers specified number of newest jobs and saves it to file
+
+import sys
 import consts
 import time
+sys.path.append('..\\')
+import methods
+
 
 # Select desired backends.
 considered_backends_names = consts.CONSIDERED_REMOTE_BACKENDS
