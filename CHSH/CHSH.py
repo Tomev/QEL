@@ -63,7 +63,7 @@ def get_chsh_circuits(steps=10):
             new_circuit.name = 'CHSH_' + str(2 * step) + 'pi/' + str(steps) + '_' + m
 
             barrier_new_circuit = bell + barrier_bell_middle + measure[m]
-            barrier_new_circuit.name = 'B_CHSH_' + str(2 * step) + 'pi/' + str(steps) + '_' + m
+            barrier_new_circuit.name = 'CHSH_' + str(2 * step) + 'pi/' + str(steps) + '_' + m + '_B'
 
             real_chsh_circuits.append(new_circuit)
             real_chsh_circuits.append(barrier_new_circuit)

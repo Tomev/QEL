@@ -7,11 +7,11 @@ This is a readme for our CHSH inequality experiments.
 For CHSH experiments following circuit naming convention shall be used:
 
 ```
-CHSH_measurement_theta
+CHSH_measurement_theta[_B]
 ```
 
 where CHSH is the basic name of experiments, measurement denotes what's being measured, theta is the angle (in radians) of rotation
-around Y axis. For example
+around Y axis and optional parameter B denotes if barrier was used. For example
 
 ```
 CHSH_XX_0.62
