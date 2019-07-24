@@ -7,10 +7,10 @@ This is a readme for our Mermin inequalities experiments.
 For Mermin experiments following circuit naming convention shall be used:
 
 ```
-Mermin_measurements
+Mermin_measurements[_B]
 ```
 
-where Mermin is general name of experiments and measurements denotes what we want to measure. For example
+where Mermin is general name of experiments, measurements denotes what we want to measure and optional parameter B informs if barrier was used in script. For example
 
 
 ```

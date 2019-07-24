@@ -34,7 +34,7 @@ def get_mermin_circuits():
     ghz_xxx.name = "Mermin_XXX"
 
     bghz_xxx = bghz3 + measure_xxx
-    bghz_xxx.name = "B_Mermin_XXX"
+    bghz_xxx.name = "Mermin_XXX_B"
 
     # Quantum circuit to measure XYY
     measure_xyy = QuantumCircuit(q3, c3)
@@ -51,7 +51,7 @@ def get_mermin_circuits():
     ghz_xyy.name = "Mermin_XYY"
 
     bghz_xyy = bghz3 + measure_xyy
-    bghz_xyy.name = "B_Mermin_XYY"
+    bghz_xyy.name = "Mermin_XYY_B"
 
     # quantum circuit to measure q YXY
     measure_yxy = QuantumCircuit(q3, c3)
@@ -68,7 +68,7 @@ def get_mermin_circuits():
     ghz_yxy.name = "Mermin_YXY"
 
     bghz_yxy = bghz3 + measure_yxy
-    bghz_yxy.name = "B_Mermin_YXY"
+    bghz_yxy.name = "Mermin_YXY_B"
 
     # quantum circuit to measure q YYX
     measure_yyx = QuantumCircuit(q3, c3)
@@ -85,7 +85,7 @@ def get_mermin_circuits():
     ghz_yyx.name = "Mermin_YYX"
 
     bghz_yyx = bghz3 + measure_yyx
-    bghz_yyx.name = "B_Mermin_YYX"
+    bghz_yyx.name = "Mermin_YYX_B"
 
     circuits = [ghz_xxx, ghz_yyx, ghz_yxy, ghz_xyy, bghz_xxx, bghz_yyx, bghz_yxy, bghz_xyy, ]
 
