@@ -327,4 +327,5 @@ def save_calibration_data(backend_name, data):
     f.close()
 
 
-IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
+#IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
+IBMQ.save_account(Qconfig.APItoken, overwrite=True)
