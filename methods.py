@@ -11,7 +11,7 @@ import consts
 
 
 def get_operational_remote_backends():
-    operational_backends = IBMQ.backends(operational=True, filters=lambda x: not x.configuration().simulator)
+    operational_backends = IBMQ.load_account().backends(operational=True, filters=lambda x: not x.configuration().simulator)
     return operational_backends
 
 
@@ -25,7 +25,7 @@ def get_backends_names(backends):
 
 
 def get_backend_from_name(name):
-    return IBMQ.get_backend(name)
+    return IBMQ.load_account().backends(name)
 
 
 def get_sim_backend_from_name(name):
@@ -129,6 +129,7 @@ def reset_jobs_counter():
     if os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
         os.remove(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'))
 
+
 def test_locally(circuits, use_mapping=False):
     backend = get_sim_backend_from_name("qasm_simulator")
     executed_job = execute_circuits(circuits, backend, use_mapping)
@@ -144,7 +145,7 @@ def test_locally(circuits, use_mapping=False):
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
-    backend = IBMQ.get_backend(backend_name)
+    backend = IBMQ.load_account().backends(backend_name)
 
     number_of_jobs_to_download = jobs_number
     downloaded_jobs = []
@@ -327,5 +328,4 @@ def save_calibration_data(backend_name, data):
     f.close()
 
 
-#IBMQ.enable_account(Qconfig.APItoken, url=Qconfig.config['url'])
 IBMQ.save_account(Qconfig.APItoken, overwrite=True)
