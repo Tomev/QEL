@@ -11,7 +11,7 @@ import consts
 
 
 def get_operational_remote_backends():
-    operational_backends = IBMQ.load_account().backends(operational=True, filters=lambda x: not x.configuration().simulator)
+    operational_backends = acc.backends(operational=True, filters=lambda x: not x.configuration().simulator)
     return operational_backends
 
 
@@ -25,7 +25,7 @@ def get_backends_names(backends):
 
 
 def get_backend_from_name(name):
-    return IBMQ.load_account().backends(name)
+    return acc.backends(name)[0]
 
 
 def get_sim_backend_from_name(name):
@@ -137,11 +137,6 @@ def test_locally(circuits, use_mapping=False):
     for circuit in circuits:
         print(circuit.name)
         print(executed_job.result().get_counts(circuit))
-        # print(executed_job.result())
-        # print(executed_job)
-        # print("Circ")
-        # print(circuit)
-        # print(circuit.qasm())
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
@@ -329,3 +324,4 @@ def save_calibration_data(backend_name, data):
 
 
 IBMQ.save_account(Qconfig.APItoken, overwrite=True)
+acc = IBMQ.load_account()
