@@ -38,6 +38,7 @@ def get_current_credits():
     return api.get_my_credits()['remaining']
 
 
+# Legacy
 def get_backend_name_from_number(backend_index):
     backend_index = backend_index % len(consts.CONSIDERED_REMOTE_BACKENDS)
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
@@ -58,11 +59,6 @@ def execute_circuits(circuits, backend, use_mapping=False, noise_model=None):
                      basis_gates=basis_gates, coupling_map=mapping)
     else:
         return execute(circuits, backend, shots=consts.SHOTS)
-
-
-def package_home(gdict):
-    filename = gdict["__file__"]
-    return os.path.dirname(filename)
 
 
 def run_main_loop(circuits):
@@ -288,6 +284,7 @@ def create_circuit_from_qasm(qasm_file_path):
     return QuantumCircuit.from_qasm_file(qasm_file_path)
 
 
+# Legacy
 def custom_backend_monitor(backend):
     # Custom version of qiskit 10.1 backend monitor.
 
@@ -341,6 +338,7 @@ def custom_backend_monitor(backend):
     return backend_info
 
 
+# Legacy
 def save_calibration_data(backend_name, data):
 
     now = datetime.datetime.now()
