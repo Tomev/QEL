@@ -149,16 +149,9 @@ def test_locally(circuits, use_mapping=False):
 # Used in noisy simulator
 def generate_gate_times():
     backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+    properties = backend.properties()
     coupling_map = backend.configuration().coupling_map
-    # I have no idea where should I get information about default gate time and thus I'm using
-    # what seems to be the right time basing on noisy simulator tutorial in qiskit 0.11 documentation
-    default_gate_time = 800
-
-    gate_times = [('u1', None, default_gate_time), ('u2', None, default_gate_time), ('u3', None, default_gate_time)]
-
-    for val in coupling_map:
-        gate_times.append(('cx', val, default_gate_time))
-
+    gate_times = noise.device.parameters.gate_time_values(properties)
     return gate_times
 
 

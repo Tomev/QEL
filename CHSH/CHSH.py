@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 sys.path.append('..')
-from methods import test_locally, run_main_loop
+from methods import test_locally, run_main_loop, test_locally_with_noise
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 steps_number = 8
@@ -75,3 +75,4 @@ def get_chsh_circuits(steps=10):
 
 run_main_loop(get_chsh_circuits(steps_number))
 # test_locally(get_chsh_circuits(steps_number))
+# test_locally_with_noise(get_chsh_circuits(steps_number))
