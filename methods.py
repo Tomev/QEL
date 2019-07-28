@@ -68,6 +68,7 @@ def package_home(gdict):
 def run_main_loop(circuits):
     current_backend_index = 0
     wait_time_in_minutes = 5
+    credits_required = 3
 
     if not os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
         file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "a")
@@ -86,7 +87,7 @@ def run_main_loop(circuits):
         current_credits_number = get_current_credits()
 
         # In case there are to little credits
-        while current_credits_number < 3:
+        while current_credits_number < credits_required:
             print("Current credits number is", current_credits_number,
                   'which is less than 3. Waiting ' + str(wait_time_in_minutes) + ' minute(s) to continue.')
             time.sleep(wait_time_in_minutes * 60)
