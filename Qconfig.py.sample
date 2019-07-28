@@ -1,0 +1,6 @@
+# Input your API Token here and remove ".sample" from file's name.
+
+APItoken = 'Your_API_Token' 
+
+if 'APItoken' not in locals():
+    raise Exception('Please set up your access token. See Qconfig.py.')
