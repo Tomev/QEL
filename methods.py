@@ -1,4 +1,5 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
+from qiskit.providers.aer import noise
 from IBMQuantumExperience import IBMQuantumExperience
 import numpy as np
 import time
@@ -42,13 +43,19 @@ def get_backend_name_from_number(backend_index):
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
 
 
-def execute_circuits(circuits, backend, use_mapping=False):
+def execute_circuits(circuits, backend, use_mapping=False, noise_model=None):
     if use_mapping:
         real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
         mapping = real_chip.configuration().coupling_map
         print("Used mapping:")
         print(mapping)
         return execute(circuits, backend, shots=consts.SHOTS, coupling_map=mapping)
+    elif noise_model != None:
+      real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+      mapping = real_chip.configuration().coupling_map
+      basis_gates = noise_model.basis_gates
+      return execute(circuits, backend, noise_model=noise_model, shots=consts.SHOTS,
+                     basis_gates=basis_gates, coupling_map=mapping)
     else:
         return execute(circuits, backend, shots=consts.SHOTS)
 
@@ -133,6 +140,35 @@ def reset_jobs_counter():
 def test_locally(circuits, use_mapping=False):
     backend = get_sim_backend_from_name("qasm_simulator")
     executed_job = execute_circuits(circuits, backend, use_mapping)
+
+    for circuit in circuits:
+        print(circuit.name)
+        print(executed_job.result().get_counts(circuit))
+
+
+# Used in noisy simulator
+def generate_gate_times():
+    backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+    coupling_map = backend.configuration().coupling_map
+    # I have no idea where should I get information about default gate time and thus I'm using
+    # what seems to be the right time basing on noisy simulator tutorial in qiskit 0.11 documentation
+    default_gate_time = 800
+
+    gate_times = [('u1', None, default_gate_time), ('u2', None, default_gate_time), ('u3', None, default_gate_time)]
+
+    for val in coupling_map:
+        gate_times.append(('cx', val, default_gate_time))
+
+    return gate_times
+
+
+def test_locally_with_noise(circuits):
+    gate_times = generate_gate_times()
+    properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
+    noise_model = noise.device.basic_device_noise_model(properties, gate_times=gate_times)
+
+    backend = get_sim_backend_from_name("qasm_simulator")
+    executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
 
     for circuit in circuits:
         print(circuit.name)
