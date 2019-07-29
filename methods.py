@@ -147,22 +147,36 @@ def test_locally(circuits, use_mapping=False):
 def generate_gate_times():
     backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
     properties = backend.properties()
-    coupling_map = backend.configuration().coupling_map
     gate_times = noise.device.parameters.gate_time_values(properties)
     return gate_times
 
 
-def test_locally_with_noise(circuits):
+def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
     gate_times = generate_gate_times()
     properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
     noise_model = noise.device.basic_device_noise_model(properties, gate_times=gate_times)
 
     backend = get_sim_backend_from_name("qasm_simulator")
-    executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
 
-    for circuit in circuits:
-        print(circuit.name)
-        print(executed_job.result().get_counts(circuit))
+    if save_to_file:
+        simulation_report_content = consts.JOBS_REPORT_HEADER
+
+        for i in range(number_of_simulations):
+            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            simulation_report_content += parse_job_to_report_string(executed_job)
+            print(f'Simulation {i+1} done.')
+
+        # Save gathered data to file.
+        file = open("sim_report.csv", "w")
+        file.write(simulation_report_content)
+        file.close()
+        print("Report saved!")
+    else:
+        for circuit in circuits:
+            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            print(circuit.name)
+            print(executed_job.result().get_counts(circuit))
+
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
@@ -193,7 +207,11 @@ def parse_job_to_report_string(job):
     job_id = job.job_id()
     circuit_names = [j.header.name for j in job.result().results]
     job_backend_name = job.backend().name()
-    job_creation_date = job.creation_date()
+
+    if type(job).__name__ == 'AerJob':
+        job_creation_date = '-'
+    else:
+        job_creation_date = job.creation_date()
 
     for circuit_name in circuit_names:
         job_string += job_id + consts.CSV_SEPARATOR
