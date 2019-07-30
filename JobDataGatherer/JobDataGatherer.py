@@ -17,7 +17,7 @@ for backend_name in considered_backends_names:
     job_gathering_time = time.time()
     backends_jobs = methods.get_jobs_from_backend(backend_name)
     job_gathering_time = time.time() - job_gathering_time
-    print(f"Jobs gathered from {backend_name} finished in {job_gathering_time} s.")
+    print(f"{len(backends_jobs)} jobs gathered from {backend_name} finished in {job_gathering_time} s.")
 
     i = 0
     jobs_parsing_time = time.time()
