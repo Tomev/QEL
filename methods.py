@@ -185,14 +185,14 @@ def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
     number_of_jobs_to_download = jobs_number
     downloaded_jobs = []
     number_of_jobs_to_skip = 0
-
-    # Due to long connection times and a fail probability small download step is used
+    max_download_number = 10
+    download_number = min(max_download_number, consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM)
 
     while number_of_jobs_to_download > 0:
 
         print("Number of jobs to download left: %i." % number_of_jobs_to_download)
 
-        number_of_jobs_to_download_now = min(consts.MAX_JOBS_SINGLE_DOWNLOAD_NUM, number_of_jobs_to_download)
+        number_of_jobs_to_download_now = min(download_number, number_of_jobs_to_download)
 
         number_of_jobs_to_download -= number_of_jobs_to_download_now
         downloaded_jobs.extend(backend.jobs(limit=number_of_jobs_to_download_now, skip=number_of_jobs_to_skip, status='DONE'))
