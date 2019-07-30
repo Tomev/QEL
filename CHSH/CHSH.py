@@ -74,5 +74,5 @@ def get_chsh_circuits(steps=10):
 
 
 run_main_loop(get_chsh_circuits(steps_number))
-# test_locally(get_chsh_circuits(steps_number))
+# test_locally(get_chsh_circuits(steps_number), use_mapping=True, save_to_file=True, number_of_simulations=1000)
 # test_locally_with_noise(get_chsh_circuits(steps_number))

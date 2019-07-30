@@ -91,7 +91,5 @@ def get_mermin_circuits():
 
     return circuits
 
-
 run_main_loop_with_chsh_test(get_mermin_circuits())
-# test_locally(get_mermin_circuits())
-
+#test_locally(get_mermin_circuits(), use_mapping=True, save_to_file=True, number_of_simulations=100)
