@@ -180,7 +180,7 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
-    backend = IBMQ.load_account().backends(backend_name)
+    backend = IBMQ.load_account().backends(backend_name)[0]
 
     number_of_jobs_to_download = jobs_number
     downloaded_jobs = []
