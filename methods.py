@@ -134,13 +134,27 @@ def reset_jobs_counter():
         os.remove(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'))
 
 
-def test_locally(circuits, use_mapping=False):
+def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simulations=1):
     backend = get_sim_backend_from_name("qasm_simulator")
-    executed_job = execute_circuits(circuits, backend, use_mapping)
 
-    for circuit in circuits:
-        print(circuit.name)
-        print(executed_job.result().get_counts(circuit))
+    if save_to_file:
+        simulation_report_content = consts.JOBS_REPORT_HEADER
+
+        for i in range(number_of_simulations):
+            executed_job = execute_circuits(circuits, backend, use_mapping)
+            simulation_report_content += parse_job_to_report_string(executed_job)
+            print(f'Simulation {i + 1} done.')
+
+        # Save gathered data to file.
+        file = open("sim_report.csv", "w")
+        file.write(simulation_report_content)
+        file.close()
+        print("Report saved!")
+    else:
+        for circuit in circuits:
+            executed_job = execute_circuits(circuits, backend, use_mapping)
+            print(circuit.name)
+            print(executed_job.result().get_counts(circuit))
 
 
 # Used in noisy simulator
