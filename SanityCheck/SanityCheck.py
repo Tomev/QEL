@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 sys.path.append('..')
-from methods import test_locally, run_main_loop, test_locally_with_noise
+from methods import test_locally, run_main_loop, test_locally_with_noise, run_main_loop_with_chsh_test
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
@@ -47,6 +47,7 @@ c6.measure(qr3, cr3)
 
 SC_Circuits = [c1, c2, c3, c4, c5, c6]
 
-run_main_loop(SC_Circuits)
+run_main_loop_with_chsh_test(SC_Circuits)
+#run_main_loop(SC_Circuits)
 #test_locally(SC_Circuits, use_mapping=True, save_to_file=True, number_of_simulations=1)
 #test_locally_with_noise(SC_Circuits)
