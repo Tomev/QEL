@@ -8,4 +8,4 @@ CSV_SEPARATOR = ';'
 JOBS_DOWNLOAD_LIMIT = 1000
 MAX_JOBS_SINGLE_DOWNLOAD_NUM = 10  # 10 is max.
 JOBS_REPORT_HEADER = 'ID;Backend;Circuit;Date;Results\n'
-JOBS_FILE_NAME = "jobs_report.csv"
+JOBS_FILE_NAME = "raw_jobs_report.csv"

@@ -5,10 +5,10 @@ and singular one.
 
 ## Gatherers
 
-* Default job gatherer, launched by JobDataGatherer.py script, gathers job in one loop, breaking it means necessity to
+* Default job gatherer, launched by JobDataGatherer.py script, gathers jobs in one loop, breaking it means necessity to
 restart whole process which can be a pain, especially if there's a lot of jobs to download. Since qiskit 0.10.X it's
-recommended way to download jobs as it happens that with proper internet connection jobs can be gathered with speed of
-200 jobs per second. Parsing takes a little longer however that should pose a script-breaking problem. 
+recommended way to download jobs as it happens jobs can be gathered with speed of 200 jobs per second with decent connection.
+Parsing takes a little longer, however that shouldn't pose a script-breaking problem. 
 
 * Singular job data gatherer is a job data gathering method that connects to the IBM and downloads one job at the time 
 and parses it to the csv file. When there's a problem with connection it breaks, however, can be resumed basing on
