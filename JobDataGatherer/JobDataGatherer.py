@@ -35,7 +35,7 @@ for backend_name in considered_backends_names:
 print("Starting report generation.")
 report_generation_time = time.time()
 # Save gathered data to file.
-file = open("jobs_report.csv", "w")
+file = open(consts.JOBS_FILE_NAME, "w")
 file.write(report_content)
 file.close()
 
