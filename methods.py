@@ -192,7 +192,6 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
             print(executed_job.result().get_counts(circuit))
 
 
-
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
     backend = IBMQ.load_account().backends(backend_name)[0]
 
@@ -260,7 +259,35 @@ def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep=consts.CSV_SE
         df_long.columns = [c.lower() for c in df_long.columns]
     
     df_long.to_csv(csv_file, index=False)    
-    
+
+
+def add_measure_in_base(qc: QuantumCircuit, base: str):
+    #qr = QuantumRegister(len(base))
+    #cr = ClassicalRegister(len(base))
+
+    base = base.upper()
+
+    for i in range(len(base)):
+        if base[i] == 'X':
+            qc.h(qc.qubits[i])
+        elif base[i] == 'Y':
+            qc.s(qc.qubits[i]).inverse()
+            qc.h(qc.qubits[i])
+
+    qc.measure(qc.qubits, qc.clbits)
+
+    input_circ_name_parts = qc.name.split('_')
+
+    if input_circ_name_parts[-1] == 'B':
+        new_name = ''
+        for i in range(len(input_circ_name_parts) - 1):
+            new_name = new_name + input_circ_name_parts[i] + '_'
+        qc.name = new_name + base + '_B'
+    else:
+        qc.name = qc.name + "_" + base
+
+    return qc
+
 
 def get_chsh_circuits():
     q = QuantumRegister(2)
@@ -273,31 +300,11 @@ def get_chsh_circuits():
     bell.ry(np.pi/4, q[0])
 
     # Circuits to measure q to c in different basis.
-    measure_zz = QuantumCircuit(q, c)
-    measure_zz.measure(q[0], c[0])
-    measure_zz.measure(q[1], c[1])
-
-    measure_xx = QuantumCircuit(q, c)
-    measure_xx.h(q[0])
-    measure_xx.h(q[1])
-    measure_xx.measure(q[0], c[0])
-    measure_xx.measure(q[1], c[1])
-
-    measure_zx = QuantumCircuit(q, c)
-    measure_zx.h(q[0])
-    measure_zx.measure(q[0], c[0])
-    measure_zx.measure(q[1], c[1])
-
-    measure_xz = QuantumCircuit(q, c)
-    measure_xz.h(q[1])
-    measure_xz.measure(q[0], c[0])
-    measure_xz.measure(q[1], c[1])
-
-    measure = [measure_zz, measure_zx, measure_xx, measure_xz]
+    bases = ['ZZ', 'ZX', 'XX', 'XZ']
 
     chsh_circuits = []
-    for m in measure:
-        chsh_circuits.append(bell + m)
+    for b in bases:
+        chsh_circuits.append(add_measure_in_base(bell.copy(), b))
 
     # Set circuits names.
     chsh_circuits[0].name = 'CHSH-test_ZZ'
