@@ -46,6 +46,7 @@ c6 = QuantumCircuit(qr3, cr3)
 c6.x(qr3[0])
 c6.x(qr3[1])
 c6.x(qr3[2])
+c6.barrier()
 c6.name = "SC_111_B"
 c6.measure(qr3, cr3)
 
