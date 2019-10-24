@@ -117,7 +117,7 @@ def run_main_loop(circuits):
 
         except BaseException as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
-            print(f'Waiting {wait_time_in_minutes} before next try.')
+            print(f'Waiting {wait_time_in_minutes} minute(s) before next try.')
             time.sleep(wait_time_in_minutes * 60)
             continue
 
