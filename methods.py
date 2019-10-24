@@ -263,10 +263,8 @@ def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep=consts.CSV_SE
 
 
 def add_measure_in_base(qc: QuantumCircuit, base: str):
-    # qr = QuantumRegister(len(base))
-    # cr = ClassicalRegister(len(base))
 
-    base = base.upper()
+    base = ''.join(reversed(base.upper()))
 
     for i in range(len(base)):
         if base[i] == 'X':
@@ -276,6 +274,8 @@ def add_measure_in_base(qc: QuantumCircuit, base: str):
             qc.h(qc.qubits[i])
 
     qc.measure(qc.qubits, qc.clbits)
+
+    base = ''.join(reversed(base.upper()))
 
     input_circ_name_parts = qc.name.split('_')
 
