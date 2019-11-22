@@ -4,10 +4,8 @@ sys.path.append('..')
 from methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
-steps_number = 8
 
-
-def get_chsh_circuits(steps=10):
+def get_chsh_circuits(steps=8):
     # Creating registers
     q = QuantumRegister(2)
     c = ClassicalRegister(2)
@@ -46,11 +44,9 @@ def get_chsh_circuits(steps=10):
             real_chsh_circuits.append(new_circuit)
             real_chsh_circuits.append(barrier_new_circuit)
 
-    print("Number of circuits: " + str(len(real_chsh_circuits)))
-
     return real_chsh_circuits
 
 
-run_main_loop(get_chsh_circuits(steps_number))
+#run_main_loop(get_chsh_circuits())
 #test_locally(get_chsh_circuits(steps_number), use_mapping=True, save_to_file=True, number_of_simulations=100)
 #test_locally_with_noise(get_chsh_circuits(steps_number))
