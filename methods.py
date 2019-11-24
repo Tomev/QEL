@@ -11,6 +11,10 @@ import datetime
 import Qconfig
 import consts
 
+from qiskit.ignis.mitigation.measurement import (complete_meas_cal,
+                                                 CompleteMeasFitter,
+                                                 MeasurementFilter)
+
 
 def get_operational_remote_backends():
     operational_backends = acc.backends(operational=True, filters=lambda x: not x.configuration().simulator)
@@ -159,18 +163,9 @@ def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simu
             print(executed_job.result().get_counts(circuit))
 
 
-# Used in noisy simulator
-def generate_gate_times():
-    backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
-    properties = backend.properties()
-    gate_times = noise.device.parameters.gate_time_values(properties)
-    return gate_times
-
-
 def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
-    gate_times = generate_gate_times()
     properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
-    noise_model = noise.device.basic_device_noise_model(properties, gate_times=gate_times)
+    noise_model = noise.device.basic_device_noise_model(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
 
@@ -192,6 +187,62 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
             executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
             print(circuit.name)
             print(executed_job.result().get_counts(circuit))
+
+
+def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_simulations=1):
+    properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
+    noise_model = noise.device.basic_device_noise_model(properties)
+
+    backend = get_sim_backend_from_name("qasm_simulator")
+
+    if save_to_file:
+        simulation_report_content = consts.JOBS_REPORT_HEADER
+        mitigation_report_content = consts.JOBS_REPORT_HEADER
+
+        for i in range(number_of_simulations):
+            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            error_mitigation_filters = get_error_mitigation_filters(executed_job)
+
+            simulation_report_content += parse_job_to_report_string(executed_job)
+            mitigation_report_content += get_mitigation_report_string(executed_job)
+
+            print(f'Simulation {i + 1} done.')
+
+            for circuit in circuits:
+                executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+                print(circuit.name)
+                raw_counts = executed_job.result().get_counts(circuit)
+
+                index = len(list(raw_counts.keys())[0])
+                meas_filter = error_mitigation_filters[index]
+                mitigated_counts = meas_filter.apply(raw_counts)
+
+                print("Results without mitigation:", raw_counts)
+                print("Results with mitigation:", {l: int(mitigated_counts[l]) for l in mitigated_counts})
+
+        # Save gathered data to file.
+        file = open("sim_report.csv", "w")
+        file.write(simulation_report_content)
+        file.close()
+
+        file = open('raw_mitigation_jobs_report.csv', 'w')
+        file.write(mitigation_report_content)
+        file.close()
+
+        print("Report saved!")
+    else:
+        for circuit in circuits:
+            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            error_mitigation_filters = get_error_mitigation_filters(executed_job)
+            print(circuit.name)
+            raw_counts = executed_job.result().get_counts(circuit)
+
+            index = len(list(raw_counts.keys())[0])
+            meas_filter = error_mitigation_filters[index]
+            mitigated_counts = meas_filter.apply(raw_counts)
+
+            print("Results without mitigation:", raw_counts)
+            print("Results with mitigation:", {l: int(mitigated_counts[l]) for l in mitigated_counts})
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
@@ -234,6 +285,36 @@ def parse_job_to_report_string(job):
         job_string += str(circuit_name) + consts.CSV_SEPARATOR
         job_string += job_creation_date + consts.CSV_SEPARATOR
         job_string += str(job.result().get_counts(circuit_name)) + '\n'
+
+    return job_string
+
+
+def get_mitigation_report_string(job):
+    job_string = ''
+
+    job_id = job.job_id()
+    circuit_names = [j.header.name for j in job.result().results]
+    job_backend_name = job.backend().name()
+
+    if type(job).__name__ == 'AerJob':
+        job_creation_date = '-'
+    else:
+        job_creation_date = job.creation_date()
+
+    error_mitigation_filters = get_error_mitigation_filters(job)
+
+    for circuit_name in circuit_names:
+        job_string += job_id + consts.CSV_SEPARATOR
+        job_string += job_backend_name + consts.CSV_SEPARATOR
+        job_string += str(circuit_name) + consts.CSV_SEPARATOR
+        job_string += job_creation_date + consts.CSV_SEPARATOR
+
+        raw_counts = job.result().get_counts(circuit_name)
+        index = len(list(raw_counts.keys())[0])
+        meas_filter = error_mitigation_filters[index]
+        mitigated_counts = meas_filter.apply(raw_counts)
+
+        job_string += str(mitigated_counts) + '\n'
 
     return job_string
 
@@ -388,6 +469,47 @@ def save_calibration_data(backend_name, data):
     f = open(file_path, "w+")
     f.write(data)
     f.close()
+
+
+def get_error_mitigation_filters(job):
+
+    if type(job).__name__ == 'AerJob':
+        job_creation_date = '-'
+        backend_name = consts.CONSIDERED_REMOTE_BACKENDS[0]
+    else:
+        job_creation_date = job.creation_date()
+        backend_name = job.backend().name()
+
+    properties = get_backend_from_name(backend_name).properties(job_creation_date)
+    noise_model = noise.device.basic_device_noise_model(properties)
+    filters = dict()
+
+    qubits_lists = []
+    # This could possibly be a one liner, but I find the loops easier to understand
+    for i in range(len(properties.qubits)):
+        q_list = []
+        for j in range(i + 1):
+            q_list.append(j)
+        qubits_lists.append(q_list)
+
+    i = 1  # Start from 1, as it would be dictionary accessed by result state length
+
+    for q_list in qubits_lists:
+        filters[i] = generate_error_mitigation_filter(q_list, noise_model)
+        i += 1
+
+    return filters
+
+
+def generate_error_mitigation_filter(q_list, noise_model):
+    backend = get_sim_backend_from_name("qasm_simulator")
+    qr = QuantumRegister(5)
+    meas_cals, state_labels = complete_meas_cal(qubit_list=q_list, qr=qr)
+    calibration_job = execute(meas_cals, backend=backend, shots=8192, noise_model=noise_model)
+    cal_results = calibration_job.result()
+    meas_fitter = CompleteMeasFitter(cal_results, state_labels)
+    em_filter = meas_fitter.filter
+    return em_filter
 
 
 IBMQ.save_account(Qconfig.APItoken, overwrite=True)

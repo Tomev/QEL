@@ -10,6 +10,7 @@ import consts
 # Select desired backends.
 considered_backends_names = consts.CONSIDERED_REMOTE_BACKENDS
 report_content = consts.JOBS_REPORT_HEADER
+mitigation_report_content = consts.JOBS_REPORT_HEADER
 
 # Get jobs data.
 for backend_name in considered_backends_names:
@@ -24,6 +25,7 @@ for backend_name in considered_backends_names:
     for job in backends_jobs:
         job_parsing_time = time.time()
         report_content += methods.parse_job_to_report_string(job)
+        mitigation_report_content += methods.get_mitigation_report_string(job)
         job_parsing_time = time.time() - job_parsing_time
         print(f"Job {i} parsing finished in {job_parsing_time} s.")
         i += 1
@@ -37,6 +39,10 @@ report_generation_time = time.time()
 # Save gathered data to file.
 file = open(consts.JOBS_FILE_NAME, "w")
 file.write(report_content)
+file.close()
+
+file = open('raw_mitigation_jobs_report.csv', 'w')
+file.write(mitigation_report_content)
 file.close()
 
 report_generation_time = time.time() - report_generation_time

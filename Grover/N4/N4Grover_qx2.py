@@ -1,6 +1,6 @@
 import sys
 sys.path.append('..\\..')
-from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test
+from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test, test_locally_with_error_mitigation
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from Grover.N4.rtof import rtof4
 
@@ -123,7 +123,7 @@ def diffusion():
 states = ['{0:04b}'.format(x) for x in range(2**4)]
 circuits = []
 
-print(states)
+#print(states)
 
 
 for state in states:
@@ -137,5 +137,6 @@ for state in states:
     circuits.append(qc)
 
 
-test_locally(circuits, True)
-#run_main_loop_with_chsh_test(circuits)
+#test_locally(circuits, False, True, 1000)
+run_main_loop_with_chsh_test(circuits)
+#test_locally_with_error_mitigation(circuits, True, 1000)
