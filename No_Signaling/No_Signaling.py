@@ -8,5 +8,5 @@ from methods import run_main_loop, run_main_loop_with_chsh_test, test_locally
 circuits = get_sc_circuits() + get_chsh_circuits() + get_mermin_circuits()
 
 #run_main_loop(circuits)
-#run_main_loop_with_chsh_test(circuits)
-test_locally(circuits, False, True, 1)
+run_main_loop_with_chsh_test(circuits)
+#test_locally(circuits, False, True, 1)
