@@ -10,6 +10,6 @@ circuits = get_sc_circuits() + get_mermin_circuits() + get_chsh_circuits(5)
 print(len(circuits))
 
 
-# run_main_loop(circuits)
+run_main_loop(circuits)
 #run_main_loop_with_chsh_test(circuits)
 #test_locally(circuits, True, False, 1)
