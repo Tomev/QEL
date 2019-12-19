@@ -3,7 +3,7 @@
 import sys
 sys.path.append('..\\')
 from methods import report_to_csv
-from consts import JOBS_FILE_NAME
+from consts import JOBS_FILE_NAME, M_JOBS_FILE_NAME
 
 file_result_name = 'jobs_report.csv'
 
