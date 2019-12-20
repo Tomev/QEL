@@ -69,9 +69,16 @@ def execute_circuits(circuits, backend, use_mapping=False, noise_model=None):
         return execute(circuits, backend, shots=consts.SHOTS)
 
 
-def run_main_loop(circuits):
+def run_main_loop(circuits_list):
     current_backend_index = 0
     wait_time_in_minutes = 5
+
+    current_circuits_list_index = 0
+
+    if isinstance(circuits_list[0], list):   # Check if list of circuits of multiple lists of circuits were given
+        circuits = circuits_list[0]
+    else:
+        circuits = circuits_list
 
     if not os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
         file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "a")
@@ -85,7 +92,8 @@ def run_main_loop(circuits):
 
     while iterations_done < consts.ITERATIONS_NUMBER:
 
-        print(f'Iteration number: { iterations_done}')
+        print(f'Iteration number: {iterations_done}')
+        print(f'Circuits list with index {current_circuits_list_index}, with jobs number {len(circuits)}.')
 
         print('Getting available backends...')
         operational_remote_backends = get_operational_remote_backends()
@@ -117,7 +125,7 @@ def run_main_loop(circuits):
                 time.sleep(10)
 
             print("Program sent for execution to ", backend_name, '.')
-            current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
+            # current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
 
         except BaseException as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
@@ -126,6 +134,8 @@ def run_main_loop(circuits):
             continue
 
         iterations_done += 1
+        current_circuits_list_index = (current_circuits_list_index + 1) % len(circuits_list)
+        circuits = circuits_list[current_circuits_list_index]
         line = str(iterations_done)
         print(f'Writing to file: {line}')
         file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), 'w')
