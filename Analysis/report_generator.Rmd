@@ -1,46 +1,56 @@
 ---
-title: "Untitled"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE,
                       fig.width=12, fig.height=7)
-source('~/QE/Analysis/analysis_methods.R')
+source('analysis_methods.R')
 ```
 
-How to process Mermin with CHSH test
 ```{r}
-data = read_csv('JT_Mermin.csv')
+data = read_csv('no_signaling.csv')
 data %>% print_basic_info
 
 data %<>% chsh_test
-data %<>% filter(good)
-
-data %<>% process_mermin
-
-mermin = data %>% agg_data
-mermin %>% summary_table
-
-mermin_signaling = data %>% process_signaling
-mermin_signaling %>% plot_signaling
 ```
 
-How to process CHSH
+
+## Mermin
+
 ```{r}
-data = read_csv('CHSH_no_signaling.csv')
-data %>% print_basic_info
+mermin = data %>% process_mermin(barrier = TRUE)
 
-data %<>% process_chsh
+mermin %>% agg_data(print_kable = TRUE)
 
-data %<>% group_by(theta0, theta)
+mermin_signaling = mermin %>% process_signaling
+mermin_signaling %>%
+  plot_signaling(facet_y = quo(barrier)) %>% plyr::l_ply(print)
+```
 
-chsh = data %>% agg_data
-chsh %>% summary_table(theta0)
-chsh %>% chsh_plot
 
-chsh_signaling = data %>% process_signaling
-chsh_signaling %>%
-  filter(qubit == "1") %>%
-  plot_signaling(x = quo(theta), facet_x = quo(my_base))
+## CHSH
+
+```{r}
+chsh = data %>% process_chsh(barrier = TRUE)
+
+chsh %>% agg_data %>% chsh_plot
+
+chsh_signaling = chsh %>% process_signaling
+
+plyr::l_ply(chsh_signaling$qubit %>% unique, function(i){
+  
+  chsh_signaling %>%
+  filter(qubit == i) %>%
+  plot_signaling(
+    x = quo(theta),
+    facet_x = quo(my_base),
+    facet_y = quo(barrier)) %>%
+    
+    plyr::l_ply(function(p){
+      print(
+        p+pi_axis()+ggtitle(str_c('Nr of qubit: ', i))
+        )})
+  
+})
 ```
