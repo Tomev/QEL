@@ -289,3 +289,26 @@ plot_signaling <- function(data, ...,
   
   return(list(p1,p2))
 }
+
+
+process_sc <- function(data){
+  #Extract the circuit data for usual sanity check naming convention
+  
+  data %<>% extract_circuit_data(
+    experiment = 1,
+    state = 2,
+    observable = 3,
+    barrier = 4
+    )
+  data %<>% filter(experiment == 'SC')
+  
+  data %<>% mutate(
+    sign = (-1)^(variable %in% c('01', '10', '001','010','100','111')),
+    barrier = ifelse(barrier == 'B', 'With', 'Without'),
+    n_qubits = str_length(variable)
+  )
+  
+  data %<>% group_by(n_qubits, barrier, state)
+  
+  return(data)
+}

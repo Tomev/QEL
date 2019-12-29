@@ -9,7 +9,7 @@ source('analysis_methods.R')
 ```
 
 ```{r}
-data = read_csv('no_signaling.csv')
+data = read_csv('C:/Users/ala/Downloads/no_signaling (1).csv')
 data %>% print_basic_info
 
 data %<>% chsh_test
@@ -53,4 +53,21 @@ plyr::l_ply(chsh_signaling$qubit %>% unique, function(i){
         )})
   
 })
+```
+
+
+## Sanity check
+
+```{r}
+sc = data %>% process_sc
+
+sc_signaling = sc %>% process_signaling
+
+for(n in sc$n_qubits %>% unique){
+  print(str_c('number of qubits: ',n))
+  sc_signaling %>% filter(n_qubits == n) %>%
+  plot_signaling(facet_y = quo(barrier), facet_x = quo(state)) %>%
+    plyr::l_ply(print)
+}
+
 ```
