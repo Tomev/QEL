@@ -4,14 +4,15 @@ sys.path.append('..')
 from methods import test_locally, run_main_loop, test_locally_with_noise, run_main_loop_with_chsh_test, add_measure_in_base
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
+
 def get_sc_circuits():
     qr2 = QuantumRegister(2)
     cr2 = ClassicalRegister(2)
     qr3 = QuantumRegister(3)
     cr3 = ClassicalRegister(3)
 
-    bases_N2 = ['ZZ', 'ZX', 'XX', 'XZ']
-    bases_N3 = {'XXX', 'YYX', 'YXY', 'XYY'}
+    bases_N2 = ['ZZ', 'ZX', 'XX', 'XZ', 'YY', 'YX', 'XY']
+    bases_N3 = {'XXX', 'YYX', 'YXY', 'XYY', 'ZZX', 'ZXZ', 'XZZ'}
 
     c1 = QuantumCircuit(qr2, cr2)
     c1.name = "SC_00"
