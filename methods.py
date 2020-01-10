@@ -78,7 +78,8 @@ def run_main_loop(circuits_list):
     if isinstance(circuits_list[0], list):   # Check if list of circuits of multiple lists of circuits were given
         circuits = circuits_list[0]
     else:
-        circuits = circuits_list
+        circuits_list = [circuits_list]
+        circuits = circuits_list[0]
 
     if not os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
         file = open(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt'), "a")
