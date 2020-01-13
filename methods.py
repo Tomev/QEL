@@ -523,6 +523,10 @@ def generate_error_mitigation_filter(q_list, noise_model):
     return em_filter
 
 
+def draw_circuit(circuit, file_name='my_circuit.png'):
+    circuit.draw(output='mpl', filename=file_name)
+
+
 IBMQ.save_account(Qconfig.APItoken, overwrite=True)
 acc = IBMQ.load_account()
 acc.credentials
