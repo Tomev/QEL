@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-desired_date = datetime.strptime('2020-9-20T20:00:00', '%Y-%m-%dT%H:%M:%S')
+desired_date = datetime.strptime('2019-12-20T20:00:00', '%Y-%m-%dT%H:%M:%S')
 
 report = 'ID;Backend;Circuit;Date;Results\n'
 mitigation_report = 'ID;Backend;Circuit;Date;Results\n'
@@ -31,7 +31,7 @@ for file in os.listdir(os.getcwd()):
     elif file.startswith('raw_mitigation'):
         mitigation_report += get_report_string_from_file(file)
     else:
-        print(file)
+        print(f'Ignoring: {file}.')
 
 
 file = open('raw_jobs_report.csv', 'w')
@@ -41,5 +41,9 @@ file.close()
 file = open('raw_mitigation_jobs_report.csv', 'w')
 file.write(mitigation_report)
 file.close()
+
+print('Launching aReportConverter.')
+
+os.system('python aReportConverter.py')
 
 print('Finished.')
