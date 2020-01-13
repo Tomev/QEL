@@ -41,7 +41,7 @@ file = open(consts.JOBS_FILE_NAME, "w")
 file.write(report_content)
 file.close()
 
-file = open('raw_mitigation_jobs_report.csv', 'w')
+file = open(consts.M_JOBS_FILE_NAME, 'w')
 file.write(mitigation_report_content)
 file.close()
 
