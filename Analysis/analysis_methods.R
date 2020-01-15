@@ -41,6 +41,11 @@ extract_circuit_data <- function(data, ..., pattern = '_', circuit_column = 'cir
   return(data)
 }
 
+state_sign <- function(v){
+  #Assign the measurement result (eigenvalue) to the measured state
+  (-1)^str_count(v, '1')
+}
+
 chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
   
   "
@@ -78,8 +83,8 @@ chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
     #Sign 
     mutate(
       value = value*
-        ifelse(variable %in% c('00','11'), 1, -1)*
-        ifelse(observable == 'XZ', -1, 1)
+        state_sign(variable)*
+        (-1)^(observable %in% c('XZ', 'XY'))
     ) %>%
     #Calculate expected value of each observable
     group_by(id, observable) %>%
@@ -132,7 +137,7 @@ process_chsh <- function(data, ..., barrier = F){
   
   #Whether the result of the measurement is +1 or -1
   data %<>% mutate(
-    sign = (-1)^((observable == 'XZ')+(variable %in% c ('01','10')))
+    sign = (-1)^(observable %in% c('XZ','XY'))*state_sign(variable)
   )
   
   data %<>% group_by(theta, add = TRUE)
@@ -148,7 +153,7 @@ process_mermin <- function(data, ..., barrier = F){
   data %<>% filter(experiment == 'Mermin')
   
   data %<>% mutate(
-    sign = (-1)^((observable == 'XXX')+(variable %in% c('000','011','101','110')))
+    sign = (-1)^(observable == 'XXX')*state_sign(variable)
   )
   
   if(barrier){
@@ -212,7 +217,8 @@ chsh_plot <- function(data){
                 left_join(
                   tibble(
                     buf = 0,
-                    theta = seq(min(data$theta), max(data$theta), 0.05))
+                    theta = seq(min(data$theta), max(data$theta), 0.05)),
+                  'buf'
                   ) %>%
                 mutate(chsh = 2*eta*(cos(theta)+sin(theta))))+
     pi_axis()
@@ -303,7 +309,7 @@ process_sc <- function(data){
   data %<>% filter(experiment == 'SC')
   
   data %<>% mutate(
-    sign = (-1)^(variable %in% c('01', '10', '001','010','100','111')),
+    sign = state_sign(variable),
     barrier = ifelse(barrier == 'B', 'With', 'Without'),
     n_qubits = str_length(variable)
   )
