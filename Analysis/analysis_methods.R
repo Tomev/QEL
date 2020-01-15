@@ -212,7 +212,7 @@ bell_fit_plot <- function(data, experiment){
   #Local realism
   lr_lims <- switch(experiment,
                     CHSH = c(-2,2),
-                    Mermin = c(-4, 4))
+                    Mermin = c(-2, 2))
   
   #Fit
   eta_df = data %>% do(eta = lm(value ~ 0+theory, data = .) %>% coef) %>%
