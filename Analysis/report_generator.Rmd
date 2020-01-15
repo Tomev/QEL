@@ -34,7 +34,7 @@ mermin_signaling %>%
 ```{r}
 chsh = data %>% process_chsh(barrier = TRUE)
 
-chsh %>% agg_data %>% chsh_plot
+chsh %>% agg_data %>% bell_fit_plot('CHSH')
 
 chsh_signaling = chsh %>% process_signaling
 

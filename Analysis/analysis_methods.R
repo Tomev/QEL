@@ -46,120 +46,42 @@ state_sign <- function(v){
   (-1)^str_count(v, '1')
 }
 
-chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
+process_bell <- function(data, ..., parameter, name, minus_obs, barrier){
   
-  "
-  Process chsh-test data
+  #Filter experiments
+  data %<>%
+    extract_circuit_data(experiment = 1) %>%
+    filter(experiment == name)
   
-  Currently works if:
-    - names of test circuits are CHSH-test_AB(_...),
-      AB = XX, XZ, ZX, ZZ,
-      anything can follow after '_'
-    - the following names of columns are used:
-      - names of circuits: 'circuit'
-      - job ids: 'id'
-      - state names: 'variable'
-      - counts: 'value'
-  The label good=TRUE is assigned to jobs with chsh>2.
+  #The result of experiment(+/-1)
+  data %<>% extract_circuit_data(observable = 2+parameter) %>%
+    mutate(sign = state_sign(variable)*(-1)^(observable %in% minus_obs))
   
-  Output: the data frame with filtered out test circuits and new columns 'chsh' and 'good'.
-  If `filter` only the good jobs are left.
-  
-  If `print` prints how many jobs were selected
-  
-  TO DO: general column names, threshold value, more general tests?
-  TO DO: Plot
-  "
-  
-  #Choose the data from chsh test
-  test_data = data %>%
-    filter(str_split_fixed(circuit,'_',2)[,1] == 'CHSH-test')
-  
-  #Extract observable from circuit name
-  test_data %<>% extract_circuit_data(observable = 2)
-  
-  #Aggregate
-  test_data %<>%
-    #Sign 
-    mutate(
-      value = value*
-        state_sign(variable)*
-        (-1)^(observable %in% c('XZ', 'XY'))
-    ) %>%
-    #Calculate expected value of each observable
-    group_by(id, observable) %>%
-    summarise(value = sum(value)/sum(abs(value))) %>%
-    #Calculate CHSH parameter
-    summarise(chsh = sum(value)) %>%
-    #Good job threshold
-    mutate(good = (abs(chsh)>2))
-  
-  if(print){
-    str_c(
-      'CHSH test. Jobs selected: ',
-      sum(test_data$good),
-      ' out of ',
-      nrow(test_data)
-      ) %>% print
-  }
-  
-  #Return the filtered data frame with test data joined using job id
-  data %<>% filter(str_split_fixed(circuit,'_',2)[,1] != 'CHSH-test') %>%
-  left_join(test_data,'id')
-  
-  if(filter){data %<>% filter(good)}
-  
-  return(data)
-}
-
-process_chsh <- function(data, ..., barrier = F){
-  #Extract the circuit data for usual chsh naming convention
-  
-  data %<>% extract_circuit_data(experiment = 1, theta0 = 2, observable = 3)
-  data %<>% filter(experiment == 'CHSH')
-  
+  #Process barrier
   if(barrier){
     data %<>% extract_circuit_data(barrier = 4)
     data %<>% mutate(barrier = ifelse(barrier == 'B', 'With', 'Without'))
     data %<>% group_by(barrier)
   }
   
-  #Numeric theta from string
-  data %<>% left_join(
-    tibble(
-      theta0 = unique(data$theta0),
-      theta = theta0 %>%
-        str_replace('pi','*pi') %>%
-        sapply(function(x) eval(parse(text = x)))
-    ),
-    'theta0'
-  )
   
-  #Whether the result of the measurement is +1 or -1
-  data %<>% mutate(
-    sign = (-1)^(observable %in% c('XZ','XY'))*state_sign(variable)
-  )
-  
-  data %<>% group_by(theta, add = TRUE)
-  
-  return(data)
-}
-
-process_mermin <- function(data, ..., barrier = F){
-  #Extract the circuit data for usual mermin naming convention
-  #TODO: processing barrier repeated
-  
-  data %<>% extract_circuit_data(experiment = 1, observable = 2)
-  data %<>% filter(experiment == 'Mermin')
-  
-  data %<>% mutate(
-    sign = (-1)^(observable == 'XXX')*state_sign(variable)
-  )
-  
-  if(barrier){
-    data %<>% extract_circuit_data(barrier = 3)
-    data %<>% mutate(barrier = ifelse(barrier == 'B', 'With', 'Without'))
-    data %<>% group_by(barrier)
+  #Extract and process information about theta
+  if(parameter){
+    
+    data %<>% extract_circuit_data(theta0 = 2)
+    
+    #Numeric theta from string
+    data %<>% left_join(
+      tibble(
+        theta0 = unique(data$theta0),
+        theta = theta0 %>%
+          str_replace('pi','*pi') %>%
+          sapply(function(x) eval(parse(text = x)))
+      ),
+      'theta0'
+    )
+    
+    data %<>% group_by(theta, add = TRUE)
   }
   
   return(data)
@@ -186,6 +108,89 @@ agg_data <- function(data, print_kable = FALSE){
   return(table)
 }
 
+chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
+  
+  "
+  Process chsh-test data
+  
+  Currently works if:
+    - names of test circuits are CHSH-test_AB(_...),
+      AB = XX, XZ, ZX, ZZ,
+      anything can follow after '_'
+    - the following names of columns are used:
+      - names of circuits: 'circuit'
+      - job ids: 'id'
+      - state names: 'variable'
+      - counts: 'value'
+  The label good=TRUE is assigned to jobs with chsh>2.
+  
+  Output: the data frame with filtered out test circuits and new columns 'chsh' and 'good'.
+  If `filter` only the good jobs are left.
+  
+  If `print` prints how many jobs were selected
+  
+  TO DO: general column names, threshold value, more general tests?
+  TO DO: Plot
+  "
+  
+  #Choose and process the data from chsh test
+  test_data = data %>% process_bell(
+    name = 'CHSH-test',
+    parameter = FALSE,
+    minus_obs = 'XZ',
+    barrier = FALSE
+    )
+  
+  #Calculate the CHSH parameter
+  test_data %<>%
+    group_by(id) %>%
+    agg_data %>%
+    select(-dv, chsh = value) %>%
+    #Good job threshold
+    mutate(good = (abs(chsh)>2))
+  
+  if(print){
+    str_c(
+      'CHSH test. Jobs selected: ',
+      sum(test_data$good),
+      ' out of ',
+      nrow(test_data)
+      ) %>% print
+  }
+  
+  #Return the filtered data frame with test data joined using job id
+  data %<>% 
+    extract_circuit_data(experiment = 1) %>%
+    filter(experiment != 'CHSH-test') %>%
+    left_join(test_data,'id')
+  
+  if(filter){data %<>% filter(good)}
+  
+  return(data)
+}
+
+process_chsh <- function(data, ..., barrier = F){
+  #Extract the circuit data for usual chsh naming convention
+  data %>% process_bell(
+    name = 'CHSH',
+    parameter = T,
+    barrier = barrier,
+    minus_obs = c('XZ', 'XY')
+    )
+}
+
+process_mermin <- function(data, ..., barrier = F){
+  #Extract the circuit data for usual mermin naming convention
+  
+  data %>% process_bell(
+    name = 'Mermin',
+    parameter = FALSE,
+    minus_obs = 'XXX',
+    barrier = barrier
+  )
+
+}
+
 pi_axis <- function(){
   scale_x_continuous(breaks = 0:7*2*pi/8,
                      minor_breaks=waiver(),
@@ -193,25 +198,35 @@ pi_axis <- function(){
   
 }
 
-chsh_plot <- function(data){
-  #Fit and plot a sinusoid (different fits for each group if data is grouped)
+bell_fit_plot <- function(data, experiment){
+  #Fit and plot a function
+  #Different fits for each group if data is grouped
   
+  #Theoretical expected value
+  fun <- switch(experiment,
+                CHSH = function(x) 2*(cos(x)+sin(x)),
+                Mermin = function(x) -4*cos(x))
   data %<>%
-    mutate(chsh = value, delta_chsh = dv, chsh_theory = 2*(cos(theta)+sin(theta)))
+    mutate(theory = fun(theta))
+  
+  #Local realism
+  lr_lims <- switch(experiment,
+                    CHSH = c(-2,2),
+                    Mermin = c(-4, 4))
   
   #Fit
-  eta_df = data %>% do(eta = lm(chsh ~ 0+chsh_theory, data = .) %>% coef) %>%
+  eta_df = data %>% do(eta = lm(value ~ 0+theory, data = .) %>% coef) %>%
     mutate(eta = eta[[1]])
   
   #Plot
-  p = ggplot(data, aes(x = theta, y = chsh))+
-    geom_errorbar(aes(ymin = chsh - delta_chsh, ymax = chsh + delta_chsh),
+  p = ggplot(data, aes(x = theta, y = value))+
+    geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
                   width = 0.03)+
     geom_point(size = 0.05, alpha = 0.5)+
     #annotate('text', label = str_c('eta = ', round(eta,3)),
     #         x = min(data$theta)+0.2, y = 0)+
-    geom_hline(yintercept = c(2,-2),lty=2)+
-    stat_function(fun=function(x) 2*(cos(x)+sin(x)))+
+    geom_hline(yintercept = lr_lims,lty=2)+
+    stat_function(fun=fun)+
     geom_line(data = eta_df %>%
                 mutate(buf = 0) %>%
                 left_join(
@@ -220,7 +235,7 @@ chsh_plot <- function(data){
                     theta = seq(min(data$theta), max(data$theta), 0.05)),
                   'buf'
                   ) %>%
-                mutate(chsh = 2*eta*(cos(theta)+sin(theta))))+
+                mutate(value = fun(theta)))+
     pi_axis()
   
   print(p)
