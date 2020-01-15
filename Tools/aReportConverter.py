@@ -3,16 +3,15 @@
 import sys
 sys.path.append('..\\')
 from methods import report_to_csv
-from consts import JOBS_FILE_NAME, M_JOBS_FILE_NAME
 
 file_result_name = 'jobs_report.csv'
 
 # report_file = JOBS_FILE_NAME  # Default value
 
-report_file = JOBS_FILE_NAME
+report_file = 'raw_jobs_report.csv'
 report_to_csv(file_result_name, report_file=report_file)
 
 file_result_name = 'm_jobs_report.csv'
 
-report_file = M_JOBS_FILE_NAME
+report_file = 'raw_mitigation_jobs_report.csv'
 report_to_csv(file_result_name, report_file=report_file)
