@@ -393,17 +393,18 @@ def get_chsh_circuits():
     bell.ry(np.pi / 4, q[0])
 
     # Circuits to measure q to c in different basis.
-    bases = ['ZZ', 'ZX', 'XX', 'XZ']
+    #bases = ['ZZ', 'ZX', 'XX', 'XZ']
+    bases = ['YY', 'YX', 'XX', 'XY']
 
     chsh_circuits = []
     for b in bases:
         chsh_circuits.append(add_measure_in_base(bell.copy(), b))
 
     # Set circuits names.
-    chsh_circuits[0].name = 'CHSH-test_ZZ'
-    chsh_circuits[1].name = 'CHSH-test_ZX'
+    chsh_circuits[0].name = 'CHSH-test_YY'
+    chsh_circuits[1].name = 'CHSH-test_YX'
     chsh_circuits[2].name = 'CHSH-test_XX'
-    chsh_circuits[3].name = 'CHSH-test_XZ'
+    chsh_circuits[3].name = 'CHSH-test_XY'
 
     return chsh_circuits
 
