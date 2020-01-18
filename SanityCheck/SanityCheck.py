@@ -11,8 +11,11 @@ def get_sc_circuits():
     qr3 = QuantumRegister(3)
     cr3 = ClassicalRegister(3)
 
-    bases_N2 = ['ZZ', 'ZX', 'XX', 'XZ', 'YY', 'YX', 'XY']
-    bases_N3 = {'XXX', 'YYX', 'YXY', 'XYY', 'ZZX', 'ZXZ', 'XZZ'}
+    #bases_N2 = ['ZZ', 'ZX', 'XX', 'XZ', 'YY', 'YX', 'XY']
+    #bases_N3 = {'XXX', 'YYX', 'YXY', 'XYY', 'ZZX', 'ZXZ', 'XZZ'}
+
+    bases_N2 = ['XX', 'YY', 'YX', 'XY']
+    bases_N3 = {}
 
     c1 = QuantumCircuit(qr2, cr2)
     c1.name = "SC_00"
@@ -44,8 +47,8 @@ def get_sc_circuits():
     c6.barrier()
     c6.name = "SC_111_B"
 
-
-    circuits_2d = [c1, c2, c3]
+    #circuits_2d = [c1, c2, c3]
+    circuits_2d = [c1, c3]
     circuits_3d = [c4, c5, c6]
 
     SC_Circuits = []
@@ -60,6 +63,6 @@ def get_sc_circuits():
 
     return SC_Circuits
 
-run_main_loop_with_chsh_test(get_sc_circuits())
+#run_main_loop_with_chsh_test(get_sc_circuits())
 #test_locally(SC_Circuits, use_mapping=True, save_to_file=True, number_of_simulations=100)
 #test_locally_with_noise(SC_Circuits)

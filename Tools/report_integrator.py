@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-desired_date = datetime.strptime('2019-12-20T20:00:00', '%Y-%m-%dT%H:%M:%S')
+desired_date = datetime.strptime('2020-1-13T20:00:00', '%Y-%m-%dT%H:%M:%S')
 
 report = 'ID;Backend;Circuit;Date;Results\n'
 mitigation_report = 'ID;Backend;Circuit;Date;Results\n'
