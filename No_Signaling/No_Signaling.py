@@ -17,6 +17,6 @@ print(f'CHSH_TEST: {len(get_chsh_circuits())}')
 
 print(len(no_signaling_circuits))
 
-#run_main_loop(circuits)
+run_main_loop([no_signaling_circuits])
 #run_main_loop_with_chsh_test(circuits)
 #test_locally(circuits, True, False, 1)
