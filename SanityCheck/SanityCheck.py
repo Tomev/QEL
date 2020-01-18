@@ -48,7 +48,7 @@ def get_sc_circuits():
     c6.name = "SC_111_B"
 
     #circuits_2d = [c1, c2, c3]
-    circuits_2d = [c1, c3]
+    circuits_2d = [c3]
     circuits_3d = [c4, c5, c6]
 
     SC_Circuits = []
