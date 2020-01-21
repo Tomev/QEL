@@ -390,7 +390,8 @@ def get_chsh_circuits():
     bell = QuantumCircuit(q, c)
     bell.h(q[0])
     bell.cx(q[0], q[1])
-    bell.ry(np.pi / 4, q[0])
+    bell.rz(-np.pi / 4, q[0])
+    bell.barrier()
 
     # Circuits to measure q to c in different basis.
     #bases = ['ZZ', 'ZX', 'XX', 'XZ']
