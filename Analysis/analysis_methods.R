@@ -262,6 +262,7 @@ process_signaling <- function(data){
                 dv =sqrt((1-value)*(1+value)/total))
   }) %>% 
     bind_rows(.id = 'qubit') %>%
+    filter(my_base != '') %>%
     mutate(
       index = str_c(qubit, my_base)
     )
