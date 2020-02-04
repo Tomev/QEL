@@ -1,6 +1,6 @@
 # QX Laboratory
 
-This is a project containing our first steps in quantum computing with IBM QE.
+This is a project containing our first steps in quantum computing.
 
 ## Getting Started
 
