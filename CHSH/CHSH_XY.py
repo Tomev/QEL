@@ -55,13 +55,8 @@ def get_chsh_test_circuits():
     bell = create_bell_state()
     bell.rz(-np.pi / 4, chsh_quantum_register[0])
     bell.barrier()
+    bell.name = 'CHSH-test'
     chsh_circuits = add_measurements_in_selected_bases([bell])
-
-    # Set circuits names.
-    chsh_circuits[0].name = 'CHSH-test_YY'
-    chsh_circuits[1].name = 'CHSH-test_YX'
-    chsh_circuits[2].name = 'CHSH-test_XX'
-    chsh_circuits[3].name = 'CHSH-test_XY'
 
     return chsh_circuits
 
@@ -91,18 +86,10 @@ def get_symmetric_chsh_test_circuits():
     bell.rz(np.pi / 8, chsh_quantum_register[0])
     bell.rz(-np.pi / 8, chsh_quantum_register[1])
     bell.barrier()
+    bell.name = 'CHSH-test'
     chsh_circuits = add_measurements_in_selected_bases([bell])
-
-    # Set circuits names.
-    chsh_circuits[0].name = 'CHSH-test_YY'
-    chsh_circuits[1].name = 'CHSH-test_YX'
-    chsh_circuits[2].name = 'CHSH-test_XX'
-    chsh_circuits[3].name = 'CHSH-test_XY'
-
     return chsh_circuits
 
-
-draw_circuit(get_symmetric_chsh_test_circuits()[3])
 
 # run_main_loop(get_chsh_circuits())
 # test_locally(get_chsh_circuits(), use_mapping=True, save_to_file=True, number_of_simulations=1)
