@@ -75,7 +75,7 @@ def run_main_loop(circuits_list):
 
     current_circuits_list_index = 0
 
-    if isinstance(circuits_list[0], list):   # Check if list of circuits of multiple lists of circuits were given
+    if isinstance(circuits_list[0], list):  # Check if list of circuits of multiple lists of circuits were given
         circuits = circuits_list[0]
     else:
         circuits_list = [circuits_list]
@@ -355,7 +355,6 @@ def report_to_csv(csv_file, report_file=consts.JOBS_FILE_NAME, sep=consts.CSV_SE
 
 
 def add_measure_in_base(qc: QuantumCircuit, base: str):
-
     base = ''.join(reversed(base.upper()))
 
     for i in range(len(base)):
@@ -380,34 +379,6 @@ def add_measure_in_base(qc: QuantumCircuit, base: str):
         qc.name = qc.name + "_" + base
 
     return qc
-
-
-def get_chsh_circuits():
-    q = QuantumRegister(2)
-    c = ClassicalRegister(2)
-
-    # Circuit to prepare an entangled state.
-    bell = QuantumCircuit(q, c)
-    bell.h(q[0])
-    bell.cx(q[0], q[1])
-    bell.rz(-np.pi / 4, q[0])
-    bell.barrier()
-
-    # Circuits to measure q to c in different basis.
-    #bases = ['ZZ', 'ZX', 'XX', 'XZ']
-    bases = ['YY', 'YX', 'XX', 'XY']
-
-    chsh_circuits = []
-    for b in bases:
-        chsh_circuits.append(add_measure_in_base(bell.copy(), b))
-
-    # Set circuits names.
-    chsh_circuits[0].name = 'CHSH-test_YY'
-    chsh_circuits[1].name = 'CHSH-test_YX'
-    chsh_circuits[2].name = 'CHSH-test_XX'
-    chsh_circuits[3].name = 'CHSH-test_XY'
-
-    return chsh_circuits
 
 
 def run_main_loop_with_chsh_test(circuits):
@@ -485,7 +456,6 @@ def save_calibration_data(backend_name, data):
 
 
 def get_error_mitigation_filters(job):
-
     if type(job).__name__ == 'AerJob':
         job_creation_date = '-'
         backend_name = consts.CONSIDERED_REMOTE_BACKENDS[0]
