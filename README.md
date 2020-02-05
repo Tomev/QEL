@@ -1,6 +1,6 @@
-# IBM QX Laboratory
+# QX Laboratory
 
-This is a project containing our first steps in quantum computing with IBM QE.
+This is a project containing our first steps in quantum computing.
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ For development and running:
 
 * Python 3.5 or higher
 * qiskit 0.7 python package (currently, as it's evolving fast)
-* IBM QX account (to run jobs remotely)
+* IBM QX account (to run jobs remotely on IBM backends)
 
 ### After download:
 

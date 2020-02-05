@@ -137,7 +137,7 @@ chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
   test_data = data %>% process_bell(
     name = 'CHSH-test',
     parameter = FALSE,
-    minus_obs = 'XZ',
+    minus_obs = c('XZ', 'YY'),
     barrier = FALSE
     )
   
@@ -235,7 +235,7 @@ bell_fit_plot <- function(data, experiment){
                     theta = seq(min(data$theta), max(data$theta), 0.05)),
                   'buf'
                   ) %>%
-                mutate(value = fun(theta)))+
+                mutate(value = eta*fun(theta)))+
     pi_axis()
   
   print(p)
@@ -262,6 +262,7 @@ process_signaling <- function(data){
                 dv =sqrt((1-value)*(1+value)/total))
   }) %>% 
     bind_rows(.id = 'qubit') %>%
+    filter(my_base != '') %>%
     mutate(
       index = str_c(qubit, my_base)
     )
