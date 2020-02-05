@@ -1,22 +1,22 @@
 import sys
+
 sys.path.append('..')
-import CHSH.CHSH_XY as CHSH
-from SanityCheck.SanityCheck import get_sc_circuits
-from Mermin.mermin_test import get_mermin_circuits
-from methods import run_main_loop, run_main_loop_with_chsh_test, test_locally, test_locally_with_noise, get_chsh_circuits
 
-#chsh_circuits = CHSH.get_chsh_circuits(8) + get_chsh_circuits()
-#complementary_circuits = get_mermin_circuits() + get_sc_circuits() + get_chsh_circuits()
-#circuits = [chsh_circuits, complementary_circuits]
+from SanityCheck.SanityCheck import get_sc_n2_circuits, get_sc_n3_circuits
+from Mermin.Mermin import get_mermin_circuits, get_mermin_test_circuits
+from CHSH.CHSH_XY import get_symmetric_chsh_circuits, get_symmetric_chsh_test_circuits
+from methods import run_main_loop, test_locally, test_locally_with_noise
 
-no_signaling_circuits = CHSH.get_chsh_circuits(8) + get_chsh_circuits() + get_sc_circuits()
+chsh_circuits = get_sc_n2_circuits() + get_symmetric_chsh_circuits(8) + get_symmetric_chsh_test_circuits()
+mermin_circuits = get_sc_n3_circuits() + get_mermin_circuits(8) + get_mermin_test_circuits()
 
-print(f'SC: {len(get_sc_circuits())}')
-print(f'CHSH: {len(CHSH.get_chsh_circuits(8))}')
-print(f'CHSH_TEST: {len(get_chsh_circuits())}')
+no_signaling_circuits = [chsh_circuits, mermin_circuits]
 
-print(len(no_signaling_circuits))
+print(f'CHSH Experiment Circuits Length: {len(chsh_circuits)}')
+print(f'Mermin Experiment Circuts Length: {len(mermin_circuits)}')
 
-run_main_loop([no_signaling_circuits])
-#run_main_loop_with_chsh_test(circuits)
-#test_locally(circuits, True, False, 1)
+print(f'No_signaling_experiments num: {len(no_signaling_circuits)}')
+
+run_main_loop(no_signaling_circuits)
+# run_main_loop_with_chsh_test(circuits)
+# test_locally(circuits, True, False, 1)

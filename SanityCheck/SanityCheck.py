@@ -39,7 +39,8 @@ def get_sc_n3_circuits():
     qr3 = QuantumRegister(3)
     cr3 = ClassicalRegister(3)
 
-    bases_n3 = ['XXX', 'YYX', 'YXY', 'XYY', 'ZZX', 'ZXZ', 'XZZ']
+    # bases_n3 = ['XXX', 'YYX', 'YXY', 'XYY', 'ZZX', 'ZXZ', 'XZZ']
+    bases_n3 = ['XXX', 'YYX', 'YXY', 'XYY']
 
     c3 = QuantumCircuit(qr3, cr3)
     c3.name = "SC_000"
