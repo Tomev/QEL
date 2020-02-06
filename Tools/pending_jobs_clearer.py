@@ -4,6 +4,7 @@ sys.path.append('..')
 
 import consts
 from qiskit import IBMQ
+from qiskit.providers.jobstatus import JobStatus
 
 backend = IBMQ.load_account().backends(consts.CONSIDERED_REMOTE_BACKENDS[0])[0]
 
@@ -12,14 +13,21 @@ print(f'Clearing backend {backend}.')
 jobs_to_cancel = []
 
 # This may need to include more statuses.
-jobs_to_cancel.extend(backend.jobs(limit=5, status='QUEUED'))
-jobs_to_cancel.extend(backend.jobs(limit=5, status='RUNNING'))
-jobs_to_cancel.extend(backend.jobs(limit=5, status='QUEUED'))
+jobs_to_cancel.extend(backend.jobs(limit=5, status=JobStatus.QUEUED))
+jobs_to_cancel.extend(backend.jobs(limit=5, status=JobStatus.RUNNING))
 
-print(f'Got {len(jobs_to_cancel)} jobs.\n')
+if len(jobs_to_cancel) == 0:
+    print('No jobs were found. Canceling last 5 jobs.')
+    jobs_to_cancel.extend(backend.jobs(limit=5))
+
+print(f'Got {len(jobs_to_cancel)} jobs to cancel.\n')
 
 for j in jobs_to_cancel:
-    j.cancel()
-    print('CANCELLED')
+    print(j.status())
+    if j.status() != JobStatus.CANCELLED:
+        j.cancel()
+        print('CANCELLED')
+    else:
+        print('Job was already cancelled.')
 
 print('\nClearing finished.')
