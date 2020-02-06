@@ -14,6 +14,7 @@ jobs_to_cancel = []
 # This may need to include more statuses.
 jobs_to_cancel.extend(backend.jobs(limit=5, status='QUEUED'))
 jobs_to_cancel.extend(backend.jobs(limit=5, status='RUNNING'))
+jobs_to_cancel.extend(backend.jobs(limit=5, status='QUEUED'))
 
 print(f'Got {len(jobs_to_cancel)} jobs.\n')
 
