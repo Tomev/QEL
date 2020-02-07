@@ -1,7 +1,7 @@
 # Input your API Token here and remove ".sample" from file's name.
 
 APItoken = 'Your_API_Token'
-report_postfix = ''
+reports_postfix = ''
 
 config = {
     'url': 'https://quantumexperience.ng.bluemix.net/api',
