@@ -13,7 +13,7 @@ def get_n2_calibration_circuits():
     qr2 = QuantumRegister(2)
     cr2 = ClassicalRegister(2)
 
-    calibration_base = 'XX'
+    calibration_base = 'ZZ'
 
     # 00 State
     c1 = QuantumCircuit(qr2, cr2)
@@ -51,7 +51,7 @@ def get_n3_calibration_circuits():
     qr3 = QuantumRegister(3)
     cr3 = ClassicalRegister(3)
 
-    calibration_base = 'XXX'
+    calibration_base = 'ZZZ'
 
     c0 = QuantumCircuit(qr3, cr3)
     c0.name = "Calibration_000"
