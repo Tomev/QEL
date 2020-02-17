@@ -70,7 +70,7 @@ process_bell <- function(data, ..., parameter, name, minus_obs, barrier){
   if(barrier){
     data %<>% extract_circuit_data(barrier = 4)
     data %<>% mutate(barrier = ifelse(barrier == 'B', 'With', 'Without'))
-    data %<>% group_by(barrier)
+    data %<>% group_by(barrier, add = TRUE)
   }
   
   
@@ -254,15 +254,24 @@ bell_fit_plot <- function(data, experiment){
   eta_df = data %>% do(eta = lm(value ~ 0+theory, data = .) %>% coef) %>%
     mutate(eta = eta[[1]])
   
+  eta_df %<>% mutate(
+    legend = do.call(str_c,
+                     c(list('Experimental data'), groups(data), sep = '_')))
+  
+  data %<>% mutate(
+    legend = do.call(str_c,
+                     c(list('Experimental data'), groups(data), sep = '_')))
+  
+  
   #Plot
-  p = ggplot(data, aes(x = theta, y = value))+
+  p = ggplot(data, aes(x = theta, y = value, colour = legend))+
     geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
                   width = 0.03)+
     geom_point(size = 0.05, alpha = 0.5)+
     #annotate('text', label = str_c('eta = ', round(eta,3)),
     #         x = min(data$theta)+0.2, y = 0)+
     geom_hline(yintercept = lr_lims,lty=2)+
-    stat_function(fun=fun)+
+    stat_function(fun=fun, colour = 'black')+
     geom_line(data = eta_df %>%
                 mutate(buf = 0) %>%
                 left_join(
@@ -275,7 +284,7 @@ bell_fit_plot <- function(data, experiment){
     pi_axis()
   
   print(p)
-  return(eta_df %>% knitr::kable())
+  return(eta_df %>% select(-legend) %>% knitr::kable())
   }
 
 process_signaling <- function(data){
@@ -366,7 +375,7 @@ process_sc <- function(data){
     n_qubits = str_length(variable)
   )
   
-  data %<>% group_by(n_qubits, barrier, state)
+  data %<>% group_by(n_qubits, barrier, state, add = TRUE)
   
   return(data)
 }
