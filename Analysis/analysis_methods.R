@@ -41,6 +41,15 @@ extract_circuit_data <- function(data, ..., pattern = '_', circuit_column = 'cir
   return(data)
 }
 
+experiment_groups <- function(data){
+  data %>%
+    extract_circuit_data(exp = 1) %>%
+    select(id, exp, date) %>% distinct %>%
+    mutate(v='X') %>% spread(exp, v) %>%
+    group_by_at(vars(-id, -date)) %>%
+    summarise(n_jobs = n(), start = min(date), end = max(date))
+}
+
 state_sign <- function(v){
   #Assign the measurement result (eigenvalue) to the measured state
   (-1)^str_count(v, '1')
