@@ -117,38 +117,34 @@ agg_data <- function(data, print_kable = FALSE){
   return(table)
 }
 
-chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
-  
+bell_test <- function(data, ...,
+                      print = TRUE, filter = TRUE,
+                      threshold = threshold){
   "
-  Process chsh-test data
+  Process test circuits
   
   Currently works if:
-    - names of test circuits are CHSH-test_AB(_...),
-      AB = XX, XZ, ZX, ZZ,
+    - names of test circuits are test-name_ABC(_...),
+      ABC = XX, XZ, XYY, ... - bases,
       anything can follow after '_'
     - the following names of columns are used:
       - names of circuits: 'circuit'
       - job ids: 'id'
       - state names: 'variable'
       - counts: 'value'
-  The label good=TRUE is assigned to jobs with chsh>2.
+  The label good=TRUE is assigned to jobs with |test value|>threshold.
   
   Output: the data frame with filtered out test circuits and new columns 'chsh' and 'good'.
+  Only jobs for which a given test was performed are left.
   If `filter` only the good jobs are left.
   
   If `print` prints how many jobs were selected
   
-  TO DO: general column names, threshold value, more general tests?
   TO DO: Plot
   "
   
-  #Choose and process the data from chsh test
-  test_data = data %>% process_bell(
-    name = 'CHSH-test',
-    parameter = FALSE,
-    minus_obs = c('XZ', 'YY'),
-    barrier = FALSE
-    )
+  #Select and process the data from chsh test
+  test_data = data %>% process_bell(...)
   
   #Calculate the CHSH parameter
   test_data %<>%
@@ -156,15 +152,15 @@ chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
     agg_data %>%
     select(-dv, chsh = value) %>%
     #Good job threshold
-    mutate(good = (abs(chsh)>2))
+    mutate(good = (abs(chsh)>threshold))
   
   if(print){
     str_c(
-      'CHSH test. Jobs selected: ',
+      'Jobs selected: ',
       sum(test_data$good),
       ' out of ',
       nrow(test_data)
-      ) %>% print
+    ) %>% print
   }
   
   #Return the filtered data frame with test data joined using job id
@@ -176,6 +172,37 @@ chsh_test <- function(data, ..., print = TRUE, filter = TRUE){
   if(filter){data %<>% filter(good)}
   
   return(data)
+  
+}
+
+chsh_test <- function(data,
+                      minus_obs = c('XZ', 'XY'),
+                      ...,
+                      threshold = 2,
+                      print = TRUE, filter = TRUE){
+  
+  bell_test(data,
+    print = print, filter = filter,
+    name = 'CHSH-test',
+    parameter = FALSE,
+    minus_obs = minus_obs,
+    threshold = threshold,
+    barrier = FALSE)
+}
+
+mermin_test <- function(data,
+                      minus_obs = c('XXX'),
+                      ...,
+                      threshold = 2,
+                      print = TRUE, filter = TRUE){
+  
+  bell_test(data,
+            print = print, filter = filter,
+            name = 'Mermin-test',
+            parameter = FALSE,
+            minus_obs = minus_obs,
+            threshold = threshold,
+            barrier = FALSE)
 }
 
 process_chsh <- function(data, ..., barrier = F){
