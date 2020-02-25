@@ -55,6 +55,30 @@ state_sign <- function(v){
   (-1)^str_count(v, '1')
 }
 
+fill_missing_states <- function(data){
+  
+  #TODO: ungrouping?
+  
+  data %>%
+    mutate(nq = str_length(variable)) %>%
+    group_by(nq, add = TRUE) %>%
+    do(
+      full_join(.,
+                full_join(
+                  select(.,-variable,-value) %>% distinct,
+                  tibble(
+                    nq = .$nq[1],
+                    variable = R.utils::intToBin(0:(2 ^ .$nq[1] - 1))
+                  )
+                )
+      )
+    ) %>%
+    ungroup %>% select(-nq) %>%
+    mutate(value = ifelse(is.na(value),0,value))
+  
+  
+}
+
 process_bell <- function(data, ..., parameter, name, minus_obs, barrier){
   
   #Filter experiments
@@ -119,7 +143,7 @@ agg_data <- function(data, print_kable = FALSE){
 
 bell_test <- function(data, ...,
                       print = TRUE, filter = TRUE,
-                      threshold = threshold){
+                      threshold = threshold, message = ''){
   "
   Process test circuits
   
@@ -156,7 +180,8 @@ bell_test <- function(data, ...,
   
   if(print){
     str_c(
-      'Jobs selected: ',
+      message,
+      ' Jobs selected: ',
       sum(test_data$good),
       ' out of ',
       nrow(test_data)
@@ -179,7 +204,7 @@ chsh_test <- function(data,
                       minus_obs = c('XZ', 'XY'),
                       ...,
                       threshold = 2,
-                      print = TRUE, filter = TRUE){
+                      print = TRUE, filter = TRUE, message = ''){
   
   bell_test(data,
     print = print, filter = filter,
@@ -187,14 +212,15 @@ chsh_test <- function(data,
     parameter = FALSE,
     minus_obs = minus_obs,
     threshold = threshold,
-    barrier = FALSE)
+    barrier = FALSE,
+    message = message)
 }
 
 mermin_test <- function(data,
                       minus_obs = c('XXX'),
                       ...,
                       threshold = 2,
-                      print = TRUE, filter = TRUE){
+                      print = TRUE, filter = TRUE, message = ''){
   
   bell_test(data,
             print = print, filter = filter,
@@ -202,7 +228,8 @@ mermin_test <- function(data,
             parameter = FALSE,
             minus_obs = minus_obs,
             threshold = threshold,
-            barrier = FALSE)
+            barrier = FALSE,
+            message = message)
 }
 
 process_chsh <- function(data, ..., barrier = F){
@@ -215,12 +242,12 @@ process_chsh <- function(data, ..., barrier = F){
     )
 }
 
-process_mermin <- function(data, ..., barrier = F){
+process_mermin <- function(data, ..., barrier = F, parameter = FALSE){
   #Extract the circuit data for usual mermin naming convention
   
   data %>% process_bell(
     name = 'Mermin',
-    parameter = FALSE,
+    parameter = parameter,
     minus_obs = 'XXX',
     barrier = barrier
   )
@@ -378,4 +405,43 @@ process_sc <- function(data){
   data %<>% group_by(n_qubits, barrier, state, add = TRUE)
   
   return(data)
+}
+
+
+process_calibration <- function(data){
+  #TODO: grouping? this should be performed before any other process_
+  
+  data %<>% distinct %>%
+    fill_missing_states() %>%
+    extract_circuit_data(experiment = 1)
+  
+  cal_data = data %>% filter(experiment == 'Calibration')
+  #data %<>% filter(experiment != 'Calibration')
+  
+  cal_data %<>% extract_circuit_data(instate = 2)
+    
+  matrices = lapply(
+    unique(cal_data$id),
+    function(i){
+      cal_data %>%
+        filter(id == i) %>%
+        select(instate, variable, value) %>%
+        group_by(instate) %>%
+        mutate(value = value/sum(value)) %>%
+        spread(instate, value, fill = 0) %>%
+        arrange(variable) %>%
+        select(-variable) %>% as.matrix %>% matlib::inv()
+    }
+  ) %>%
+    setNames(unique(cal_data$id))
+  
+  data %>%
+    group_by_at(vars(-variable,-value)) %>%
+    arrange(variable) %>%
+    do(
+      data.frame(
+        variable =.$variable,
+        value = matrices[[.$id[1]]] %*% .$value)
+    )
+  
 }
