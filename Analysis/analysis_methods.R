@@ -439,7 +439,7 @@ process_calibration <- function(data){
     group_by_at(vars(-variable,-value)) %>%
     arrange(variable) %>%
     do(
-      data.frame(
+      tibble(
         variable =.$variable,
         value = matrices[[.$id[1]]] %*% .$value)
     )
