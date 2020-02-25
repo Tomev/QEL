@@ -278,8 +278,10 @@ bell_fit_plot <- function(data, experiment){
                     Mermin = c(-2, 2))
   
   #Fit
-  eta_df = data %>% do(eta = lm(value ~ 0+theory, data = .) %>% coef) %>%
-    mutate(eta = eta[[1]])
+  eta_df = data %>%
+    do(
+      (lm(value ~ 0+theory, data = .) %>% summary)$coefficients %>%
+        as_tibble)
   
   eta_df %<>% mutate(
     legend = do.call(str_c,
@@ -289,29 +291,49 @@ bell_fit_plot <- function(data, experiment){
     legend = do.call(str_c,
                      c(list('Experimental data'), groups(data), sep = '_')))
   
+  plot_data = eta_df %>%
+    mutate(buf = 0) %>%
+    left_join(
+      tibble(
+        buf = 0,
+        theta = seq(min(data$theta), max(data$theta), 0.05)),
+      'buf'
+    ) %>%
+    mutate(
+      value = Estimate*fun(theta),
+      low = (Estimate-`Std. Error`)*fun(theta),
+      high = (Estimate+`Std. Error`)*fun(theta)
+      )
   
   #Plot
   p = ggplot(data, aes(x = theta, y = value, colour = legend))+
     geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
                   width = 0.03)+
-    geom_point(size = 0.05, alpha = 0.5)+
+    geom_point(size = 1, alpha = 0.1)+
     #annotate('text', label = str_c('eta = ', round(eta,3)),
     #         x = min(data$theta)+0.2, y = 0)+
     geom_hline(yintercept = lr_lims,lty=2)+
     stat_function(fun=fun, colour = 'black')+
-    geom_line(data = eta_df %>%
-                mutate(buf = 0) %>%
-                left_join(
-                  tibble(
-                    buf = 0,
-                    theta = seq(min(data$theta), max(data$theta), 0.05)),
-                  'buf'
-                  ) %>%
-                mutate(value = eta*fun(theta)))+
+    geom_line(data = plot_data)+
+    geom_ribbon(data = plot_data,
+                alpha = 0.2, colour = 0,
+                aes(ymin = low, ymax = high, fill = legend))+
     pi_axis()
   
   print(p)
-  return(eta_df %>% select(-legend) %>% knitr::kable())
+  
+  
+  return(
+    data %>%
+      summarise(
+        min = min(value),
+        max = max(value),
+        dv = mean(dv)) %>%
+      mutate_if(is.numeric, round, digits = 5) %>%
+      left_join(eta_df) %>%
+      select(-legend) %>%
+      knitr::kable()
+    )
   }
 
 process_signaling <- function(data){
