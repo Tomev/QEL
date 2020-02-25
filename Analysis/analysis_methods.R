@@ -309,7 +309,7 @@ bell_fit_plot <- function(data, experiment){
   p = ggplot(data, aes(x = theta, y = value, colour = legend))+
     geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
                   width = 0.03)+
-    geom_point(size = 1, alpha = 0.1)+
+    geom_point(alpha = 0.2)+
     #annotate('text', label = str_c('eta = ', round(eta,3)),
     #         x = min(data$theta)+0.2, y = 0)+
     geom_hline(yintercept = lr_lims,lty=2)+
@@ -385,7 +385,7 @@ plot_signaling <- function(data, ...,
       mutate(other_base = other_base %>% str_replace('_','')),
     aes_(x=x, y = quo(value), colour = quo(other_base))
   )+
-    geom_point()+
+    geom_point(alpha = 0.2)+
     geom_errorbar(aes(ymin = value-!!error, ymax = value+!!error), width = 0.1)+
     facet_grid(rows = vars(!!facet_x), cols = vars(!!facet_y), labeller = label_both)
     labs(y = 'Expected value')
