@@ -464,6 +464,7 @@ process_calibration <- function(data){
       tibble(
         variable =.$variable,
         value = matrices[[.$id[1]]] %*% .$value)
-    )
+    ) %>%
+    mutate(value = pmax(value, 0))
   
 }
