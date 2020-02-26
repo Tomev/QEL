@@ -326,6 +326,20 @@ bell_fit_plot <- function(data, experiment){
   
   print(p)
   
+  p = ggplot(
+    data,
+    aes(x = theory, y = value, colour = legend, fill = legend)
+    )+
+    geom_hline(yintercept = lr_lims,lty=2)+
+    geom_hline(yintercept = max_lims,lty=2)+
+    geom_smooth(method = 'lm', formula = y~0+x, alpha = 0.2, size = 0.5)+
+    geom_point(alpha = 0.2)+
+    geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
+                  width = 0.03)+
+    pi_axis()
+  
+  print(p)
+  
   
   return(
     data %>%
