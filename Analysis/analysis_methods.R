@@ -276,6 +276,9 @@ bell_fit_plot <- function(data, experiment){
   lr_lims <- switch(experiment,
                     CHSH = c(-2,2),
                     Mermin = c(-2, 2))
+  max_lims <- switch(experiment,
+                    CHSH = c(-2,2)*sqrt(2),
+                    Mermin = c(-4, 4))
   
   #Fit
   eta_df = data %>%
@@ -307,17 +310,18 @@ bell_fit_plot <- function(data, experiment){
   
   #Plot
   p = ggplot(data, aes(x = theta, y = value, colour = legend))+
-    geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
-                  width = 0.03)+
-    geom_point(alpha = 0.2)+
-    #annotate('text', label = str_c('eta = ', round(eta,3)),
-    #         x = min(data$theta)+0.2, y = 0)+
     geom_hline(yintercept = lr_lims,lty=2)+
+    geom_hline(yintercept = max_lims,lty=2)+
     stat_function(fun=fun, colour = 'black')+
-    geom_line(data = plot_data)+
     geom_ribbon(data = plot_data,
                 alpha = 0.2, colour = 0,
                 aes(ymin = low, ymax = high, fill = legend))+
+    geom_point(alpha = 0.2)+
+    geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
+                  width = 0.03)+
+    #annotate('text', label = str_c('eta = ', round(eta,3)),
+    #         x = min(data$theta)+0.2, y = 0)+
+    geom_line(data = plot_data)+
     pi_axis()
   
   print(p)
