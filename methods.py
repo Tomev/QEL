@@ -52,24 +52,24 @@ def get_backend_name_from_number(backend_index):
     return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
 
 
-def execute_circuits(circuits, backend, use_mapping=False, noise_model=None):
+def execute_circuits(circuits, backend, use_mapping=False, noise_model=None, **kwargs):
     if use_mapping:
         real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
         mapping = real_chip.configuration().coupling_map
         print("Used mapping:")
         print(mapping)
-        return execute(circuits, backend, shots=consts.SHOTS, coupling_map=mapping)
+        return execute(circuits, backend, shots=consts.SHOTS, coupling_map=mapping, **kwargs)
     elif noise_model is not None:
         real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
         mapping = real_chip.configuration().coupling_map
         basis_gates = noise_model.basis_gates
         return execute(circuits, backend, noise_model=noise_model, shots=consts.SHOTS,
-                       basis_gates=basis_gates, coupling_map=mapping)
+                       basis_gates=basis_gates, coupling_map=mapping, **kwargs)
     else:
-        return execute(circuits, backend, shots=consts.SHOTS)
+        return execute(circuits, backend, shots=consts.SHOTS, **kwargs)
 
 
-def run_main_loop(circuits_list):
+def run_main_loop(circuits_list, **kwargs):
     current_backend_index = 0
     wait_time_in_minutes = 5
 
@@ -119,7 +119,7 @@ def run_main_loop(circuits_list):
 
             print("Executing quantum program on %s." % backend_name)
 
-            job = execute_circuits(circuits, get_backend_from_name(backend_name))
+            job = execute_circuits(circuits, get_backend_from_name(backend_name), **kwargs)
 
             while job.status() == JobStatus.INITIALIZING:
                 print(job.status())
@@ -499,6 +499,7 @@ def draw_circuit(circuit, file_name='my_circuit.png'):
     circuit.draw(output='mpl', filename=file_name)
 
 
-IBMQ.save_account(Qconfig.APItoken, overwrite=True)
-acc = IBMQ.load_account()
-acc.credentials
+# IBMQ.save_account(Qconfig.APItoken, overwrite=True)
+# acc = IBMQ.load_account()
+# acc.credentials
+acc = IBMQ.enable_account(Qconfig.APItoken)
