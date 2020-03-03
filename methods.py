@@ -1,5 +1,5 @@
 from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
-from qiskit.providers.aer import noise
+from qiskit.providers.aer.noise import NoiseModel
 from qiskit.providers.ibmq.job.ibmqjob import IBMQJob, JobStatus
 from IBMQuantumExperience import IBMQuantumExperience
 import numpy as np
@@ -169,14 +169,14 @@ def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simu
         print("Report saved!")
     else:
         for circuit in circuits:
-            executed_job = execute_circuits(circuits, backend, use_mapping)
+            executed_job = execute_circuits(circuit, backend, use_mapping)
             print(circuit.name)
             print(executed_job.result().get_counts(circuit))
 
 
 def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
     properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
-    noise_model = noise.device.basic_device_noise_model(properties)
+    noise_model = NoiseModel.from_backend(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
 
@@ -195,14 +195,14 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
         print("Report saved!")
     else:
         for circuit in circuits:
-            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            executed_job = execute_circuits(circuit, backend, noise_model=noise_model)
             print(circuit.name)
             print(executed_job.result().get_counts(circuit))
 
 
 def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_simulations=1):
     properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
-    noise_model = noise.device.basic_device_noise_model(properties)
+    noise_model = NoiseModel.from_backend(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
 
@@ -220,7 +220,7 @@ def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_s
             print(f'Simulation {i + 1} done.')
 
             for circuit in circuits:
-                executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+                executed_job = execute_circuits(circuit, backend, noise_model=noise_model)
                 print(circuit.name)
                 raw_counts = executed_job.result().get_counts(circuit)
 
@@ -243,7 +243,7 @@ def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_s
         print("Report saved!")
     else:
         for circuit in circuits:
-            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            executed_job = execute_circuits(circuit, backend, noise_model=noise_model)
             error_mitigation_filters = get_error_mitigation_filters(executed_job)
             print(circuit.name)
             raw_counts = executed_job.result().get_counts(circuit)
@@ -464,7 +464,7 @@ def get_error_mitigation_filters(job):
         backend_name = job.backend().name()
 
     properties = get_backend_from_name(backend_name).properties(job_creation_date)
-    noise_model = noise.device.basic_device_noise_model(properties)
+    noise_model = NoiseModel.from_backend(properties)
     filters = dict()
 
     qubits_lists = []

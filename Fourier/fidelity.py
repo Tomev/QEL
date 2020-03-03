@@ -1,9 +1,7 @@
 import sys
 sys.path.append('..')
 from qiskit import IBMQ, QuantumCircuit
-from Qconfig import APItoken
-import methods
-from methods import run_main_loop
+from methods import run_main_loop, test_locally, test_locally_with_noise
 
 
 def main():
@@ -24,7 +22,11 @@ def main():
         # run_main_loop([circuit], job_name="F3X_fidelity_computational_base_{:03b}".format(state))
         circuits.append(circuit)
 
-    run_main_loop(circuits, job_name="F3X_fidelity_computational_base_all")
+    # run_main_loop(circuits, job_name="F3X_fidelity_computational_base_all")
+
+    # test_locally(circuits)
+
+    test_locally_with_noise(circuits)
 
 
 def prepend_x(circuit, qubit):
