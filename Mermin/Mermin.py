@@ -8,10 +8,8 @@ import numpy as np
 mermin_quantum_register = QuantumRegister(3)
 c3 = ClassicalRegister(3)
 selected_mermin_bases = ['XXX', 'YYX', 'YXY', 'XYY']
-topology_qubits_order = [1, 0, 2]  # For T topology, like QX London
-
-
-# topology_qubits_order = [0, 1, 2]      # For star topology, like QX2
+#topology_qubits_order = [1, 0, 2]  # For T topology, like QX London
+topology_qubits_order = [0, 1, 2]      # For star topology, like QX2
 
 
 def create_ghz_state():
