@@ -1,9 +1,9 @@
 from Qconfig import reports_postfix
 
 SHOTS = 8192  # Standard was 1024
-#CONSIDERED_REMOTE_BACKENDS = ['ibmqx2']
+CONSIDERED_REMOTE_BACKENDS = ['ibmqx2']
 #CONSIDERED_REMOTE_BACKENDS = ['ibmq_ourense']
-CONSIDERED_REMOTE_BACKENDS = ['ibmq_london']
+#CONSIDERED_REMOTE_BACKENDS = ['ibmq_london']
 #CONSIDERED_REMOTE_BACKENDS = ['ibmq_vigo']
 ITERATIONS_NUMBER = 1000
 
