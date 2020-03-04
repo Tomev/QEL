@@ -5,6 +5,8 @@ from Qconfig import APItoken
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
+from run_fidelity_circuits import get_circuits
+from methods import test_locally_with_noise, get_backend_from_name
 
 
 n = 3
@@ -34,12 +36,17 @@ def make_array(jobs):
 
 
 def main():
-    acc = IBMQ.enable_account(APItoken)
-    backend = acc.get_backend(backend_name)
+    backend = get_backend_from_name(backend_name)
+
     job = backend.jobs(job_name="{}_all".format(job_base_name))[0]
-    jobs = [backend.jobs(job_name="{}_{:03b}".format(job_base_name, i))[0] for i in range(8)]
-    # array = make_array([job])
-    array = make_array(jobs)
+    array = make_array([job])
+
+    # jobs = [backend.jobs(job_name="{}_{:03b}".format(job_base_name, i))[0] for i in range(8)]
+    # array = make_array(jobs)
+
+    # WARNING: this takes the backend from consts.CONSIDERED_REMOTE_BACKENDS
+    # jobs = test_locally_with_noise(get_circuits())
+    # array = make_array(jobs)
 
     figure, axis = plt.subplots()
     set_axes(axis)

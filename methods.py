@@ -180,11 +180,14 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
 
     backend = get_sim_backend_from_name("qasm_simulator")
 
+    jobs = []
+
     if save_to_file:
         simulation_report_content = consts.JOBS_REPORT_HEADER
 
         for i in range(number_of_simulations):
             executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            jobs.append(executed_job)
             simulation_report_content += parse_job_to_report_string(executed_job)
             print(f'Simulation {i + 1} done.')
 
@@ -196,8 +199,11 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
     else:
         for circuit in circuits:
             executed_job = execute_circuits(circuit, backend, noise_model=noise_model)
+            jobs.append(executed_job)
             print(circuit.name)
             print(executed_job.result().get_counts(circuit))
+
+    return jobs
 
 
 def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_simulations=1):
