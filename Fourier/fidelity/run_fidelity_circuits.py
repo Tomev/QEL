@@ -1,11 +1,11 @@
 import sys
-sys.path.append('..')
+sys.path.append('../..')
 from qiskit import IBMQ, QuantumCircuit
 from methods import run_main_loop, test_locally, test_locally_with_noise
 
 
 def main():
-    fourier_circuit = QuantumCircuit.from_qasm_file('circuits/F3X.txt')
+    fourier_circuit = QuantumCircuit.from_qasm_file('../circuits/F3X.txt')
     fourier_circuit.data = fourier_circuit.data[:-3]
     inverted_fourier_circuit = fourier_circuit.inverse()
     fourier_circuit.barrier()
@@ -19,14 +19,14 @@ def main():
         for i in range(3):
             if state & (1 << i):
                 prepend_x(circuit, i)
-        # run_main_loop([circuit], job_name="F3X_fidelity_computational_base_{:03b}".format(state))
+        run_main_loop([circuit], job_name="F3X_fidelity_computational_base_{:03b}".format(state))
         circuits.append(circuit)
 
     # run_main_loop(circuits, job_name="F3X_fidelity_computational_base_all")
 
     # test_locally(circuits)
 
-    test_locally_with_noise(circuits)
+    # test_locally_with_noise(circuits)
 
 
 def prepend_x(circuit, qubit):
