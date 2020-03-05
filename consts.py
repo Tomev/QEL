@@ -9,7 +9,7 @@ ITERATIONS_NUMBER = 1000
 
 # Job gatherer
 CSV_SEPARATOR = ';'
-JOBS_DOWNLOAD_LIMIT = 500
+JOBS_DOWNLOAD_LIMIT = 100
 MAX_JOBS_SINGLE_DOWNLOAD_NUM = 10  # 10 is max.
 JOBS_REPORT_HEADER = 'ID;Backend;Circuit;Date;Results\n'
 JOBS_FILE_NAME = f"raw_jobs_report_{reports_postfix}.csv"
