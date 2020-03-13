@@ -13,6 +13,7 @@ n = 3
 shots = 8192
 backend_name = 'ibmqx2'
 job_base_name = "F3X_fidelity_computational_base"
+logical_to_physical = [0, 1, 2]
 
 
 def set_axes(axis):
@@ -21,17 +22,25 @@ def set_axes(axis):
         ax.set_major_formatter(StrMethodFormatter("{{x:0{}b}}".format(n)))
 
 
+def permute(x):
+    y = 0
+    for i in range(n):
+        if x & (1 << i):
+            y += 1 << (logical_to_physical[i])
+    return y
+
+
 def make_array(jobs):
     dict_key_format = "{{:0{}b}}".format(n)
     counts = []
     if len(jobs) == 1:
         result = jobs[0].result()
         for i in range(2 ** n):
-            counts.append([result.get_counts(experiment=i)[dict_key_format.format(j)] for j in range(2 ** n)])
+            counts.append([result.get_counts(experiment=i)[dict_key_format.format(permute(j))] for j in range(2 ** n)])
     else:
         results = [job.result() for job in jobs]
         for result in results:
-            counts.append([result.get_counts()[dict_key_format.format(j)] for j in range(2 ** n)])
+            counts.append([result.get_counts()[dict_key_format.format(permute(j))] for j in range(2 ** n)])
     return np.array(counts)
 
 
