@@ -1,8 +1,5 @@
 from qiskit import QuantumCircuit, QuantumRegister, transpile, ClassicalRegister
 from qiskit.extensions import CnotGate
-import sys
-sys.path.append('..')
-from QEL.Qconfig import APItoken
 import numpy as np
 from itertools import permutations
 
@@ -28,7 +25,7 @@ def print_transpilations(qc, arch=None, initial_layout=None):
         for o in range(4):
             qct = transpile(qc, basis_gates=basis_gates, optimization_level=o,
                             coupling_map=coupling_maps[arch], initial_layout=layout)
-            n_cx = sum(1 for _ in filter(lambda g: g[0].__class__ == CnotGate, qct.data))
+            n_cx = sum(1 for _ in filter(lambda g: isinstance(g[0], CnotGate), qct.data))
             if optimal is None or n_cx < optimal:
                 optimals = [(qct, layout, o)]
                 optimal = n_cx
@@ -40,17 +37,31 @@ def print_transpilations(qc, arch=None, initial_layout=None):
         print("Source:\n{0}".format(qct.qasm()))
 
 
-def fourier_circuit(n):
-    qr = QuantumRegister(n)
-    cr = ClassicalRegister(n)
-    qc = QuantumCircuit(qr, cr)
+def fourier_circuit(n, measure=True, regs=None):
+    """
+    regs must be a list(Register) or None. If regs is not None the total number of qubits in the registers in regs
+    has to exceed n; first n qubits from the registers will be used for the transform. If measure is True, the same
+    holds for classical bits
+    """
+    if regs is None:
+        qc = QuantumCircuit(n, n)
+    elif all((isinstance(reg, QuantumRegister) or isinstance(reg, ClassicalRegister) for reg in regs)):
+        qc = QuantumCircuit(*regs)
+        if len(qc.qubits) < n:
+            raise ValueError("Too few qubits in the registers")
+        if measure and len(qc.clbits) < n:
+            raise ValueError("Too few classical bits in the registers")
+    else:
+        raise ValueError("Invalid registers")
+
     for i in range(n):
-        qc.h(qr[i])
+        qc.h(i)
         pw = 1
         for j in range(i + 1, n):
             pw *= 2
-            qc.cu1(np.pi / pw, qr[j], qr[i])
-    qc.measure(qr, cr)
+            qc.cu1(np.pi / pw, j, i)
+    if measure:
+        qc.measure(range(n), range(n))
     return qc
 
 
