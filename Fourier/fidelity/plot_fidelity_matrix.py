@@ -50,7 +50,8 @@ def main():
     job = backend.jobs(job_name="{}_all".format(job_base_name))[0]
     array = make_array([job])
 
-    # jobs = [backend.jobs(job_name="{}_{:03b}".format(job_base_name, i))[0] for i in range(8)]
+    # job_name_format = "{{}}_{{:0{}b}}".format(n)
+    # jobs = [backend.jobs(job_name=job_name_format.format(job_base_name, i))[0] for i in range(8)]
     # array = make_array(jobs)
 
     # WARNING: this takes the backend from consts.CONSIDERED_REMOTE_BACKENDS
