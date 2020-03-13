@@ -1,12 +1,12 @@
 import sys
 sys.path.append('../..')
-from Fourier.fourier import fourier_circuit
+from Fourier.fourier import fourier_circuit, print_transpilations
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions import U1Gate
 import numpy as np
 
 
-gate = U1Gate(2 * np.pi * (1 / 8 + 1 / 16 + 1 / 4 + 1 / 128))
+gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8))
 
 
 def phase_estimation_circuit(num_approximation_bits, gate, initial_amplitudes=None, min_success_probability=None):
@@ -44,7 +44,8 @@ def phase_estimation_circuit(num_approximation_bits, gate, initial_amplitudes=No
 
 
 def main():
-    print(phase_estimation_circuit(7, gate, min_success_probability=0.5, initial_amplitudes=[([0], [0, 1])]))
+    circuit = phase_estimation_circuit(3, gate, initial_amplitudes=[([0], [0, 1])])
+    print_transpilations(circuit, arch='T')
 
 
 if __name__ == '__main__':
