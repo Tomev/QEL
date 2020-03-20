@@ -91,6 +91,8 @@ def run_main_loop(circuits_list, **kwargs):
     iterations_done = int(line)
     file.close()
 
+    jobs = []
+
     while iterations_done < consts.ITERATIONS_NUMBER:
 
         print(f'Iteration number: {iterations_done}')
@@ -120,6 +122,7 @@ def run_main_loop(circuits_list, **kwargs):
             print("Executing quantum program on %s." % backend_name)
 
             job = execute_circuits(circuits, get_backend_from_name(backend_name), **kwargs)
+            jobs.append(job)
 
             while job.status() == JobStatus.INITIALIZING:
                 print(job.status())
@@ -145,6 +148,8 @@ def run_main_loop(circuits_list, **kwargs):
 
     reset_jobs_counter()
 
+    return jobs
+
 
 def reset_jobs_counter():
     if os.path.isfile(os.path.join(os.path.dirname(__file__), 'current_iteration_holder.txt')):
@@ -154,11 +159,14 @@ def reset_jobs_counter():
 def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simulations=1):
     backend = get_sim_backend_from_name("qasm_simulator")
 
+    jobs = []
+
     if save_to_file:
         simulation_report_content = consts.JOBS_REPORT_HEADER
 
         for i in range(number_of_simulations):
             executed_job = execute_circuits(circuits, backend, use_mapping)
+            jobs.append(executed_job)
             simulation_report_content += parse_job_to_report_string(executed_job)
             print(f'Simulation {i + 1} done.')
 
@@ -170,8 +178,11 @@ def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simu
     else:
         for circuit in circuits:
             executed_job = execute_circuits(circuit, backend, use_mapping)
+            jobs.append(executed_job)
             print(circuit.name)
             print(executed_job.result().get_counts(circuit))
+
+    return jobs
 
 
 def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
@@ -388,7 +399,7 @@ def add_measure_in_base(qc: QuantumCircuit, base: str):
 
 
 def run_main_loop_with_chsh_test(circuits):
-    run_main_loop(circuits + get_chsh_circuits())
+    return run_main_loop(circuits + get_chsh_circuits())
 
 
 def create_circuit_from_qasm(qasm_file_path):
