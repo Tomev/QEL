@@ -9,30 +9,49 @@ source('analysis_methods.R')
 ```
 
 ```{r}
-data = read_csv('C:/Users/ala/Downloads/no_signaling (1).csv')
+data = str_c ('jobs_report (',1:2,').csv')  %>% lapply(read_csv) %>% bind_rows %>% distinct
 data %>% print_basic_info
-
-data %<>% chsh_test
+data1 = str_c ('m_jobs_report (',1:2,').csv')  %>% lapply(read_csv) %>% bind_rows %>% distinct
+data2 = data %>% process_calibration()
 ```
 
+# 2 QUBITS
 
-## Mermin
+
+## CHSH test
 
 ```{r}
-mermin = data %>% process_mermin(barrier = TRUE)
-
-mermin %>% agg_data(print_kable = TRUE)
-
-mermin_signaling = mermin %>% process_signaling
-mermin_signaling %>%
-  plot_signaling(facet_y = quo(barrier)) %>% plyr::l_ply(print)
+chsh = bind_rows(
+  raw = data %>% chsh_test(message = 'No mitigation:'),
+  mitigated = data1 %>% chsh_test(message = 'After mitigation:'),
+  calibrated = data2 %>% chsh_test(message = 'Manual calibration:'),
+  .id = 'mit')
+chsh %<>%
+  mutate(mit = factor(mit,
+                      levels = c('raw', 'mitigated', 'calibrated'))) %>%
+  group_by(mit)
 ```
+
+
+## Sanity check
+
+
+```{r}
+sc_signaling = chsh %>% process_sc %>% process_signaling
+
+sc_signaling %>%
+  plot_signaling(facet_y = quo(mit), facet_x = quo(state)) %>%
+    plyr::l_ply(print)
+```
+
 
 
 ## CHSH
 
+
+
 ```{r}
-chsh = data %>% process_chsh(barrier = TRUE)
+chsh %<>% process_chsh(barrier = FALSE)
 
 chsh %>% agg_data %>% bell_fit_plot('CHSH')
 
@@ -45,7 +64,8 @@ plyr::l_ply(chsh_signaling$qubit %>% unique, function(i){
   plot_signaling(
     x = quo(theta),
     facet_x = quo(my_base),
-    facet_y = quo(barrier)) %>%
+    facet_y = quo(mit)
+    ) %>%
     
     plyr::l_ply(function(p){
       print(
@@ -56,18 +76,63 @@ plyr::l_ply(chsh_signaling$qubit %>% unique, function(i){
 ```
 
 
-## Sanity check
+# 3 QUBITS
+
+
+## Mermin test
 
 ```{r}
-sc = data %>% process_sc
-
-sc_signaling = sc %>% process_signaling
-
-for(n in sc$n_qubits %>% unique){
-  print(str_c('number of qubits: ',n))
-  sc_signaling %>% filter(n_qubits == n) %>%
-  plot_signaling(facet_y = quo(barrier), facet_x = quo(state)) %>%
-    plyr::l_ply(print)
-}
-
+mermin = bind_rows(
+  raw = data %>% mermin_test(message = 'No mitigation:'),
+  mitigated = data1 %>% mermin_test(message = 'After mitigation:'),
+  calibrated = data2 %>% mermin_test(message = 'Manual calibration:'),
+  .id = 'mit')
+mermin %<>%
+  mutate(mit = factor(mit,
+                      levels = c('raw', 'mitigated', 'calibrated'))) %>%
+  group_by(mit)
 ```
+
+
+## Sanity check
+
+
+```{r}
+sc_signaling = mermin %>% process_sc %>% process_signaling
+
+sc_signaling %>%
+  plot_signaling(facet_y = quo(mit), facet_x = quo(state)) %>%
+    plyr::l_ply(print)
+```
+
+
+
+## Mermin
+
+
+
+```{r}
+mermin %<>% process_mermin(barrier = FALSE, parameter = TRUE)
+
+mermin %>% agg_data %>% bell_fit_plot('Mermin')
+
+mermin_signaling = mermin %>% process_signaling
+
+plyr::l_ply(mermin_signaling$qubit %>% unique, function(i){
+  
+  mermin_signaling %>%
+  filter(qubit == i) %>%
+  plot_signaling(
+    x = quo(theta),
+    facet_x = quo(my_base),
+    facet_y = quo(mit)
+    ) %>%
+    
+    plyr::l_ply(function(p){
+      print(
+        p+pi_axis()+ggtitle(str_c('Nr of qubit: ', i))
+        )})
+  
+})
+```
+
