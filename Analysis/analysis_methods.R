@@ -283,19 +283,28 @@ bell_fit_plot <- function(data, experiment){
   #Fit
   eta_df = data %>%
     do(
-      (lm(value ~ 0+theory, data = .) %>% summary)$coefficients %>%
+      (nls(value ~ eta*fun(theta+delta),
+           start = list(eta=1, delta=0),
+           data = .) %>%
+             summary)$coefficients %>%
+        as.data.frame() %>%
+        rownames_to_column('parameter') %>%
         as_tibble)
-  
-  eta_df %<>% mutate(
-    legend = do.call(str_c,
-                     c(list('Experimental data'), groups(data), sep = '_')))
-  
+    
   data %<>% mutate(
     legend = do.call(str_c,
                      c(list('Experimental data'), groups(data), sep = '_')))
   
   plot_data = eta_df %>%
-    mutate(buf = 0) %>%
+    select(-`t value`, -`Pr(>|t|)`, -`Std. Error`) %>%
+    spread(parameter, Estimate) %>%
+    mutate(
+      legend = do.call(
+        str_c,
+        c(list('Experimental data'), groups(data), sep = '_')
+        ),
+      buf = 0
+    ) %>%
     left_join(
       tibble(
         buf = 0,
@@ -303,9 +312,7 @@ bell_fit_plot <- function(data, experiment){
       'buf'
     ) %>%
     mutate(
-      value = Estimate*fun(theta),
-      low = (Estimate-`Std. Error`)*fun(theta),
-      high = (Estimate+`Std. Error`)*fun(theta)
+      value = eta*fun(theta+delta)
       )
   
   #Plot
@@ -313,29 +320,13 @@ bell_fit_plot <- function(data, experiment){
     geom_hline(yintercept = lr_lims,lty=2)+
     geom_hline(yintercept = max_lims,lty=2)+
     stat_function(fun=fun, colour = 'black')+
-    geom_ribbon(data = plot_data,
-                alpha = 0.2, colour = 0,
-                aes(ymin = low, ymax = high, fill = legend))+
+    geom_line(data = plot_data, aes(colour = legend))+
     geom_point(alpha = 0.2)+
     geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
                   width = 0.03)+
     #annotate('text', label = str_c('eta = ', round(eta,3)),
     #         x = min(data$theta)+0.2, y = 0)+
     geom_line(data = plot_data)+
-    pi_axis()
-  
-  print(p)
-  
-  p = ggplot(
-    data,
-    aes(x = theory, y = value, colour = legend, fill = legend)
-    )+
-    geom_hline(yintercept = lr_lims,lty=2)+
-    geom_hline(yintercept = max_lims,lty=2)+
-    geom_smooth(method = 'lm', formula = y~0+x, alpha = 0.2, size = 0.5)+
-    geom_point(alpha = 0.2)+
-    geom_errorbar(aes(ymin = value - dv, ymax = value + dv),
-                  width = 0.03)+
     pi_axis()
   
   print(p)
@@ -349,7 +340,6 @@ bell_fit_plot <- function(data, experiment){
         dv = mean(dv)) %>%
       mutate_if(is.numeric, round, digits = 5) %>%
       left_join(eta_df) %>%
-      select(-legend) %>%
       knitr::kable()
     )
   }
