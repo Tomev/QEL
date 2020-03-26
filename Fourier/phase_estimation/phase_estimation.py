@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../..')
-from Fourier.fourier import fourier_circuit, print_transpilations
+from Fourier.fourier import fourier_circuit, get_transpilations
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit.extensions import U1Gate
 import numpy as np
@@ -63,6 +63,8 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
         circuit = phase_estimation_iteration_circuit(current_estimated_bit_numbers, gate,
                                                      less_significant_bits=estimated_bits,
                                                      initial_amplitudes=initial_amplitudes)
+        circuit = get_transpilations(circuit, arch='T')[0][0]
+
         job = job_function(circuit)
         result = job.result()
 
@@ -77,7 +79,7 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
 
 def main():
     # circuit = phase_estimation_circuit(3, u1_gate, initial_amplitudes=[([0], [0, 1])])
-    # print_transpilations(circuit, arch='T')
+    # get_transpilations(circuit, arch='T')
 
     # from methods import test_locally
     # print(QuantumCircuit.from_qasm_file('../circuits/P3T_1.txt'))

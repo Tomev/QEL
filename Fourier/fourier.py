@@ -14,10 +14,11 @@ coupling_maps = {
 }
 
 
-def print_transpilations(qc, arch=None, initial_layout=None):
-    print("High level circuit:")
-    print(qc.draw())
-    print(qc.qasm())
+def n_cnots(circuit):
+    return sum(1 for g in circuit.data if isinstance(g[0], CnotGate))
+
+
+def get_transpilations(qc, arch=None, initial_layout=None):
     optimals = []
     optimal = None
     layouts = permutations(range(qc.n_qubits)) if initial_layout is None else [initial_layout]
@@ -25,16 +26,14 @@ def print_transpilations(qc, arch=None, initial_layout=None):
         for o in range(4):
             qct = transpile(qc, basis_gates=basis_gates, optimization_level=o,
                             coupling_map=coupling_maps[arch], initial_layout=layout)
-            n_cx = sum(1 for _ in filter(lambda g: isinstance(g[0], CnotGate), qct.data))
+            n_cx = n_cnots(qct)
             if optimal is None or n_cx < optimal:
                 optimals = [(qct, layout, o)]
                 optimal = n_cx
             elif n_cx == optimal:
                 optimals.append((qct, layout, o))
-    print("Minimal number of cx operations: {0}".format(optimal))
-    for (qct, layout, o) in optimals:
-        print("Layout: {0}, optimization: {1}, circuit:\n{2}".format(layout, o, qct.draw()))
-        print("Source:\n{0}".format(qct.qasm()))
+
+    return optimals
 
 
 def fourier_circuit(n, measure=True, regs=None):
@@ -66,7 +65,19 @@ def fourier_circuit(n, measure=True, regs=None):
 
 
 def main():
-    print_transpilations(fourier_circuit(4), arch='X')
+    qc = fourier_circuit(4)
+
+    print("High level circuit:")
+    print(qc.draw())
+    print(qc.qasm())
+
+    optimals = get_transpilations(qc, arch='X')
+
+    print("Minimal number of cx operations: {0}".format(n_cnots(optimals[0][0])))
+
+    for (qct, layout, o) in optimals:
+        print("Layout: {0}, optimization: {1}, circuit:\n{2}".format(layout, o, qct.draw()))
+        print("Source:\n{0}".format(qct.qasm()))
 
 
 if __name__ == '__main__':
