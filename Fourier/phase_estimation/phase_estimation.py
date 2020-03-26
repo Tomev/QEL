@@ -48,7 +48,7 @@ def phase_estimation_iteration_circuit(estimated_bits, gate, less_significant_bi
 
 
 def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initial_amplitudes=None,
-                               min_success_probability=None, t=1):
+                               min_success_probability=None, t=1, description=""):
     if min_success_probability is not None:
         num_estimated_bits = num_approximation_bits + int(np.ceil(np.log2(2 + 1 / (2 * (1 - min_success_probability)))))
     else:
@@ -65,7 +65,9 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
                                                      initial_amplitudes=initial_amplitudes)
         circuit = get_transpilations(circuit, arch='T')[0][0]
 
-        job = job_function(circuit)
+        job = job_function(circuit,
+                           job_name="ph_est_{}_n={}_t={}_{}".format(description, num_approximation_bits, t,
+                                                                              current_estimated_bit_numbers))
         result = job.result()
 
         current_estimated_bits_str = max(result.get_counts(), key=result.get_counts().get)
@@ -85,12 +87,13 @@ def main():
     # print(QuantumCircuit.from_qasm_file('../circuits/P3T_1.txt'))
 
     # from methods import test_locally
-    # print(estimate_phase_iteratively(4, u1_gate, lambda circuit: test_locally([circuit])[0],
+    # print(estimate_phase_iteratively(4, u1_gate, lambda circuit, job_name: test_locally([circuit])[0],
     #                                  initial_amplitudes=[([0], [0, 1])], t=2))
 
     from methods import run_main_loop
-    print(estimate_phase_iteratively(4, u1_gate, lambda circuit: run_main_loop([circuit])[0],
-                                     initial_amplitudes=[([0], [0, 1])], t=2))
+    print(estimate_phase_iteratively(4, u1_gate,
+                                     lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0],
+                                     initial_amplitudes=[([0], [0, 1])], t=2, description="1011"))
 
 
 if __name__ == '__main__':
