@@ -6,72 +6,49 @@ from qiskit.extensions import U1Gate
 import numpy as np
 
 
-u1_gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8))
+u1_gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8 + 1 / 16))
 
 
-def phase_estimation_circuit(num_approximation_bits, gate, initial_amplitudes=None, min_success_probability=None):
-    if min_success_probability is not None:
-        num_approximation_qubits = num_approximation_bits +\
-                                   int(np.ceil(np.log2(2 + 1 / (2 * (1 - min_success_probability)))))
-    else:
-        num_approximation_qubits = num_approximation_bits
+def phase_estimation_circuit(num_approximation_bits, gate, initial_amplitudes=None):
+    return phase_estimation_iteration_circuit(range(num_approximation_bits), gate,
+                                              initial_amplitudes=initial_amplitudes)
 
-    n = num_approximation_qubits + gate.num_qubits
+
+def phase_estimation_iteration_circuit(estimated_bits, gate, less_significant_bits=None, initial_amplitudes=None):
+    n_estimated_bits = len(estimated_bits)
+    n = n_estimated_bits + gate.num_qubits
     qr = QuantumRegister(n)
-    cr = ClassicalRegister(num_approximation_bits)
+    cr = ClassicalRegister(n_estimated_bits)
     qc = QuantumCircuit(qr, cr)
 
     if initial_amplitudes is not None:
         for qubits, amplitudes in initial_amplitudes:
-            qc.initialize(amplitudes, [qr[idx + num_approximation_qubits] for idx in qubits])
+            qc.initialize(amplitudes, [qr[n_estimated_bits + idx] for idx in qubits])
 
-    for i in range(num_approximation_qubits):
+    for i in range(n_estimated_bits):
         qc.h(qr[i])
 
-    pw = 1
-    for i in range(num_approximation_qubits):
-        cgate = gate.power(pw).control()
+    for i, bit in enumerate(estimated_bits):
+        cgate = gate.power(1 << bit).control()
         qc.append(cgate, [qr[i]] + qr[-gate.num_qubits:])
-        pw *= 2
-
-    inv_fourier_circuit = fourier_circuit(num_approximation_qubits, regs=[qr, cr], measure=False)
-    inv_fourier_circuit = inv_fourier_circuit.inverse()
-    qc.extend(inv_fourier_circuit)
-
-    qc.measure(qr[:num_approximation_bits], cr)
-
-    return qc
-
-
-def phase_estimation_iteration_circuit(estimated_bit, gate, less_significant_bits=None, initial_amplitudes=None):
-    n = gate.num_qubits + 1
-    qr = QuantumRegister(n)
-    cr = ClassicalRegister(1)
-    qc = QuantumCircuit(qr, cr)
-
-    if initial_amplitudes is not None:
-        for qubits, amplitudes in initial_amplitudes:
-            qc.initialize(amplitudes, [qr[idx + 1] for idx in qubits])
-
-    qc.h(qr[0])
-
-    cgate = gate.power(2 ** estimated_bit).control()
-    qc.append(cgate, [qr[0]] + [qr[-gate.num_qubits]])
 
     if less_significant_bits:
         # convert a list of bits to a number
         less_significant_phase = int(''.join(map(str, less_significant_bits)), 2) / (1 << len(less_significant_bits))
-        qc.u1(- np.pi * less_significant_phase, qr[0])
+        for i in range(n_estimated_bits):
+            qc.u1(- np.pi * less_significant_phase / (1 << (n_estimated_bits - 1 - i)), qr[i])
 
-    qc.h(qr[0])
+    inv_fourier_circuit = fourier_circuit(n_estimated_bits, regs=[qr, cr], measure=False)
+    inv_fourier_circuit = inv_fourier_circuit.inverse()
+    qc.extend(inv_fourier_circuit)
 
-    qc.measure(qr[0], cr)
+    qc.measure(qr[:n_estimated_bits], cr)
 
     return qc
 
 
 def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initial_amplitudes=None,
-                               min_success_probability=None):
+                               min_success_probability=None, t=1):
     if min_success_probability is not None:
         num_estimated_bits = num_approximation_bits + int(np.ceil(np.log2(2 + 1 / (2 * (1 - min_success_probability)))))
     else:
@@ -79,13 +56,21 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
 
     estimated_bits = []
 
-    for bit_number in reversed(range(num_estimated_bits)):
-        circuit = phase_estimation_iteration_circuit(bit_number, gate, less_significant_bits=estimated_bits,
+    current_bit_idx = num_estimated_bits
+    while current_bit_idx > 0:
+        current_estimated_bit_numbers = range(max(current_bit_idx - t, 0), current_bit_idx)
+
+        circuit = phase_estimation_iteration_circuit(current_estimated_bit_numbers, gate,
+                                                     less_significant_bits=estimated_bits,
                                                      initial_amplitudes=initial_amplitudes)
         job = job_function(circuit)
         result = job.result()
-        bit = 1 if result.get_counts().get('1', 0) > result.get_counts().get('0', 0) else 0
-        estimated_bits.insert(0, bit)
+
+        current_estimated_bits_str = max(result.get_counts(), key=result.get_counts().get)
+        current_estimated_bits = [int(bit) for bit in reversed(current_estimated_bits_str)]
+        estimated_bits = current_estimated_bits + estimated_bits
+
+        current_bit_idx -= t
 
     return estimated_bits[:num_approximation_bits]
 
@@ -98,12 +83,12 @@ def main():
     # print(QuantumCircuit.from_qasm_file('../circuits/P3T_1.txt'))
 
     # from methods import test_locally
-    # print(estimate_phase_iteratively(3, u1_gate, lambda circuit: test_locally([circuit])[0],
-    #                                  initial_amplitudes=[([0], [0, 1])]))
+    # print(estimate_phase_iteratively(4, u1_gate, lambda circuit: test_locally([circuit])[0],
+    #                                  initial_amplitudes=[([0], [0, 1])], t=2))
 
     from methods import run_main_loop
-    print(estimate_phase_iteratively(3, u1_gate, lambda circuit: run_main_loop([circuit])[0],
-                                     initial_amplitudes=[([0], [0, 1])]))
+    print(estimate_phase_iteratively(4, u1_gate, lambda circuit: run_main_loop([circuit])[0],
+                                     initial_amplitudes=[([0], [0, 1])], t=2))
 
 
 if __name__ == '__main__':
