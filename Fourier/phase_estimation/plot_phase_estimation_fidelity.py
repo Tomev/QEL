@@ -11,6 +11,25 @@ import re
 from consts import SHOTS
 
 
+parameter_sets = [
+    {
+        'n': 3,
+        'backend_name': 'ibmq_london',
+        'job_name': 'pe_fid_ltp=[4, 1, 0, 3]_all'
+    },
+    {
+        'n': 3,
+        'backend_name': 'ibmqx2',
+        'job_name': 'pe_fid_ltp=[3, 4, 0, 2]_all'
+    },
+    {
+        'n': 4,
+        'backend_name': 'ibmq_london',
+        'job_name': 'pe_fid_ltp=[3, 1, 0, 2, 4]_all'
+    }
+]
+
+
 def set_axes(axis, n):
     for ax in (axis.xaxis, axis.yaxis):
         ax.set_ticks(range(2 ** n))
@@ -46,7 +65,7 @@ def make_array(jobs, n, measure_logical_to_physical=None):
     return np.array(counts)
 
 
-def plot(array, n, job_base_name, plot_labels=False, save_avg=False, save_plot=False):
+def plot(array, n, experiment_name, plot_labels=False, save_avg=False, save_plot=False):
     figure, axis = plt.subplots()
     plt.xticks(rotation=45)
     set_axes(axis, n)
@@ -59,42 +78,29 @@ def plot(array, n, job_base_name, plot_labels=False, save_avg=False, save_plot=F
     axis.set_xlabel("Wynik szacowania")
 
     if save_avg:
-        with open("../../../../Fizyka-licencjat/Pomiary/pe_fidelities.txt", "a") as f:
-            f.write("{}\t{}\n".format(job_base_name, 100 * array.trace() / SHOTS / (2 ** n)))
+        with open("../../../../Fizyka-licencjat/Pomiary/pe_fid.txt", "a") as f:
+            f.write("{}\t{}\n".format(experiment_name, 100 * array.trace() / SHOTS / (2 ** n)))
 
     axis.imshow(array, cmap='viridis')
 
     if save_plot:
-        plt.savefig("../../../../Fizyka-licencjat/Pomiary/X3_{}.pdf".format(job_base_name), transparent=True,
+        plt.savefig("../../../../Fizyka-licencjat/Pomiary/{}.pdf".format(experiment_name), transparent=True,
                     bbox_inches='tight', pad_inches=0)
 
     plt.show()
 
 
 def main():
-    n = 3
-    # n = 4
-    backend_name = 'ibmq_london'
-    # backend_name = 'ibmqx2'
-    job_base_name = "pe_fid"
-    logical_to_physical = [4, 1, 0, 3]
+    for parameter_set in parameter_sets:
+        n = parameter_set['n']
+        backend_name = parameter_set['backend_name']
 
-    backend = get_backend_from_name(backend_name)
+        backend = get_backend_from_name(backend_name)
+        jobs = [backend.jobs(job_name=re.escape(parameter_set['job_name']))[0]]
 
-    # job = backend.jobs(job_name=re.escape("{}_all".format(job_base_name)))[0]
-    # array = make_array([job])
+        array = make_array(jobs, n)
 
-    job = backend.jobs(job_name=re.escape("pe_fid_ltp={}_all".format(logical_to_physical)))[0]
-    array = make_array([job], n)
-
-    # job_name_format = "{{}}_{{:0{}b}}".format(n)
-    # jobs = [backend.jobs(job_name=job_name_format.format(job_base_name, i))[0] for i in range(8)]
-    # array = make_array(jobs)
-
-    # jobs = test_locally_with_noise(get_circuits()[0], backend_name)
-    # array = make_array(jobs)
-
-    plot(array, n, job_base_name)
+        plot(array, n, "pe_fid_{}_n={}_{}".format(backend_name, n, parameter_set['job_name']))
 
 
 if __name__ == '__main__':

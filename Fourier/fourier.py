@@ -17,6 +17,12 @@ coupling_maps = {
     'X5': [[0, 1], [1, 0], [1, 2], [2, 1], [2, 3], [3, 2], [3, 0], [0, 3], [3, 4], [4, 3]]
 }
 
+archs = {
+    None: None,
+    'ibmq_london': 'T',
+    'ibmqx2': 'X'
+}
+
 
 def n_cnots(circuit):
     return sum(1 for g in circuit.data if isinstance(g[0], CnotGate))

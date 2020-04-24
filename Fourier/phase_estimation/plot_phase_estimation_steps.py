@@ -9,6 +9,64 @@ from mpl_toolkits.axes_grid1 import host_subplot
 from consts import SHOTS
 
 
+parameter_sets = [
+    {
+        'n': 4,
+        't': 1,
+        'backend_name': 'ibmq_london',
+        'job_base_name': 'ph_est_1011_01_n=4_t=1'
+    },
+    {
+        'n': 4,
+        't': 1,
+        'backend_name': 'ibmqx2',
+        'job_base_name': 'ph_est_1011_01_n=4_t=1'
+    },
+    {
+        'n': 4,
+        't': 2,
+        'backend_name': 'ibmq_london',
+        'job_base_name': 'ph_est_1011_134_n=4_t=2'
+    },
+    {
+        'n': 4,
+        't': 2,
+        'backend_name': 'ibmqx2',
+        'job_base_name': 'ph_est_1011_012_n=4_t=2'
+    },
+    {
+        'n': 10,
+        't': 1,
+        'backend_name': 'ibmq_london',
+        'job_base_name': 'ph_est_pi/4_n=10_t=1'
+    },
+    {
+        'n': 10,
+        't': 1,
+        'backend_name': 'ibmqx2',
+        'job_base_name': 'ph_est_pi/4_01_n=10_t=1'
+    },
+    {
+        'n': 10,
+        't': 2,
+        'backend_name': 'ibmq_london',
+        'job_base_name': 'ph_est_pi/4_134_n=10_t=2'
+    },
+    {
+        'n': 10,
+        't': 2,
+        'backend_name': 'ibmqx2',
+        'job_base_name': 'ph_est_pi/4_012_n=10_t=2'
+    },
+    {
+        'n': 10,
+        't': 3,
+        'backend_name': 'ibmq_london',
+        'job_base_name': 'ph_est_pi/4_0134_n=10_t=3'
+    },
+]
+
+
 def set_axes(axis, n, t):
     axis.yaxis.set_ticks(range(n))
     axis.yaxis.set_major_formatter(FuncFormatter(lambda x, pos: "{}".format(x + 1)))
@@ -35,7 +93,7 @@ def make_array(jobs, n, t):
     return np.array(counts)
 
 
-def plot(array, n, t, job_base_name, plot_labels=False, save_avg=False, save_plot=False):
+def plot(array, n, t, experiment_name, plot_labels=False, save_val=False, save_plot=False):
     figure = plt.figure()
     axis = host_subplot(1, 1, 1, figure=figure)
     plt.xticks(rotation=45)
@@ -48,45 +106,36 @@ def plot(array, n, t, job_base_name, plot_labels=False, save_avg=False, save_plo
     axis.set_ylabel("Miejsce po przecinku")
     axis.set_xlabel("Wartość grupy bitów")
 
-    if save_avg:
-        with open("../../../../Fizyka-licencjat/Pomiary/pe_fidelities.txt", "a") as f:
-            f.write("{}\t{}\n".format(job_base_name, 100 * array.trace() / SHOTS / (2 ** n)))
+    if save_val:
+        bits = ""
+        for i in reversed(range(n, 0, -t)):
+            bits += "{{:0{}b}}".format(min(i, t)).format(array[i - 1][::2 ** (max(t - i, 0))].argmax())
+        with open("../../../../Fizyka-licencjat/Pomiary/pe_steps.txt", "a") as f:
+            f.write("{}\t{}\n".format(experiment_name, bits))
 
     axis.imshow(array, cmap='viridis')
 
     if save_plot:
-        plt.savefig("../../../../Fizyka-licencjat/Pomiary/{}.pdf".format(job_base_name.replace("/", "")),
+        plt.savefig("../../../../Fizyka-licencjat/Pomiary/{}.pdf".format(experiment_name.replace("/", "")),
                     transparent=True, bbox_inches='tight', pad_inches=0)
 
     plt.show()
 
 
 def main():
-    n = 10
-    t = 1
-    # t = 2
-    # t = 3
-    shots = 8192
-    # backend_name = 'ibmq_london'
-    backend_name = 'ibmqx2'
-    job_base_name = "ph_est_pi/4_01_n={}_t={}".format(n, t)
+    for parameter_set in parameter_sets:
+        n = parameter_set['n']
+        t = parameter_set['t']
+        backend_name = parameter_set['backend_name']
+        job_base_name = parameter_set['job_base_name']
 
-    backend = get_backend_from_name(backend_name)
+        backend = get_backend_from_name(backend_name)
+        jobs = [backend.jobs(job_name=re.escape("{}_{}".format(job_base_name, range(max(i - t, 0), i))))[0]
+                for i in reversed(range(n, 0, -t))]
 
-    # job = backend.jobs(job_name=re.escape("{}_all".format(job_base_name)))[0]
-    # array = make_array([job])
+        array = make_array(jobs, n, t)
 
-    # job = backend.jobs(job_name=re.escape("pe_fid_ltp=[3, 4, 0, 2]_all"))[0]
-    # array = make_array([job])
-
-    jobs = [backend.jobs(job_name=re.escape("{}_{}".format(job_base_name, range(max(i - t, 0), i))))[0]
-            for i in reversed(range(n, 0, -t))]
-    array = make_array(jobs, n, t)
-
-    # jobs = test_locally_with_noise(get_circuits()[0], backend_name)
-    # array = make_array(jobs)
-
-    plot(array, n, t, job_base_name)
+        plot(array, n, t, "pe_steps_{}_n={}_t={}_{}".format(backend_name, n, t, job_base_name).replace("/", ""))
 
 
 if __name__ == '__main__':
