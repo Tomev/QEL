@@ -5,7 +5,7 @@ from Qconfig import APItoken
 import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib.ticker import StrMethodFormatter
-from run_fidelity_circuits import get_circuits
+from run_phase_estimation_fidelity import get_circuits
 from methods import test_locally_with_noise, get_backend_from_name
 import re
 from consts import SHOTS
@@ -20,6 +20,7 @@ def set_axes(axis, n):
 def permute(x, n, measure_logical_to_physical=None):
     if measure_logical_to_physical is None:
         measure_logical_to_physical = range(n)
+
     y = 0
     for i in range(n):
         if x & (1 << i):
@@ -34,12 +35,13 @@ def make_array(jobs, n, measure_logical_to_physical=None):
         result = jobs[0].result()
         for i in range(2 ** n):
             counts.append(
-                [result.get_counts(experiment=i)[dict_key_format.format(permute(j, n, measure_logical_to_physical))]
+                [result.get_counts(experiment=i)[
+                     dict_key_format.format(permute(j, n, measure_logical_to_physical))[::-1]]
                  for j in range(2 ** n)])
     else:
         results = [job.result() for job in jobs]
         for result in results:
-            counts.append([result.get_counts()[dict_key_format.format(permute(j, n, measure_logical_to_physical))]
+            counts.append([result.get_counts()[dict_key_format.format(permute(j, n, measure_logical_to_physical))[::-1]]
                            for j in range(2 ** n)])
     return np.array(counts)
 
@@ -72,31 +74,17 @@ def plot(array, n, job_base_name, plot_labels=False, save_avg=False, save_plot=F
 def main():
     n = 3
     # n = 4
-    shots = 8192
     backend_name = 'ibmq_london'
-    arch = 'T'
     # backend_name = 'ibmqx2'
-    # job_base_name = "F3T_fidelity_computational_base"
-    # job_base_name = "F3T_fid_comp_base_old_repeated_ltp=[0, 1, 2]"
-    # job_base_name = "F3T_fid_comp_base_ltp=[0, 1, 2]"
-    # job_base_name = "F3T_fid_comp_base_ltp=[1, 3, 4]"
-    # job_base_name = "F3X_fidelity_computational_base"
-    # job_base_name = "F4T_fidelity_computational_base"
-    # job_base_name = "F4T_fid_comp_base_old_repeated_ltp=[1, 2, 0, 3]"
-    # job_base_name = "F4T_fid_comp_base_ltp=[1, 2, 0, 3]"
-    # job_base_name = "F4T_fid_comp_base_ltp=[0, 1, 3, 4]"
-    # job_base_name = "F4X_fidelity_computational_base"
-    # logical_to_physical = [1, 2, 0, 3]
-    # logical_to_physical = [0, 1, 2, 3]
-    # logical_to_physical = [2, 0, 1, 3]
-
-    logical_to_physical = [1, 3, 4]
-
-    job_base_name = "F{}{}_fid_comp_base_ltp={}".format(n, arch, logical_to_physical)
+    job_base_name = "pe_fid"
+    logical_to_physical = [4, 1, 0, 3]
 
     backend = get_backend_from_name(backend_name)
 
-    job = backend.jobs(job_name=re.escape("{}_all".format(job_base_name)))[0]
+    # job = backend.jobs(job_name=re.escape("{}_all".format(job_base_name)))[0]
+    # array = make_array([job])
+
+    job = backend.jobs(job_name=re.escape("pe_fid_ltp={}_all".format(logical_to_physical)))[0]
     array = make_array([job], n)
 
     # job_name_format = "{{}}_{{:0{}b}}".format(n)

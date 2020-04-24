@@ -2,6 +2,10 @@ from qiskit import QuantumCircuit, QuantumRegister, transpile, ClassicalRegister
 from qiskit.extensions import CnotGate
 import numpy as np
 from itertools import permutations
+import sys
+sys.path.append('..')
+from methods import get_backend_from_name
+
 
 basis_gates = ['u1', 'u2', 'u3', 'cx', 'id']
 coupling_maps = {
@@ -18,20 +22,21 @@ def n_cnots(circuit):
     return sum(1 for g in circuit.data if isinstance(g[0], CnotGate))
 
 
-def get_transpilations(qc, arch=None, initial_layout=None):
+def get_transpilations(qc, arch, backend_name, initial_layout=None):
     optimals = []
     optimal = None
-    layouts = permutations(range(qc.n_qubits)) if initial_layout is None else [initial_layout]
-    for layout in layouts:
+    for i in range(8):
         for o in range(4):
+            transpile_kwargs = {'initial_layout': initial_layout} if initial_layout is not None else {}
             qct = transpile(qc, basis_gates=basis_gates, optimization_level=o,
-                            coupling_map=coupling_maps[arch], initial_layout=layout)
+                            coupling_map=coupling_maps[arch],
+                            backend=get_backend_from_name(backend_name), **transpile_kwargs)
             n_cx = n_cnots(qct)
             if optimal is None or n_cx < optimal:
-                optimals = [(qct, layout, o)]
+                optimals = [(qct, o)]
                 optimal = n_cx
             elif n_cx == optimal:
-                optimals.append((qct, layout, o))
+                optimals.append((qct, o))
 
     return optimals
 
@@ -65,19 +70,22 @@ def fourier_circuit(n, measure=True, regs=None):
 
 
 def main():
-    qc = fourier_circuit(4)
+    qc = fourier_circuit(3)
+
+    arch = 'T'
+    backend_name = 'ibmq_london'
 
     print("High level circuit:")
     print(qc.draw())
     print(qc.qasm())
 
-    optimals = get_transpilations(qc, arch='X')
+    optimals = get_transpilations(qc, arch=arch, backend_name=backend_name)
 
-    print("Minimal number of cx operations: {0}".format(n_cnots(optimals[0][0])))
+    print("Minimal number of cx operations: {}".format(n_cnots(optimals[0][0])))
 
-    for (qct, layout, o) in optimals:
-        print("Layout: {0}, optimization: {1}, circuit:\n{2}".format(layout, o, qct.draw()))
-        print("Source:\n{0}".format(qct.qasm()))
+    for (qct, o) in optimals:
+        print("Optimization: {}, circuit:\n{}".format(o, qct.draw()))
+        print("Source:\n{}".format(qct.qasm()))
 
 
 if __name__ == '__main__':

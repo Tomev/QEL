@@ -47,20 +47,19 @@ def get_current_credits():
 
 
 # Legacy
-def get_backend_name_from_number(backend_index):
-    backend_index = backend_index % len(consts.CONSIDERED_REMOTE_BACKENDS)
-    return consts.CONSIDERED_REMOTE_BACKENDS[backend_index]
+def get_backend_name_from_number(backend_names, backend_index):
+    backend_index = backend_index % len(backend_names)
+    return backend_names[backend_index]
 
 
 def execute_circuits(circuits, backend, use_mapping=False, noise_model=None, **kwargs):
     if use_mapping:
-        real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
-        mapping = real_chip.configuration().coupling_map
+        mapping = backend.configuration().coupling_map
         print("Used mapping:")
         print(mapping)
         return execute(circuits, backend, shots=consts.SHOTS, coupling_map=mapping, **kwargs)
     elif noise_model is not None:
-        real_chip = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+        real_chip = backend
         mapping = real_chip.configuration().coupling_map
         basis_gates = noise_model.basis_gates
         return execute(circuits, backend, noise_model=noise_model, shots=consts.SHOTS,
@@ -69,7 +68,7 @@ def execute_circuits(circuits, backend, use_mapping=False, noise_model=None, **k
         return execute(circuits, backend, shots=consts.SHOTS, **kwargs)
 
 
-def run_main_loop(circuits_list, **kwargs):
+def run_main_loop(circuits_list, backend_names, **kwargs):
     current_backend_index = 0
     wait_time_in_minutes = 5
 
@@ -105,15 +104,15 @@ def run_main_loop(circuits_list, **kwargs):
         # IMPORTANT https://github.com/QISKit/qiskit-sdk-py/issues/247
         # if __name__ == '__main__':
         try:
-            backend_name = get_backend_name_from_number(current_backend_index)
+            backend_name = get_backend_name_from_number(backend_names, current_backend_index)
             operational_remote_backends_names = get_backends_names(operational_remote_backends)
 
             while not operational_remote_backends_names.__contains__(backend_name):
                 print(backend_name, ': Currently not available.')
                 print("Operational backends:")
                 print(operational_remote_backends_names)
-                current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
-                backend_name = get_backend_name_from_number(current_backend_index)
+                current_backend_index = (current_backend_index + 1) % len(backend_names)
+                backend_name = get_backend_name_from_number(backend_names, current_backend_index)
                 print('Refreshing available backends list...')
                 operational_remote_backends = get_operational_remote_backends()
                 operational_remote_backends_names = get_backends_names(operational_remote_backends)
@@ -129,7 +128,7 @@ def run_main_loop(circuits_list, **kwargs):
                 time.sleep(10)
 
             print("Program sent for execution to ", backend_name, '.')
-            # current_backend_index = (current_backend_index + 1) % len(consts.CONSIDERED_REMOTE_BACKENDS)
+            # current_backend_index = (current_backend_index + 1) % len(backends)
 
         except BaseException as ex:
             print('There was an error in the circuit!. Error = {}'.format(ex))
@@ -185,8 +184,8 @@ def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simu
     return jobs
 
 
-def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
-    properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
+def test_locally_with_noise(circuits, backend_name, save_to_file=False, number_of_simulations=1):
+    properties = get_backend_from_name(backend_name).properties()
     noise_model = NoiseModel.from_backend(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
@@ -217,8 +216,8 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
     return jobs
 
 
-def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_simulations=1):
-    properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
+def test_locally_with_error_mitigation(circuits, backend_name, save_to_file=False, number_of_simulations=1):
+    properties = get_backend_from_name(backend_name).properties()
     noise_model = NoiseModel.from_backend(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
@@ -472,10 +471,9 @@ def save_calibration_data(backend_name, data):
     f.close()
 
 
-def get_error_mitigation_filters(job):
+def get_error_mitigation_filters(job, backend_name=None):
     if type(job).__name__ == 'AerJob':
         job_creation_date = '-'
-        backend_name = consts.CONSIDERED_REMOTE_BACKENDS[0]
     else:
         job_creation_date = job.creation_date()
         backend_name = job.backend().name()

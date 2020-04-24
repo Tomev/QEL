@@ -6,7 +6,11 @@ from qiskit.extensions import U1Gate
 import numpy as np
 
 
-u1_gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8 + 1 / 16))
+u1_1011_gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8 + 1 / 16))
+
+u1_pi4_gate = U1Gate(2 * np.pi * (np.pi / 4))
+
+u1_101_gate = U1Gate(2 * np.pi * (1 / 2 + 1 / 8))
 
 
 def phase_estimation_circuit(num_approximation_bits, gate, initial_amplitudes=None):
@@ -47,8 +51,8 @@ def phase_estimation_iteration_circuit(estimated_bits, gate, less_significant_bi
     return qc
 
 
-def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initial_amplitudes=None,
-                               min_success_probability=None, t=1, description=""):
+def estimate_phase_iteratively(num_approximation_bits, gate, job_function, arch, backend_name, initial_layout=None,
+                               initial_amplitudes=None, min_success_probability=None, t=1, description=""):
     if min_success_probability is not None:
         num_estimated_bits = num_approximation_bits + int(np.ceil(np.log2(2 + 1 / (2 * (1 - min_success_probability)))))
     else:
@@ -63,11 +67,12 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
         circuit = phase_estimation_iteration_circuit(current_estimated_bit_numbers, gate,
                                                      less_significant_bits=estimated_bits,
                                                      initial_amplitudes=initial_amplitudes)
-        circuit = get_transpilations(circuit, arch='T')[0][0]
+        circuit = get_transpilations(circuit, arch=arch, backend_name=backend_name,
+                                     initial_layout=initial_layout)[-1][0]
 
         job = job_function(circuit,
                            job_name="ph_est_{}_n={}_t={}_{}".format(description, num_approximation_bits, t,
-                                                                              current_estimated_bit_numbers))
+                                                                    current_estimated_bit_numbers))
         result = job.result()
 
         current_estimated_bits_str = max(result.get_counts(), key=result.get_counts().get)
@@ -80,20 +85,37 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, initi
 
 
 def main():
-    # circuit = phase_estimation_circuit(3, u1_gate, initial_amplitudes=[([0], [0, 1])])
-    # get_transpilations(circuit, arch='T')
+    # from methods import run_main_loop
+    # circuit = phase_estimation_circuit(3, u1_101_gate, initial_amplitudes=[([0], [0, 1])])
+    # circuit = get_transpilations(circuit, arch='T')[-1][0]
 
     # from methods import test_locally
     # print(QuantumCircuit.from_qasm_file('../circuits/P3T_1.txt'))
 
     # from methods import test_locally
-    # print(estimate_phase_iteratively(4, u1_gate, lambda circuit, job_name: test_locally([circuit])[0],
-    #                                  initial_amplitudes=[([0], [0, 1])], t=2))
+    # print(estimate_phase_iteratively(4, u1_1011_gate, lambda circuit, job_name: test_locally([circuit])[0],
+    #                                  initial_amplitudes=[([0], [0, 1])], t=2, description="1011"))
+
+    # from methods import run_main_loop
+    # print(estimate_phase_iteratively(4, u1_1011_gate,
+    #                                  lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0],
+    #                                  initial_amplitudes=[([0], [0, 1])], t=2, description="1011_134"))
 
     from methods import run_main_loop
-    print(estimate_phase_iteratively(4, u1_gate,
-                                     lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0],
-                                     initial_amplitudes=[([0], [0, 1])], t=2, description="1011"))
+    print(estimate_phase_iteratively(10, u1_pi4_gate,
+                                     lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0], arch='X',
+                                     backend_name='ibmqx2', initial_layout=[0, 1], initial_amplitudes=[([0], [0, 1])],
+                                     t=1, description="pi/4_01_(1)"))
+
+    # from methods import test_locally
+    # print(estimate_phase_iteratively(10, u1_pi4_gate,
+    #                                  lambda circuit, job_name: test_locally([circuit])[0],
+    #                                  initial_amplitudes=[([0], [0, 1])], t=3, description="pi/4_0134"))
+
+    # from methods import run_main_loop
+    # print(estimate_phase_iteratively(4, u1_1011_gate,
+    #                                  lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0],
+    #                                  initial_amplitudes=[([0], [0, 1])], t=4, description="1011_31024"))
 
 
 if __name__ == '__main__':
