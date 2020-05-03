@@ -88,9 +88,9 @@ def estimate_phase_iteratively(num_approximation_bits, gate, job_function, arch,
 def main():
     n = 10
     gate = u1_pi4_gate
-    job_function = lambda circuit, job_name: run_main_loop([circuit], job_name=job_name)[0]
-    arch = 'X'
     backend_name = 'ibmqx2'
+    job_function = lambda circuit, job_name: run_main_loop([circuit], [backend_name], job_name=job_name)[0]
+    arch = 'X'
     initial_layout = [2, 3]
     initial_amplitudes = [([0], [0, 1])]
     t = 1

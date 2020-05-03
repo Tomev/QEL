@@ -60,9 +60,9 @@ def main():
 
     # job_name_format = "{{}}_{{:0{}b}}".format(n)
     # for state in range(2 ** n):
-    #     run_main_loop([circuits[state]], job_name=job_name_format.format(job_base_name, state))
+    #     run_main_loop([circuits[state]], [backend_name], job_name=job_name_format.format(job_base_name, state))
 
-    run_main_loop(circuits, job_name="{}_ltp={}_all".format(job_base_name, logical_to_physical))
+    run_main_loop(circuits, [backend_name], job_name="{}_ltp={}_all".format(job_base_name, logical_to_physical))
 
     # test_locally(circuits)
 
