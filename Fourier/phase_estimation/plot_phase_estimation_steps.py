@@ -20,7 +20,7 @@ parameter_sets = [
         'n': 4,
         't': 1,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_1011_01_n=4_t=1'
+        'job_base_name': 'ph_est_1011_23_n=4_t=1'
     },
     {
         'n': 4,
@@ -32,7 +32,7 @@ parameter_sets = [
         'n': 4,
         't': 2,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_1011_012_n=4_t=2'
+        'job_base_name': 'ph_est_1011_234_n=4_t=2'
     },
     {
         'n': 10,
@@ -44,7 +44,7 @@ parameter_sets = [
         'n': 10,
         't': 1,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_pi/4_01_n=10_t=1'
+        'job_base_name': 'ph_est_pi/4_23_n=10_t=1'
     },
     {
         'n': 10,
@@ -56,7 +56,7 @@ parameter_sets = [
         'n': 10,
         't': 2,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_pi/4_012_n=10_t=2'
+        'job_base_name': 'ph_est_pi/4_234_n=10_t=2'
     },
     {
         'n': 10,
@@ -64,6 +64,12 @@ parameter_sets = [
         'backend_name': 'ibmq_london',
         'job_base_name': 'ph_est_pi/4_0134_n=10_t=3'
     },
+    {
+        'n': 10,
+        't': 3,
+        'backend_name': 'ibmqx2',
+        'job_base_name': 'ph_est_pi/4_4320_n=10_t=3'
+    }
 ]
 
 

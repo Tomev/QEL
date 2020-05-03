@@ -24,7 +24,7 @@ parameter_sets = [
     {
         'n': 3,
         'backend_name': 'ibmqx2',
-        'job_name': 'F3X_fidelity_computational_base_all',
+        'job_name': 'F3X_fid_comp_base_ltp=[2, 3, 4]_all',
     },
     {
         'n': 3,
@@ -44,8 +44,7 @@ parameter_sets = [
     {
         'n': 4,
         'backend_name': 'ibmqx2',
-        'job_name': 'F4X_fidelity_computational_base_all',
-        'measure_logical_to_physical': [2, 0, 1, 3]
+        'job_name': 'F4X_fid_comp_base_ltp=[2, 3, 4, 0]'
     },
     {
         'n': 4,
