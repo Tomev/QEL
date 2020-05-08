@@ -14,61 +14,71 @@ parameter_sets = [
         'n': 4,
         't': 1,
         'backend_name': 'ibmq_london',
-        'job_base_name': 'ph_est_1011_01_n=4_t=1'
+        'job_base_name': 'ph_est_1011_01_n=4_t=1',
+        'pair': 1
     },
     {
         'n': 4,
         't': 1,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_1011_23_n=4_t=1'
+        'job_base_name': 'ph_est_1011_23_n=4_t=1',
+        'pair': 0
     },
     {
         'n': 4,
         't': 2,
         'backend_name': 'ibmq_london',
-        'job_base_name': 'ph_est_1011_134_n=4_t=2'
+        'job_base_name': 'ph_est_1011_134_n=4_t=2',
+        'pair': 3
     },
     {
         'n': 4,
         't': 2,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_1011_234_n=4_t=2'
+        'job_base_name': 'ph_est_1011_234_n=4_t=2',
+        'pair': 2
     },
     {
         'n': 10,
         't': 1,
         'backend_name': 'ibmq_london',
-        'job_base_name': 'ph_est_pi/4_n=10_t=1'
+        'job_base_name': 'ph_est_pi/4_n=10_t=1',
+        'pair': 5
     },
     {
         'n': 10,
         't': 1,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_pi/4_23_n=10_t=1'
+        'job_base_name': 'ph_est_pi/4_23_n=10_t=1',
+        'pair': 4
     },
     {
         'n': 10,
         't': 2,
         'backend_name': 'ibmq_london',
-        'job_base_name': 'ph_est_pi/4_134_n=10_t=2'
+        'job_base_name': 'ph_est_pi/4_134_n=10_t=2',
+        'pair': 7
     },
     {
         'n': 10,
         't': 2,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_pi/4_234_n=10_t=2'
+        'job_base_name': 'ph_est_pi/4_234_n=10_t=2',
+        'pair': 6
     },
     {
         'n': 10,
         't': 3,
         'backend_name': 'ibmq_london',
-        'job_base_name': 'ph_est_pi/4_0134_n=10_t=3'
+        'job_base_name': 'ph_est_pi/4_0134_n=10_t=3',
+        'pair': 9
     },
     {
         'n': 10,
         't': 3,
         'backend_name': 'ibmqx2',
-        'job_base_name': 'ph_est_pi/4_4320_n=10_t=3'
+        'job_base_name': 'ph_est_pi/4_4320_n=10_t=3',
+        'pair': 8
     }
 ]
 
@@ -99,7 +109,7 @@ def make_array(jobs, n, t):
     return np.array(counts)
 
 
-def plot(array, n, t, experiment_name, plot_labels=False, save_val=False, save_plot=False):
+def plot(array, n, t, experiment_name, vmax, plot_labels=False, save_val=False, save_plot=False):
     figure = plt.figure()
     axis = host_subplot(1, 1, 1, figure=figure)
     plt.xticks(rotation=45)
@@ -119,7 +129,7 @@ def plot(array, n, t, experiment_name, plot_labels=False, save_val=False, save_p
         with open("../../../../Fizyka-licencjat/Pomiary/pe_steps.txt", "a") as f:
             f.write("{}\t{}\n".format(experiment_name, bits))
 
-    axis.imshow(array, cmap='viridis')
+    axis.imshow(array, cmap='viridis', vmin=0, vmax=vmax)
 
     if save_plot:
         plt.savefig("../../../../Fizyka-licencjat/Pomiary/{}.pdf".format(experiment_name.replace("/", "")),
@@ -128,20 +138,30 @@ def plot(array, n, t, experiment_name, plot_labels=False, save_val=False, save_p
     plt.show()
 
 
-def main():
-    for parameter_set in parameter_sets:
-        n = parameter_set['n']
-        t = parameter_set['t']
-        backend_name = parameter_set['backend_name']
-        job_base_name = parameter_set['job_base_name']
-
-        backend = get_backend_from_name(backend_name)
-        jobs = [backend.jobs(job_name=re.escape("{}_{}".format(job_base_name, range(max(i - t, 0), i))))[0]
+def get_jobs(backend_name, job_base_name, n, t, **kwargs):
+    backend = get_backend_from_name(backend_name)
+    return [backend.jobs(job_name=re.escape("{}_{}".format(job_base_name, range(max(i - t, 0), i))))[0]
                 for i in reversed(range(n, 0, -t))]
 
-        array = make_array(jobs, n, t)
 
-        plot(array, n, t, "pe_steps_{}_n={}_t={}_{}".format(backend_name, n, t, job_base_name).replace("/", ""))
+def main():
+    for parameter_set in parameter_sets:
+        backend_name = parameter_set['backend_name']
+        job_base_name = parameter_set['job_base_name']
+        n = parameter_set['n']
+        t = parameter_set['t']
+
+        jobs = get_jobs(**parameter_set)
+        array = make_array(jobs, n, t)
+        vmax = array.max()
+
+        if 'pair' in parameter_set:
+            pair_jobs = get_jobs(**parameter_sets[parameter_set['pair']])
+            pair_array = make_array(pair_jobs, n, t)
+            vmax = max(vmax, pair_array.max())
+
+        plot(array, n, t, "pe_steps_{}_n={}_t={}_{}".format(backend_name, n, t, job_base_name).replace("/", ""),
+             vmax=vmax)
 
 
 if __name__ == '__main__':
