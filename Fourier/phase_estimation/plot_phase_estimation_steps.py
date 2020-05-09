@@ -89,11 +89,12 @@ def set_axes(axis, n, t):
     axis.xaxis.set_ticks(range(2 ** t))
     axis.xaxis.set_major_formatter(StrMethodFormatter("{{x:0{}b}}".format(t)))
     if n % t:
-        sec_xaxis = axis.twin()
-        sec_xaxis.xaxis.set_ticks(np.arange((2 ** ((-n) % t) - 1) / 2, 2 ** t, 2 ** ((-n) % t)))
-        sec_xaxis.xaxis.set_major_formatter(
+        sec_axis = axis.twin()
+        sec_axis.xaxis.set_ticks(np.arange((2 ** ((-n) % t) - 1) / 2, 2 ** t, 2 ** ((-n) % t)))
+        sec_axis.xaxis.set_major_formatter(
             FuncFormatter(
                 lambda x, pos: "{{:0{}b}}".format(n % t).format(pos)))
+        sec_axis.yaxis.set_visible(False)
 
 
 def make_array(jobs, n, t):
@@ -129,7 +130,9 @@ def plot(array, n, t, experiment_name, vmax, plot_labels=False, save_val=False, 
         with open("../../../../Fizyka-licencjat/Pomiary/pe_steps.txt", "a") as f:
             f.write("{}\t{}\n".format(experiment_name, bits))
 
-    axis.imshow(array, cmap='viridis', vmin=0, vmax=vmax)
+    axis.pcolormesh(np.arange(2 ** t + 1) - 0.5, np.arange(n + 1) - 0.5, array, cmap='viridis', vmin=0, vmax=vmax)
+    axis.axis('image')
+    axis.invert_yaxis()
 
     if save_plot:
         plt.savefig("../../../../Fizyka-licencjat/Pomiary/{}.pdf".format(experiment_name.replace("/", "")),
