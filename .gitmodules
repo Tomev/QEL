@@ -1,0 +1,3 @@
+[submodule "QREM"]
+	path = QREM
+	url = https://github.com/fbm2718/QREM
