@@ -2,6 +2,7 @@ import sys
 
 dir_path = "D:\\Coding\\Python\\QE\\QREM\\"
 sys.path.append(dir_path)
+sys.path.append("D:\\Coding\\Python\\QE\\")
 print(f"Appended to path: {dir_path}")
 
 print(sys.path)
