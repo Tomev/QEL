@@ -128,7 +128,7 @@ def plot(array, n, t, experiment_name, vmax, plot_labels=False, save_val=False, 
         for i in reversed(range(n, 0, -t)):
             bits += "{{:0{}b}}".format(min(i, t)).format(array[i - 1][::2 ** (max(t - i, 0))].argmax())
         with open("../../../../Fizyka-licencjat/Pomiary/pe_steps.txt", "a") as f:
-            f.write("{}\t{}\n".format(experiment_name, bits))
+            f.write("{}\t{}\t{}%\n".format(experiment_name, bits, 100 * vmax / SHOTS))
 
     axis.pcolormesh(np.arange(2 ** t + 1) - 0.5, np.arange(n + 1) - 0.5, array, cmap='viridis', vmin=0, vmax=vmax)
     axis.axis('image')

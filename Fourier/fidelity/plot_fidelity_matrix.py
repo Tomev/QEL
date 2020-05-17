@@ -103,7 +103,7 @@ def plot(array, n, experiment_name, vmax, plot_labels=False, save_avg=False, sav
 
     if save_avg:
         with open("../../../../Fizyka-licencjat/Pomiary/qft_fid.txt", "a") as f:
-            f.write("{}\t{}\n".format(experiment_name, 100 * array.trace() / SHOTS / (2 ** n)))
+            f.write("{}\t{}\t{}%\n".format(experiment_name, 100 * array.trace() / SHOTS / (2 ** n), 100 * vmax / SHOTS))
 
     axis.pcolormesh(np.arange(2 ** n + 1) - 0.5, np.arange(2 ** n + 1) - 0.5, array, cmap='viridis', vmin=0, vmax=vmax)
     axis.axis('image')
