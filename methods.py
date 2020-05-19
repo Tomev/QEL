@@ -294,7 +294,7 @@ def parse_job_to_report_string(job):
         job_string += job_id + consts.CSV_SEPARATOR
         job_string += job_backend_name + consts.CSV_SEPARATOR
         job_string += str(circuit_name) + consts.CSV_SEPARATOR
-        job_string += job_creation_date + consts.CSV_SEPARATOR
+        job_string += str(job_creation_date) + consts.CSV_SEPARATOR
         job_string += str(job.result().get_counts(circuit_name)) + '\n'
 
     return job_string
@@ -318,7 +318,7 @@ def get_mitigation_report_string(job):
         job_string += job_id + consts.CSV_SEPARATOR
         job_string += job_backend_name + consts.CSV_SEPARATOR
         job_string += str(circuit_name) + consts.CSV_SEPARATOR
-        job_string += job_creation_date + consts.CSV_SEPARATOR
+        job_string += str(job_creation_date) + consts.CSV_SEPARATOR
 
         raw_counts = job.result().get_counts(circuit_name)
         index = len(list(raw_counts.keys())[0])

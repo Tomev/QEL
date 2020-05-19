@@ -10,7 +10,7 @@ print(sys.path)
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 import QREM.povmtools
 from QREM.quantum_tomography_qiskit import detector_tomography_circuits
-from methods import run_main_loop
+from methods import run_main_loop, test_locally
 
 # What I want to do now, is prepare POVM for simulated backend. According to our other notebook, I prepare
 # calibration circuits first.
@@ -55,4 +55,5 @@ test_circuits.append(qc)
 test_circuits.append(qc2)
 test_circuits.append(qc3)
 
-run_main_loop(test_circuits)
+test_locally(test_circuits)
+#run_main_loop(test_circuits)
