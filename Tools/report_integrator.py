@@ -1,7 +1,8 @@
 import os
+import pytz
 from datetime import datetime
 
-desired_date = datetime.strptime('2020-5-5T08:00:00', '%Y-%m-%dT%H:%M:%S')
+desired_date = pytz.UTC.localize(datetime.strptime('2020-5-5T08:00:00', '%Y-%m-%dT%H:%M:%S'))
 
 report = 'ID;Backend;Circuit;Date;Results\n'
 mitigation_report = 'ID;Backend;Circuit;Date;Results\n'
@@ -16,7 +17,9 @@ def get_report_string_from_file(file_path):
     report_str = ''
 
     while line:
-        job_date = datetime.strptime(line.split(';')[3], '%Y-%m-%dT%H:%M:%S.%fZ')
+        print(line)
+        print(line.split(';')[3])
+        job_date = datetime.strptime(line.split(';')[3], '%Y-%m-%d %H:%M:%S.%f%z')
         if job_date > desired_date:
             report_str += line
         line = opened_file.readline()
