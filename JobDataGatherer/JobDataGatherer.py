@@ -5,6 +5,7 @@ import time
 sys.path.append('..\\')
 import methods
 import consts
+from qiskit.providers.ibmq.apiconstants import ApiJobKind
 
 
 # Select desired backends.
@@ -23,7 +24,10 @@ for backend_name in considered_backends_names:
     i = 0
     jobs_parsing_time = time.time()
     for job in backends_jobs:
-        job_parsing_time = time.time()
+        if job._kind == ApiJobKind.QOBJECT:
+            print(job._kind)
+            continue
+        job_parsing_time = time.time()        
         report_content += methods.parse_job_to_report_string(job)
         mitigation_report_content += methods.get_mitigation_report_string(job)
         job_parsing_time = time.time() - job_parsing_time
