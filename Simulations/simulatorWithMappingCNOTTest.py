@@ -3,7 +3,7 @@ import sys
 sys.path.append('..\\')
 import consts
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from methods import test_locally, run_main_loop_with_chsh_test
+from methods import test_locally_with_noise, run_main_loop_with_chsh_test, test_locally
 
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
@@ -40,5 +40,6 @@ for i in range(5):
 
 print("Created " + str(len(circuits)) + " circuits.")
 
-#test_locally(circuits, True)
-run_main_loop_with_chsh_test(circuits)
+test_locally(circuits)
+#test_locally_with_noise(circuits, True)
+#run_main_loop_with_chsh_test(circuits)

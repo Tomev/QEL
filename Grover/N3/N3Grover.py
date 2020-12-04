@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../..')
-from methods import run_main_loop, test_locally, run_main_loop_with_chsh_test, create_circuit_from_qasm
+from methods import run_main_loop, test_locally, create_circuit_from_qasm
 
 '''
 available_file_names = ['Grover_3_000_2.qasm', 'Grover_3_001_2.qasm', 'Grover_3_010_2.qasm', 'Grover_3_011_2.qasm',

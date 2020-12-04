@@ -85,5 +85,5 @@ for i in range(5):
 
 print("Created " + str(len(circuits)) + " circuits.")
 
-#test_locally(circuits, False)
-run_main_loop_with_chsh_test(circuits)
+test_locally(circuits, True)
+#run_main_loop_with_chsh_test(circuits)

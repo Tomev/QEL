@@ -165,3 +165,4 @@ def get_sc_n3_circuits():
 # run_main_loop_with_chsh_test(get_sc_circuits())
 # test_locally(SC_Circuits, use_mapping=True, save_to_file=True, number_of_simulations=100)
 # test_locally_with_noise(SC_Circuits)
+test_locally(get_sc_n3_circuits())

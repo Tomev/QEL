@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../..')
+sys.path.append('../../..')
 from CHSH.CHSH import get_chsh_circuits
 from Mermin.mermin_test import get_mermin_circuits
 

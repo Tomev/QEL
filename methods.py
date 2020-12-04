@@ -1,19 +1,15 @@
-from qiskit import execute, IBMQ, Aer, QuantumCircuit, QuantumRegister, ClassicalRegister, exceptions
-from qiskit.providers.aer import noise
-from qiskit.providers.ibmq.job.ibmqjob import IBMQJob, JobStatus
-from IBMQuantumExperience import IBMQuantumExperience
-import numpy as np
-import time
-import pandas as pd
-import os
 import datetime
+import os
+import time
 
-import Qconfig
-import consts
-
+import pandas as pd
+from qiskit import Aer, execute, IBMQ, QuantumCircuit, QuantumRegister
 from qiskit.ignis.mitigation.measurement import (complete_meas_cal,
-                                                 CompleteMeasFitter,
-                                                 MeasurementFilter)
+                                                 CompleteMeasFitter)
+from qiskit.providers.aer import noise
+from qiskit.providers.ibmq.job.ibmqjob import JobStatus
+
+import consts
 
 
 def get_operational_remote_backends():
@@ -36,14 +32,6 @@ def get_backend_from_name(name):
 
 def get_sim_backend_from_name(name):
     return Aer.get_backend(name)
-
-
-# Legacy
-def get_current_credits():
-    # return 3  # placeholder, until I get answer from IBM
-    # This method will cause errors, as IBMQuantumExperience server is now shut down.
-    api = IBMQuantumExperience(token=Qconfig.APItoken, config=Qconfig.config)
-    return api.get_my_credits()['remaining']
 
 
 # Legacy
@@ -175,16 +163,21 @@ def test_locally(circuits, use_mapping=False, save_to_file=False, number_of_simu
 
 
 def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=1):
-    properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
-    noise_model = noise.device.basic_device_noise_model(properties)
+    # backend = QasmSimulator.from_backend(get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]))
 
+    # from qiskit.test.mock import FakeVigo
+    # backend = QasmSimulator.from_backend(FakeVigo())
+
+    simulated_backend = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0])
+    noise_model = noise.NoiseModel.from_backend(simulated_backend)
     backend = get_sim_backend_from_name("qasm_simulator")
 
     if save_to_file:
         simulation_report_content = consts.JOBS_REPORT_HEADER
 
         for i in range(number_of_simulations):
-            executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            # executed_job = execute_circuits(circuits, backend, noise_model=noise_model)
+            executed_job = execute_circuits(circuits, backend)
             simulation_report_content += parse_job_to_report_string(executed_job)
             print(f'Simulation {i + 1} done.')
 
@@ -288,7 +281,7 @@ def parse_job_to_report_string(job):
     if type(job).__name__ == 'AerJob':
         job_creation_date = '-'
     else:
-        job_creation_date = job.creation_date()
+        job_creation_date = job.creation_date().isoformat()
 
     for circuit_name in circuit_names:
         job_string += job_id + consts.CSV_SEPARATOR
@@ -379,10 +372,6 @@ def add_measure_in_base(qc: QuantumCircuit, base: str):
         qc.name = qc.name + "_" + base
 
     return qc
-
-
-def run_main_loop_with_chsh_test(circuits):
-    run_main_loop(circuits + get_chsh_circuits())
 
 
 def create_circuit_from_qasm(qasm_file_path):
@@ -499,6 +488,4 @@ def draw_circuit(circuit, file_name='my_circuit.png'):
     circuit.draw(output='mpl', filename=file_name)
 
 
-IBMQ.save_account(Qconfig.APItoken, overwrite=True)
 acc = IBMQ.load_account()
-acc.credentials

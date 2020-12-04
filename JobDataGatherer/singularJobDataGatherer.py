@@ -4,8 +4,7 @@ import sys
 sys.path.append('..\\')
 from os.path import isfile
 from datetime import datetime
-from qiskit import IBMQ
-from methods import parse_job_to_report_string, report_to_csv
+from methods import parse_job_to_report_string, report_to_csv, get_backend_from_name
 from time import time
 import consts
 
@@ -19,7 +18,7 @@ class SingleJobGatherer:
         self.jobs_to_skip = jobs_to_skip
 
     def get_single_job(self):
-        backend = IBMQ.get_backend(self.backend_name)
+        backend = get_backend_from_name(self.backend_name)
 
         number_of_jobs_to_download = 1
         downloaded_job = backend.jobs(limit=number_of_jobs_to_download, skip=self.jobs_to_skip, status='DONE')

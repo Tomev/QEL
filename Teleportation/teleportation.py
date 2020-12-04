@@ -1,8 +1,10 @@
-import qiskit
-import numpy as np
 import sys
+
+import numpy as np
+import qiskit
+
 sys.path.append('../')
-from methods import run_main_loop
+from methods import run_main_loop, test_locally
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = qiskit.QuantumRegister(3)
@@ -24,24 +26,27 @@ def measure(i):
     return circuit
 
 
-# A circuit to teleport state from qubit 0 to qubit 2.
-teleport = qiskit.QuantumCircuit(qr, cr)
+def get_teleportation_circuits():
+    # A circuit to teleport state from qubit 0 to qubit 2.
+    teleport = qiskit.QuantumCircuit(qr, cr)
 
-# Prepare bell state on qubits 1 and 2.
-teleport.h(qr[1])
-teleport.cx(qr[1], qr[2])
+    # Prepare bell state on qubits 1 and 2.
+    teleport.h(qr[1])
+    teleport.cx(qr[1], qr[2])
 
-teleport.measure(qr[0], cr[0])
-teleport.measure(qr[1], cr[1])
+    teleport.measure(qr[0], cr[0])
+    teleport.measure(qr[1], cr[1])
 
-# Prepare circuits
-circuits = []
+    # Prepare circuits
+    circuits = []
 
-for theta in np.linspace(0, np.pi, 10):
-    qc_test = prepare_state(theta)+measure(0)+measure(1)+measure(2)
-    circuits.append(qc_test)
-    qc_teleport = prepare_state(theta)+teleport+measure(2)
-    circuits.append(qc_teleport)
+    for theta in np.linspace(0, np.pi, 10):
+        qc_test = prepare_state(theta) + measure(0) + measure(1) + measure(2)
+        circuits.append(qc_test)
+        qc_teleport = prepare_state(theta) + teleport + measure(2)
+        circuits.append(qc_teleport)
+
+    return circuits
 
 # Execute
-run_main_loop(circuits)
+test_locally(get_teleportation_circuits())

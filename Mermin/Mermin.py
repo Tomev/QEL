@@ -65,3 +65,4 @@ def get_mermin_test_circuits():
 # run_main_loop_with_chsh_test(get_mermin_circuits())
 # test_locally(get_mermin_circuits(), use_mapping=True, save_to_file=True, number_of_simulations=1)
 # draw_circuit(get_mermin_circuits()[0])
+test_locally(get_mermin_circuits())
