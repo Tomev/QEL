@@ -1,9 +1,6 @@
 # Downloads last job in given backend and reports it's status
 # One need to pass backend name as an argument
-
-import sys
-sys.path.append('..\\')
-from methods import get_backend_from_name
+from ..methods import get_backend_from_name
 
 if len(sys.argv) == 1:
     print("No backend specified.")

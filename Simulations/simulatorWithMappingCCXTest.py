@@ -1,9 +1,7 @@
-import sys
-
-sys.path.append('..\\')
-import consts
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from methods import test_locally
+
+import consts
+from ..methods import test_locally
 
 
 def rtof3(control1, control2, target):
@@ -52,13 +50,12 @@ for i in range(5):
             circuit.x(qr[4])
 
             circuit_name = "Control1: " + str(i) + ", Control2: " + str(j) + ", Target: " + str(k)
-            #print(circuit_name)
+            # print(circuit_name)
             circuit += rtof3(i, j, k)
             circuit.name = circuit_name
 
             circuit.measure(qr, cr)
             circuits.append(circuit)
-
 
 print("Created " + str(len(circuits)) + " circuits.")
 

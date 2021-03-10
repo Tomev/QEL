@@ -1,9 +1,7 @@
-import sys
-
-sys.path.append('..\\')
-import consts
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from methods import test_locally_with_noise, run_main_loop_with_chsh_test, test_locally
+
+from .. import consts
+from ..methods import test_locally_with_noise, run_main_loop_with_chsh_test, test_locally
 
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
@@ -31,15 +29,14 @@ for i in range(5):
         circuit.x(qr[4])
 
         circuit_name = "Control: " + str(i) + ", Target: " + str(j)
-        #print(circuit_name)
+        # print(circuit_name)
         circuit.name = circuit_name
         circuit.cx(qr[i], qr[j])
         circuit.measure(qr, cr)
         circuits.append(circuit)
 
-
 print("Created " + str(len(circuits)) + " circuits.")
 
 test_locally(circuits)
-#test_locally_with_noise(circuits, True)
-#run_main_loop_with_chsh_test(circuits)
+# test_locally_with_noise(circuits, True)
+# run_main_loop_with_chsh_test(circuits)

@@ -1,8 +1,5 @@
 # This is parser only for data reports used by A for analysis
-
-import sys
-sys.path.append('..\\')
-from methods import report_to_csv
+from ..methods import report_to_csv
 
 file_result_name = 'jobs_report.csv'
 

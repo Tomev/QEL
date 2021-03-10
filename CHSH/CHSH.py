@@ -1,8 +1,7 @@
 import numpy as np
-import sys
-sys.path.append('..')
-from methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+
+from ..methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base
 
 
 def get_chsh_circuits(steps=8):
@@ -32,7 +31,6 @@ def get_chsh_circuits(steps=8):
         barrier_bell_middle.barrier()
 
         for b in bases_to_measure:
-
             new_circuit = bell + bell_middle
             new_circuit.name = 'CHSH_' + str(2 * step) + 'pi/' + str(steps)
             new_circuit = add_measure_in_base(new_circuit, b)
@@ -46,7 +44,6 @@ def get_chsh_circuits(steps=8):
 
     return real_chsh_circuits
 
-
-#run_main_loop(get_chsh_circuits())
-#test_locally(get_chsh_circuits(steps_number), use_mapping=True, save_to_file=True, number_of_simulations=100)
-#test_locally_with_noise(get_chsh_circuits(steps_number))
+# run_main_loop(get_chsh_circuits())
+# test_locally(get_chsh_circuits(steps_number), use_mapping=True, save_to_file=True, number_of_simulations=100)
+# test_locally_with_noise(get_chsh_circuits(steps_number))

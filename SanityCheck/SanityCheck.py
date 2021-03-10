@@ -1,12 +1,9 @@
+import numpy as np
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from typing import List
 
-import numpy as np
-import sys
-
-sys.path.append('..')
-from methods import test_locally, run_main_loop, test_locally_with_noise, run_main_loop_with_chsh_test, \
+from ..methods import test_locally, run_main_loop, test_locally_with_noise, run_main_loop_with_chsh_test, \
     add_measure_in_base
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
 
 def get_n2_calibration_circuits():

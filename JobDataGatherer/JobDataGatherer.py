@@ -2,10 +2,8 @@
 
 import sys
 import time
-sys.path.append('..\\')
-import methods
-import consts
 
+from .. import methods, consts
 
 # Select desired backends.
 considered_backends_names = consts.CONSIDERED_REMOTE_BACKENDS
@@ -32,7 +30,6 @@ for backend_name in considered_backends_names:
     jobs_parsing_time = time.time() - jobs_parsing_time
     print(f"All jobs parsing finished in {jobs_parsing_time} s.")
     print(f"Average job parsing time is {jobs_parsing_time / len(backends_jobs)} s.")
-
 
 print("Starting report generation.")
 report_generation_time = time.time()

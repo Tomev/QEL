@@ -4,10 +4,9 @@ Note: if you have only cloned the QISKit repository but not
 used `pip install`, the examples only work from the root directory.
 """
 
-import sys
-sys.path.append('../..')
-from methods import test_locally, run_main_loop_with_chsh_test
 from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
+
+from ...methods import test_locally, run_main_loop_with_chsh_test
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = QuantumRegister(2)
@@ -31,5 +30,5 @@ qc.measure(qr, cr)
 
 print('Circuit prepared for execution.')
 
-#run_main_loop_with_chsh_test(qc)
+# run_main_loop_with_chsh_test(qc)
 test_locally([qc])

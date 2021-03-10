@@ -1,8 +1,7 @@
-import sys
-sys.path.append('..\\..')
-from methods import test_locally, run_main_loop, run_main_loop_with_chsh_test, test_locally_with_error_mitigation
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from Grover.N4.rtof import rtof4
+
+from .rtof import rtof4
+from ...methods import test_locally, run_main_loop, run_main_loop_with_chsh_test, test_locally_with_error_mitigation
 
 # Mapowanie
 C0 = 3
@@ -19,7 +18,6 @@ algorithm_repetition_times = 1
 
 
 def rtof3(control1, control2, target):
-
     global qc
 
     qc.h(qr[target])
@@ -52,7 +50,6 @@ def rtof4():
 
 
 def initialization(selected_state):
-
     global qc
     global qr
     global cr
@@ -71,7 +68,6 @@ def initialization(selected_state):
 
 
 def oracle(selected_state):
-
     global qubits_indexes_by_occurrence
     global qc
 
@@ -120,10 +116,10 @@ def diffusion():
     qc.h(qr[T])
 
 
-states = ['{0:04b}'.format(x) for x in range(2**4)]
+states = ['{0:04b}'.format(x) for x in range(2 ** 4)]
 circuits = []
 
-#print(states)
+# print(states)
 
 
 for state in states:
@@ -136,7 +132,6 @@ for state in states:
     qc.measure(qr, cr)
     circuits.append(qc)
 
-
-#test_locally(circuits, False, True, 1000)
+# test_locally(circuits, False, True, 1000)
 run_main_loop_with_chsh_test(circuits)
-#test_locally_with_error_mitigation(circuits, True, 1000)
+# test_locally_with_error_mitigation(circuits, True, 1000)

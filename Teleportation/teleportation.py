@@ -1,10 +1,7 @@
-import sys
-
 import numpy as np
 import qiskit
 
-sys.path.append('../')
-from methods import run_main_loop, test_locally
+from ..methods import run_main_loop, test_locally
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = qiskit.QuantumRegister(3)
@@ -47,6 +44,7 @@ def get_teleportation_circuits():
         circuits.append(qc_teleport)
 
     return circuits
+
 
 # Execute
 test_locally(get_teleportation_circuits())

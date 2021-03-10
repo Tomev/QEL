@@ -1,15 +1,13 @@
-import sys
-
-sys.path.append('../')
-from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-from methods import run_main_loop_with_chsh_test, test_locally, add_measure_in_base, draw_circuit
 import numpy as np
+from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+
+from ..methods import run_main_loop_with_chsh_test, test_locally, add_measure_in_base, draw_circuit
 
 mermin_quantum_register = QuantumRegister(3)
 c3 = ClassicalRegister(3)
 selected_mermin_bases = ['XXX', 'YYX', 'YXY', 'XYY']
-#topology_qubits_order = [1, 0, 2]  # For T topology, like QX London
-topology_qubits_order = [0, 1, 2]      # For star topology, like QX2
+# topology_qubits_order = [1, 0, 2]  # For T topology, like QX London
+topology_qubits_order = [0, 1, 2]  # For star topology, like QX2
 
 
 def create_ghz_state():
@@ -61,6 +59,7 @@ def get_mermin_test_circuits():
     mermin_test_base_circuits.name = "Mermin-test"
     mermin_test_circuits = add_measurements_in_selected_bases([mermin_test_base_circuits])
     return mermin_test_circuits
+
 
 # run_main_loop_with_chsh_test(get_mermin_circuits())
 # test_locally(get_mermin_circuits(), use_mapping=True, save_to_file=True, number_of_simulations=1)

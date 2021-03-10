@@ -1,12 +1,10 @@
 # This gatherer will download and write jobs one at the time. Let it download jobs until certain date is met.
 
-import sys
-sys.path.append('..\\')
-from os.path import isfile
 from datetime import datetime
-from methods import parse_job_to_report_string, report_to_csv, get_backend_from_name
 from time import time
-import consts
+
+from .. import consts
+from ..methods import parse_job_to_report_string, report_to_csv, get_backend_from_name
 
 
 class SingleJobGatherer:
@@ -67,11 +65,11 @@ end_date = datetime(year, month, day)
 initialization_time = time() - initialization_time
 print(f"Gatherer initialized in {initialization_time} second(s).")
 
-#print("Printing job")
-#file = open("job_result.txt", "a")
-#file.write(str(job_gatherer.get_single_job().result()))
-#file.close()
-#print("Done")
+# print("Printing job")
+# file = open("job_result.txt", "a")
+# file.write(str(job_gatherer.get_single_job().result()))
+# file.close()
+# print("Done")
 
 while True:
     job_gathering_time = time()

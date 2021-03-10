@@ -1,9 +1,7 @@
-import sys
-
-sys.path.append('..\\')
-import consts
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
-from methods import test_locally, run_main_loop_with_chsh_test
+
+import consts
+from ..methods import test_locally, run_main_loop_with_chsh_test
 
 
 def ccnot(control1, control2, target):
@@ -27,7 +25,6 @@ def rtof3(control1, control2, target):
 
 
 def rtof4(c1, c2, c3, t):
-
     a = 2  # ancilla
 
     rtof = QuantumCircuit(qr, cr)
@@ -74,16 +71,16 @@ for i in range(5):
                 circuit.x(qr[3])
                 circuit.x(qr[4])
 
-                circuit_name = "Control1: " + str(i) + ", Control2: " + str(j) + ", Control3: " + str(k) + ", Target: " + str(l)
-                #print(circuit_name)
+                circuit_name = "Control1: " + str(i) + ", Control2: " + str(j) + ", Control3: " + str(
+                    k) + ", Target: " + str(l)
+                # print(circuit_name)
                 circuit += rtof4(i, j, k, l)
                 circuit.name = circuit_name
 
                 circuit.measure(qr, cr)
                 circuits.append(circuit)
 
-
 print("Created " + str(len(circuits)) + " circuits.")
 
 test_locally(circuits, True)
-#run_main_loop_with_chsh_test(circuits)
+# run_main_loop_with_chsh_test(circuits)

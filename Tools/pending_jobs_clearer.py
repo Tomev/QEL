@@ -1,10 +1,7 @@
-import sys
-
-sys.path.append('..')
-
-import consts
 from qiskit import IBMQ
 from qiskit.providers.jobstatus import JobStatus
+
+from .. import consts
 
 backend = IBMQ.load_account().backends(consts.CONSIDERED_REMOTE_BACKENDS[0])[0]
 

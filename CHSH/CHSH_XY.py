@@ -1,9 +1,7 @@
 import numpy as np
-import sys
-
-sys.path.append('..')
-from methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base, draw_circuit
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
+
+from ..methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base, draw_circuit
 
 selected_chsh_bases = ['YY', 'YX', 'XX', 'XY']
 chsh_quantum_register = QuantumRegister(2)
@@ -89,7 +87,6 @@ def get_symmetric_chsh_test_circuits():
     bell.name = 'CHSH-test'
     chsh_circuits = add_measurements_in_selected_bases([bell])
     return chsh_circuits
-
 
 # run_main_loop(get_chsh_circuits())
 # test_locally(get_chsh_circuits(), use_mapping=True, save_to_file=True, number_of_simulations=1)

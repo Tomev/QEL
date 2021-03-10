@@ -1,4 +1,3 @@
-import os
 from datetime import datetime
 
 desired_date = datetime.strptime('2020-3-2T08:00:00', '%Y-%m-%dT%H:%M:%S')
@@ -32,7 +31,6 @@ for file in os.listdir(os.getcwd()):
         mitigation_report += get_report_string_from_file(file)
     else:
         print(f'Ignoring: {file}.')
-
 
 file = open('raw_jobs_report.csv', 'w')
 file.write(report)

@@ -1,13 +1,12 @@
-import sys
 import warnings
-sys.path.append('../..')
-from methods import run_main_loop_with_chsh_test, execute_circuits, test_locally, get_backend_from_name
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
+
+from ...methods import run_main_loop_with_chsh_test, execute_circuits, test_locally, get_backend_from_name
 
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
 
-#Mapowanie
+# Mapowanie
 C1 = 3
 C2 = 4
 C3 = 1
@@ -36,7 +35,6 @@ def rtof3(control1, control2, target):
 
 
 def prepare_state(quantum_state):
-
     prepared_circuit = QuantumCircuit(qr, cr)
 
     if quantum_state[0] == '1':
@@ -52,7 +50,6 @@ def prepare_state(quantum_state):
 
 
 def expected_cccnot(quantum_state):
-
     if quantum_state == '1110':
         expected = '1111'
     else:
@@ -78,7 +75,7 @@ measure_all.measure(qr, cr)
 
 rtof4 = rtof3(C1, C2, A) + ccnot(A, C3, T) + rtof3(C1, C2, A)
 
-states = ['{0:04b}'.format(x) for x in range(2**4)]
+states = ['{0:04b}'.format(x) for x in range(2 ** 4)]
 
 "".join(list(reversed(['1', 'x'])))
 
@@ -91,4 +88,4 @@ for state in states:
     circuits.append(circuit)
 
 test_locally(circuits)
-#run_main_loop_with_chsh_test(circuits)
+# run_main_loop_with_chsh_test(circuits)
