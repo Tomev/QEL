@@ -3,7 +3,12 @@
 import numpy as np
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
-from ..methods import test_locally, run_main_loop_with_chsh_test
+import os, sys
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally
 
 
 def get_bell_circuits(circuits_copies_number: int = 50):
@@ -31,6 +36,5 @@ def get_bell_circuits(circuits_copies_number: int = 50):
 print("Bell experiment start")
 
 test_locally(get_bell_circuits())
-# run_main_loop_with_chsh_test(get_bell_circuits())
 
 print("Bell experiment finished")

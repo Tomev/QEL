@@ -4,9 +4,16 @@ Note: if you have only cloned the QISKit repository but not
 used `pip install`, the examples only work from the root directory.
 """
 
+import os
+import sys
+
 from qiskit import ClassicalRegister, QuantumRegister, QuantumCircuit
 
-from ...methods import test_locally, run_main_loop_with_chsh_test
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = QuantumRegister(2)

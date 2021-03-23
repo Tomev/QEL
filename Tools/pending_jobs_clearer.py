@@ -1,7 +1,14 @@
+import os
+import sys
+
 from qiskit import IBMQ
 from qiskit.providers.jobstatus import JobStatus
 
-from .. import consts
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+import consts
 
 backend = IBMQ.load_account().backends(consts.CONSIDERED_REMOTE_BACKENDS[0])[0]
 

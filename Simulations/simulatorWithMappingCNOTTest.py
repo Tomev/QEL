@@ -1,7 +1,14 @@
+import os
+import sys
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
-from .. import consts
-from ..methods import test_locally_with_noise, run_main_loop_with_chsh_test, test_locally
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+import consts
+from methods import test_locally
 
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)

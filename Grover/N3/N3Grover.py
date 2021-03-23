@@ -1,4 +1,12 @@
-from ...methods import run_main_loop, test_locally, create_circuit_from_qasm
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(parent_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally, create_circuit_from_qasm
 
 available_file_names = ['Grover_3_000_1.qasm']
 

@@ -1,5 +1,13 @@
 # This is parser only for data reports used by A for analysis
-from ..methods import report_to_csv
+
+import os
+import sys
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import report_to_csv
 
 file_result_name = 'jobs_report.csv'
 

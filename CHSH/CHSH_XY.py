@@ -1,7 +1,12 @@
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
-from ..methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base, draw_circuit
+import os, sys
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally, run_main_loop, test_locally_with_noise, add_measure_in_base, draw_circuit
 
 selected_chsh_bases = ['YY', 'YX', 'XX', 'XY']
 chsh_quantum_register = QuantumRegister(2)

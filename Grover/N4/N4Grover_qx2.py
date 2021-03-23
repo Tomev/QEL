@@ -1,7 +1,15 @@
+import os
+import sys
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
-from .rtof import rtof4
-from ...methods import test_locally, run_main_loop, run_main_loop_with_chsh_test, test_locally_with_error_mitigation
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(parent_dir)
+sys.path.append(parent_dir)
+
+from rtof import rtof4
+from methods import test_locally_with_error_mitigation
 
 # Mapowanie
 C0 = 3
@@ -132,6 +140,5 @@ for state in states:
     qc.measure(qr, cr)
     circuits.append(qc)
 
-# test_locally(circuits, False, True, 1000)
-run_main_loop_with_chsh_test(circuits)
-# test_locally_with_error_mitigation(circuits, True, 1000)
+    # test_locally(circuits, False, True, 1000)
+test_locally_with_error_mitigation(circuits, True, 1000)

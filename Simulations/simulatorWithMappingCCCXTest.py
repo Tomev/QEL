@@ -1,7 +1,15 @@
+import os
+import sys
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
 import consts
-from ..methods import test_locally, run_main_loop_with_chsh_test
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally
 
 
 def ccnot(control1, control2, target):
@@ -83,4 +91,3 @@ for i in range(5):
 print("Created " + str(len(circuits)) + " circuits.")
 
 test_locally(circuits, True)
-# run_main_loop_with_chsh_test(circuits)

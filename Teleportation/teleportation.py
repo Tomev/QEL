@@ -1,7 +1,14 @@
+import os
+import sys
+
 import numpy as np
 import qiskit
 
-from ..methods import run_main_loop, test_locally
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally
 
 # Create a Quantum Register called "qr" with 2 qubits.
 qr = qiskit.QuantumRegister(3)

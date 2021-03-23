@@ -1,7 +1,14 @@
-import warnings
+import os
+import sys
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
-from ...methods import run_main_loop_with_chsh_test, execute_circuits, test_locally, get_backend_from_name
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+parent_dir = os.path.dirname(parent_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally
 
 qr = QuantumRegister(5)
 cr = ClassicalRegister(5)
@@ -88,4 +95,3 @@ for state in states:
     circuits.append(circuit)
 
 test_locally(circuits)
-# run_main_loop_with_chsh_test(circuits)

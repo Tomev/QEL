@@ -1,7 +1,14 @@
+import os
+import sys
+
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
 import consts
-from ..methods import test_locally
+from methods import test_locally
 
 
 def rtof3(control1, control2, target):

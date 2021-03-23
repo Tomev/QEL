@@ -1,7 +1,14 @@
+import os
+import sys
+
 import numpy as np
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 
-from ..methods import run_main_loop_with_chsh_test, test_locally, add_measure_in_base, draw_circuit
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+from methods import test_locally, add_measure_in_base
 
 mermin_quantum_register = QuantumRegister(3)
 c3 = ClassicalRegister(3)

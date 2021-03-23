@@ -1,10 +1,16 @@
 # This gatherer will download and write jobs one at the time. Let it download jobs until certain date is met.
 
+import os
+import sys
 from datetime import datetime
 from time import time
 
-from .. import consts
-from ..methods import parse_job_to_report_string, report_to_csv, get_backend_from_name
+current_dir = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
+
+import consts
+from methods import parse_job_to_report_string, report_to_csv, get_backend_from_name
 
 
 class SingleJobGatherer:
