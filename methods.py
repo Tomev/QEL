@@ -195,7 +195,7 @@ def test_locally_with_noise(circuits, save_to_file=False, number_of_simulations=
 
 def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_simulations=1):
     properties = get_backend_from_name(consts.CONSIDERED_REMOTE_BACKENDS[0]).properties()
-    noise_model = noise.device.basic_device_noise_model(properties)
+    noise_model = noise.NoiseModel.from_backend(properties)
 
     backend = get_sim_backend_from_name("qasm_simulator")
 
@@ -250,6 +250,7 @@ def test_locally_with_error_mitigation(circuits, save_to_file=False, number_of_s
 
 
 def get_jobs_from_backend(backend_name, jobs_number=consts.JOBS_DOWNLOAD_LIMIT):
+    print(IBMQ.load_account().backends(backend_name))
     backend = IBMQ.load_account().backends(backend_name)[0]
 
     number_of_jobs_to_download = jobs_number
@@ -287,7 +288,7 @@ def parse_job_to_report_string(job):
         job_string += job_id + consts.CSV_SEPARATOR
         job_string += job_backend_name + consts.CSV_SEPARATOR
         job_string += str(circuit_name) + consts.CSV_SEPARATOR
-        job_string += job_creation_date + consts.CSV_SEPARATOR
+        job_string += str(job_creation_date) + consts.CSV_SEPARATOR
         job_string += str(job.result().get_counts(circuit_name)) + '\n'
 
     return job_string
@@ -311,7 +312,7 @@ def get_mitigation_report_string(job):
         job_string += job_id + consts.CSV_SEPARATOR
         job_string += job_backend_name + consts.CSV_SEPARATOR
         job_string += str(circuit_name) + consts.CSV_SEPARATOR
-        job_string += job_creation_date + consts.CSV_SEPARATOR
+        job_string += str(job_creation_date) + consts.CSV_SEPARATOR
 
         raw_counts = job.result().get_counts(circuit_name)
         index = len(list(raw_counts.keys())[0])
@@ -452,8 +453,8 @@ def get_error_mitigation_filters(job):
         job_creation_date = job.creation_date()
         backend_name = job.backend().name()
 
-    properties = get_backend_from_name(backend_name).properties(job_creation_date)
-    noise_model = noise.device.basic_device_noise_model(properties)
+    properties = get_backend_from_name(backend_name).properties(datetime=job_creation_date)
+    noise_model = noise.NoiseModel.from_backend(properties)
     filters = dict()
 
     qubits_lists = []
